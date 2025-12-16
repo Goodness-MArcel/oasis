@@ -11,4 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Handle mobile Training submenu toggle
+  const trainingToggle = document.querySelector('[data-bs-target="#mobileTrainingMenu"]');
+  const trainingMenu = document.getElementById('mobileTrainingMenu');
+  
+  if (trainingToggle && trainingMenu) {
+    trainingToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isExpanded = trainingToggle.getAttribute('aria-expanded') === 'true';
+      
+      if (isExpanded) {
+        trainingMenu.classList.remove('show');
+        trainingToggle.setAttribute('aria-expanded', 'false');
+      } else {
+        trainingMenu.classList.add('show');
+        trainingToggle.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
 });
