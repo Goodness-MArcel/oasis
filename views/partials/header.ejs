@@ -1,0 +1,73 @@
+<header class="site-header border-bottom bg-white">
+	<div class="container py-2">
+		<div class="d-flex align-items-center justify-content-between gap-3">
+			<!-- Logo -->
+			<a href="/" class="d-inline-flex align-items-center text-decoration-none">
+				<img src="/images/logo.png" alt="Integrated Oasis Logo" height="32" class="me-2" />
+				<span class="fw-semibold text-dark">Integrated Oasis</span>
+			</a>
+
+			<!-- Hamburger for small screens -->
+			<button class="btn btn-outline-secondary d-inline-flex d-md-none" id="navToggle" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<!-- Navigation -->
+			<nav class="nav-primary d-none d-md-block">
+				<ul class="nav mb-0">
+					<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="/online-training">Online Training</a></li>
+					<li class="nav-item"><a class="nav-link" href="/in-house-training">In-House Training</a></li>
+					<li class="nav-item"><a class="nav-link" href="/free-tutorials">Free Tutorials</a></li>
+					<li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
+					<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+					<li class="nav-item"><a class="nav-link" href="/auth">Login/Signup</a></li>
+				</ul>
+			</nav>
+
+			<!-- Search -->
+			<form class="search-form d-none d-lg-flex align-items-center" action="/search" method="get" role="search">
+				<input
+					type="search"
+					name="q"
+					class="form-control"
+					placeholder="Search courses and tutorials"
+					aria-label="Search"
+					value="<%= typeof query !== 'undefined' ? query : '' %>"
+				/>
+				<button class="btn btn-outline-secondary ms-2" type="submit">Search</button>
+			</form>
+
+			<!-- CTAs -->
+			<div class="d-flex align-items-center gap-2">
+				<a href="/courses" class="btn btn-primary">Explore Courses</a>
+				<a href="/get-started" class="btn btn-success">Get Started</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Mobile menu -->
+	<div class="container d-md-none" id="mobileMenu" hidden>
+		<nav>
+			<ul class="list-unstyled mb-2">
+				<li><a class="d-block py-2" href="/">Home</a></li>
+				<li><a class="d-block py-2" href="/online-training">Online Training</a></li>
+				<li><a class="d-block py-2" href="/in-house-training">In-House Training</a></li>
+				<li><a class="d-block py-2" href="/free-tutorials">Free Tutorials</a></li>
+				<li><a class="d-block py-2" href="/about">About Us</a></li>
+				<li><a class="d-block py-2" href="/contact">Contact</a></li>
+				<li><a class="d-block py-2" href="/auth">Login/Signup</a></li>
+			</ul>
+			<form class="search-form-mobile mb-3" action="/search" method="get" role="search">
+				<div class="input-group">
+					<input type="search" name="q" class="form-control" placeholder="Search" aria-label="Search" />
+					<button class="btn btn-outline-secondary" type="submit">Go</button>
+				</div>
+			</form>
+			<div class="d-flex gap-2 pb-3">
+				<a href="/courses" class="btn btn-primary w-50">Explore Courses</a>
+				<a href="/get-started" class="btn btn-success w-50">Get Started</a>
+			</div>
+		</nav>
+	</div>
+</header>
