@@ -177,7 +177,7 @@ a:hover { color: var(--secondary-green); }
 .site-footer .border-top { border-top-color: rgba(255, 255, 255, 0.15) !important; }
 
 /* Utility */
-.container { max-width: 1140px; }
+/* .container { max-width: 1140px; } */
 
 /* Hero Section */
 .hero-banner {
