@@ -22,6 +22,8 @@ main h3 {
 	position: relative;
 	padding: 4rem 1.5rem;
 	/* border-radius: 1.25rem; */
+	margin-left: 0;
+	margin-right: 0;
 	overflow: hidden;
 	background-image: url('/images/bg.jpg');
 	background-size: cover;
