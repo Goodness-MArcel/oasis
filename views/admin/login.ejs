@@ -1,0 +1,60 @@
+<!-- Admin Login Page (no public nav/footer) -->
+<section class="admin-auth-wrapper d-flex align-items-center justify-content-center py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <div class="admin-auth-card p-4 p-md-5">
+          <div class="text-center mb-3">
+            <img src="/images/logo.png" alt="Integrated Oasis Logo" height="40" class="mb-2" />
+            <h1 class="h5 fw-bold mb-0">Integrated Oasis Admin</h1>
+            <p class="text-muted small mb-0">Secure access to the admin dashboard</p>
+          </div>
+
+          <form action="/admin/login" method="post" novalidate>
+            <div class="mb-3">
+              <label for="adminEmail" class="form-label small text-muted">Admin email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="adminEmail"
+                name="email"
+                placeholder="admin@example.com"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="adminPassword" class="form-label small text-muted">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="adminPassword"
+                name="password"
+                placeholder="Enter admin password"
+                required
+              />
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3 small">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" id="adminRemember" name="remember" />
+                <label class="form-check-label" for="adminRemember">
+                  Remember this device
+                </label>
+              </div>
+              <span class="text-muted">Admin only</span>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mb-2">
+              <i class="fa-solid fa-shield-halved me-1"></i> Login as Admin
+            </button>
+
+            <p class="small text-muted mb-0 text-center">
+              If you are not an administrator, please close this page.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

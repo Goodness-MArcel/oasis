@@ -39,6 +39,18 @@
   color: var(--primary-green);
 }
 
+/* On larger screens, make only the outer corners rounded so the
+   two cards meet with a straight edge in the middle */
+@media (min-width: 992px) {
+  .auth-card {
+    border-radius: 16px 0 0 16px;
+  }
+
+  .auth-side-card {
+    border-radius: 0 16px 16px 0;
+  }
+}
+
 @media (max-width: 767.98px) {
   .auth-hero {
     padding-top: 2rem;

@@ -4,6 +4,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import expressLayouts from "express-ejs-layouts";
 import pagesRouter from "./routes/pages.js";
+import adminRouter from "./routes/admin.js";
 
 dotenv.config();
 const app = express();
@@ -45,6 +46,7 @@ const PORT = process.env.PORT || 3000;
 
 // Page routes
 app.use("/", pagesRouter);
+app.use("/admin", adminRouter);
 
 // 404 handler
 app.use((req, res) => {
