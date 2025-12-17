@@ -157,6 +157,17 @@ a:hover { color: var(--secondary-green); }
 	border-color: var(--neutral-dark);
 }
 
+/* Brand outline button (used for Login) */
+.btn-outline-primary {
+	color: var(--primary-green);
+	border-color: var(--primary-green);
+}
+.btn-outline-primary:hover {
+	color: #fff;
+	background-color: var(--primary-green);
+	border-color: var(--primary-green);
+}
+
 /* Footer */
 .site-footer {
 	background: var(--neutral-dark);

@@ -29,4 +29,22 @@ router.get("/contact", (req, res) => {
   });
 });
 
+router.get("/auth", (req, res) => {
+  res.render("pages/auth", {
+    title: "Login or Sign Up",
+    description: "Access your Integrated Oasis learner account or create a new one.",
+    pageStyles: "auth.css",
+    pageScript: "auth.js",
+  });
+});
+
+router.get("/signup", (req, res) => {
+  res.render("pages/signup", {
+    title: "Create Your Account",
+    description: "Sign up for an Integrated Oasis learner account.",
+    pageStyles: "auth.css",
+    pageScript: "auth.js",
+  });
+});
+
 export default router;

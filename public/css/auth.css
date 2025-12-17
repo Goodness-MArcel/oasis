@@ -1,0 +1,46 @@
+/* Auth Page Styles */
+
+.auth-hero {
+  min-height: 70vh;
+}
+
+.auth-card,
+.auth-side-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.auth-card h2,
+.auth-side-card h2,
+.auth-hero h1 {
+  color: var(--primary-green);
+}
+
+.auth-hero h1 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+.auth-card .form-control {
+  border-radius: 10px;
+}
+
+.auth-card .form-control:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 0.15rem rgba(74, 144, 226, 0.25);
+}
+
+.auth-side-card {
+  background: linear-gradient(135deg, rgba(46, 139, 87, 0.07), rgba(74, 144, 226, 0.06));
+}
+
+.auth-side-card ul li::marker {
+  color: var(--primary-green);
+}
+
+@media (max-width: 767.98px) {
+  .auth-hero {
+    padding-top: 2rem;
+  }
+}

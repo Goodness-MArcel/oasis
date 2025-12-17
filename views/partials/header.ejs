@@ -1,5 +1,5 @@
-<header class="site-header border-bottom bg-white">
-	<div class="container py-2">
+<header class="site-header border-bottom bg-white sticky-top shadow-sm">
+	<div class="container py-2 py-lg-3">
 		<div class="d-flex align-items-center justify-content-between gap-3">
 			<!-- Logo -->
 			<a href="/" class="d-inline-flex align-items-center text-decoration-none">
@@ -14,7 +14,7 @@
 
 			<!-- Navigation -->
 			<nav class="nav-primary d-none d-md-block">
-				<ul class="nav mb-0">
+				<ul class="nav mb-0 align-items-center">
 					<li class="nav-item"><a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Home</a></li>
 					<li class="nav-item dropdown">
 						<a
@@ -35,15 +35,15 @@
 					</li>
 					<li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/about') ? 'active' : '' %>" href="/about">About Us</a></li>
 					<li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/contact') ? 'active' : '' %>" href="/contact">Contact</a></li>
-					<li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login/Signup</a></li>
+					<!-- Login/Signup link for medium screens -->
+					<li class="nav-item d-lg-none"><a class="nav-link <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login/Signup</a></li>
+					<!-- Login & Sign Up buttons for large screens -->
+					<li class="nav-item ms-lg-3 d-none d-lg-flex align-items-center gap-2">
+						<a href="/auth" class="btn btn-outline-primary btn-sm <%= currentPath.startsWith('/auth') ? 'active' : '' %>">Login</a>
+						<a href="/signup" class="btn btn-success btn-sm <%= currentPath.startsWith('/signup') ? 'active' : '' %>">Sign Up</a>
+					</li>
 				</ul>
 			</nav>
-
-			<!-- CTAs -->
-	<div class="d-none d-md-flex align-items-center gap-3">
-				<a href="/courses" class="btn btn-primary">Explore Courses</a>
-				<a href="/get-started" class="btn btn-success">Get Started</a>
-			</div>
 		</div>
 	</div>
 
@@ -64,9 +64,15 @@
 				</li>
 				<li><a class="d-block py-2 <%= currentPath.startsWith('/about') ? 'active' : '' %>" href="/about">About Us</a></li>
 				<li><a class="d-block py-2 <%= currentPath.startsWith('/contact') ? 'active' : '' %>" href="/contact">Contact</a></li>
-				<li><a class="d-block py-2 <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login/Signup</a></li>
-		<li class="mt-3"><a class="d-block py-2 btn btn-primary w-100 <%= currentPath.startsWith('/courses') ? 'active' : '' %>" href="/courses">Explore Courses</a></li>
-		<li class="mt-2"><a class="d-block py-2 btn btn-success w-100 <%= currentPath.startsWith('/get-started') ? 'active' : '' %>" href="/get-started">Get Started</a></li>
+				<li class="mt-3">
+					<div class="d-flex gap-2">
+						<a class="btn btn-outline-primary flex-fill py-2 <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login</a>
+						<a class="btn btn-primary flex-fill py-2 <%= currentPath.startsWith('/signup') ? 'active' : '' %>" href="/signup">Sign Up</a>
+					</div>
+				</li>
+				<li class="mt-2">
+					<a class="d-block py-2 btn btn-success w-100 <%= currentPath.startsWith('/get-started') ? 'active' : '' %>" href="/get-started">Get Started</a>
+				</li>
 		</ul>
 		</nav>
 	</div>
