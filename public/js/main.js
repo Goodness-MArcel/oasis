@@ -52,4 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     // No accordion on this page – safe to ignore
   }
+
+  // Initialise AOS scroll animations (if library is loaded)
+  if (typeof AOS !== 'undefined') {
+	AOS.init({
+	  duration: 800,
+	  easing: 'ease-out-quart',
+	  once: true,
+	  offset: 80,
+	});
+  }
 });
