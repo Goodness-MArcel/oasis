@@ -29,6 +29,33 @@ router.get("/contact", (req, res) => {
   });
 });
 
+router.get("/online-training", (req, res) => {
+  res.render("pages/online-training", {
+    title: "Online Training",
+    description: "Flexible online courses in Web Development, Data, AI, Cybersecurity and more.",
+    pageStyles: "online-training.css",
+    pageScript: null,
+  });
+});
+
+router.get("/in-house-training", (req, res) => {
+  res.render("pages/in-house-training", {
+    title: "In-House Training",
+    description: "Customized in-house training programs for teams and organizations.",
+    pageStyles: "in-house.css",
+    pageScript: null,
+  });
+});
+
+router.get("/free-tutorials", (req, res) => {
+  res.render("pages/free-tutorials", {
+    title: "Free Tutorials",
+    description: "Access free programming, web design, data, and tech tutorials from Integrated Oasis.",
+    pageStyles: "free-tutorials.css",
+    pageScript: null,
+  });
+});
+
 router.get("/auth", (req, res) => {
   res.render("pages/auth", {
     title: "Login or Sign Up",

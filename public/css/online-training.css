@@ -1,0 +1,51 @@
+/* Online Training Page Styles */
+
+.online-hero h1 {
+  color: var(--primary-green);
+}
+
+.online-filters {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+}
+
+.course-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+}
+
+.course-card h3 {
+  color: var(--primary-green);
+}
+
+.course-card .course-rating span.text-warning {
+  letter-spacing: 1px;
+}
+
+.badge.bg-outline-primary {
+  color: var(--accent-blue);
+  border: 1px solid rgba(74, 144, 226, 0.35);
+  background-color: rgba(74, 144, 226, 0.06);
+}
+
+.badge.bg-outline-success {
+  color: var(--primary-green);
+  border: 1px solid rgba(46, 139, 87, 0.35);
+  background-color: rgba(46, 139, 87, 0.06);
+}
+
+.badge.bg-outline-warning {
+  color: #b58100;
+  border: 1px solid rgba(255, 193, 7, 0.5);
+  background-color: rgba(255, 193, 7, 0.08);
+}
+
+@media (max-width: 767.98px) {
+  .online-hero h1 {
+    font-size: 1.75rem;
+  }
+}

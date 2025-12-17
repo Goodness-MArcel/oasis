@@ -1,0 +1,7 @@
+/* Free Tutorials Page Styles */
+
+.free-tutorials-hero h1 {
+  color: var(--primary-green);
+}
+
+/* Reuse existing .free-tutorials, .tutorial-card styles from main.css */

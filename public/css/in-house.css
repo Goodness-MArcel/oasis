@@ -1,0 +1,55 @@
+/* In-House Training Page Styles */
+
+.inhouse-hero h1 {
+  color: var(--primary-green);
+}
+
+.inhouse-filters {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+}
+
+.inhouse-program-card,
+.inhouse-inquiry-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+}
+
+.inhouse-program-card h2,
+.inhouse-program-card h3,
+.inhouse-inquiry-card h2 {
+  color: var(--primary-green);
+}
+
+.badge.bg-success-subtle {
+  background-color: rgba(46, 139, 87, 0.1);
+}
+
+.badge.bg-primary-subtle {
+  background-color: rgba(74, 144, 226, 0.1);
+}
+
+.badge.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.12);
+}
+
+.inhouse-inquiry-card .form-control,
+.inhouse-inquiry-card .form-select {
+  border-radius: 10px;
+}
+
+.inhouse-inquiry-card .form-control:focus,
+.inhouse-inquiry-card .form-select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 0.15rem rgba(74, 144, 226, 0.25);
+}
+
+@media (max-width: 767.98px) {
+  .inhouse-hero h1 {
+    font-size: 1.75rem;
+  }
+}
