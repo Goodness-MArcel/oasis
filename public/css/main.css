@@ -20,6 +20,12 @@ body {
 	color: var(--neutral-dark);
 	background: var(--neutral-light);
 }
+/* Prevent stray horizontal scroll on small screens */
+@media (max-width: 768px) {
+	body {
+		overflow-x: hidden;
+	}
+}
 main { min-height: 60vh; }
 
 /* Links */
