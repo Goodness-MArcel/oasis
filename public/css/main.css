@@ -9,6 +9,11 @@
 	--neutral-dark: #343A40;        /* Dark Gray */
 }
 
+html {
+	scroll-behavior: smooth;
+	overflow-x: hidden;
+}
+
 /* Base layout tweaks */
 body {
 	font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
