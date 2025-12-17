@@ -89,5 +89,6 @@
 </footer>
 
 <!-- Scripts -->
-<script src="/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESvE1l5LlMt4iL7x04ecqC6rXcXQK7tBTK" crossorigin="anonymous"></script>
+<!-- Bootstrap bundle from CDN; integrity removed to avoid SRI hash mismatch blocking the script in dev -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js" defer></script>

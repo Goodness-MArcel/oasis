@@ -6,7 +6,13 @@ import expressLayouts from "express-ejs-layouts";
 
 dotenv.config();
 const app = express();
-app.use(helmet());
+
+// Helmet security headers (CSP disabled so external CDNs like Bootstrap/Unsplash can load)
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 app.use(morgan("dev"));
 
 app.set("view engine", "ejs");

@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Basic UI initialisation (works even if Bootstrap JS fails to load)
+
   const navToggle = document.getElementById('navToggle');
   const mobileMenu = document.getElementById('mobileMenu');
   if (navToggle && mobileMenu) {
@@ -12,22 +14,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle mobile Training submenu toggle
-  const trainingToggle = document.querySelector('[data-bs-target="#mobileTrainingMenu"]');
-  const trainingMenu = document.getElementById('mobileTrainingMenu');
-  
-  if (trainingToggle && trainingMenu) {
-    trainingToggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      const isExpanded = trainingToggle.getAttribute('aria-expanded') === 'true';
-      
-      if (isExpanded) {
-        trainingMenu.classList.remove('show');
-        trainingToggle.setAttribute('aria-expanded', 'false');
-      } else {
-        trainingMenu.classList.add('show');
-        trainingToggle.setAttribute('aria-expanded', 'true');
+  // Manually initialize Bootstrap Carousel
+  const carouselElement = document.getElementById('testimonialsCarousel');
+  if (carouselElement) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
+      try {
+        new bootstrap.Carousel(carouselElement, {
+          interval: 5000,
+          ride: 'carousel',
+          wrap: true,
+          keyboard: true,
+          pause: 'hover'
+        });
+      } catch (error) {
+        console.error('Error initializing carousel:', error);
       }
-    });
+    }
+  } else {
+    // No carousel on this page – safe to ignore
+  }
+
+  // Manually initialize Bootstrap Accordion
+  const accordionElement = document.getElementById('faqAccordion');
+  if (accordionElement) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+      try {
+        const collapseElements = accordionElement.querySelectorAll('.accordion-collapse');
+        collapseElements.forEach((collapseElement) => {
+          new bootstrap.Collapse(collapseElement, {
+            toggle: false
+          });
+        });
+      } catch (error) {
+        console.error('Error initializing accordion:', error);
+      }
+    }
+  } else {
+    // No accordion on this page – safe to ignore
   }
 });
