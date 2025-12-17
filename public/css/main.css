@@ -25,6 +25,22 @@ a:hover { color: var(--secondary-green); }
 .site-header { background: #fff; }
 .site-header .nav .nav-link { color: var(--neutral-dark); }
 .site-header .nav .nav-link:hover { color: var(--primary-green); }
+/* Make active nav links visibly highlighted */
+.site-header .nav .nav-link.active {
+	color: var(--primary-green);
+	font-weight: 600;
+	position: relative;
+}
+.site-header .nav .nav-link.active::after {
+	content: '';
+	position: absolute;
+	left: 0.75rem;
+	right: 0.75rem;
+	bottom: 0.15rem;
+	height: 2px;
+	background-color: var(--primary-green);
+	border-radius: 999px;
+}
 .site-header .search-form .form-control { max-width: 260px; }
 
 /* Dropdown - hover support */
@@ -49,6 +65,10 @@ a:hover { color: var(--secondary-green); }
 #mobileMenu { border-top: 1px solid #eee; background: #fff; }
 #mobileMenu a { color: var(--neutral-dark); text-decoration: none; }
 #mobileMenu a:hover { color: var(--primary-green); }
+#mobileMenu a.active {
+	color: var(--primary-green);
+	font-weight: 600;
+}
 
 /* Mobile submenu collapse */
 #mobileTrainingMenu {

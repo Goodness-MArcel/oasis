@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import helmet from "helmet";
 import expressLayouts from "express-ejs-layouts";
+import pagesRouter from "./routes/pages.js";
 
 dotenv.config();
 const app = express();
@@ -27,24 +28,23 @@ app.use(express.json());
 
 // Default locals for views to avoid undefined references
 app.use((req, res, next) => {
+  // Common view locals
   res.locals.title = res.locals.title || "Integrated Oasis";
   res.locals.description =
     res.locals.description ||
     "Integrated Oasis is a modern learning and training platform.";
   res.locals.pageStyles = res.locals.pageStyles || null;
   res.locals.pageScript = res.locals.pageScript || null;
+
+  // Current path for active nav highlighting
+  res.locals.currentPath = req.path;
+
   next();
 });
 const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.render("pages/home", {
-    title: "Home",
-    description: "Welcome to Integrated Oasis",
-    pageStyles: "home.css",
-    pageScript: "home.js",
-  });
-});
+// Page routes
+app.use("/", pagesRouter);
 
 // 404 handler
 app.use((req, res) => {

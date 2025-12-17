@@ -1,0 +1,50 @@
+/* About page specific styles */
+
+/* Make all main headings on the about page use the primary green theme */
+main h1,
+main h2,
+main h3 {
+	color: var(--primary-green);
+}
+
+/* Optional: emphasize section titles slightly */
+main h1,
+main h2 {
+	font-weight: 700;
+}
+
+main h3 {
+	font-weight: 600;
+}
+
+/* Top banner on About page */
+.about-hero-banner {
+	position: relative;
+	padding: 4rem 1.5rem;
+	/* border-radius: 1.25rem; */
+	overflow: hidden;
+	background-image: url('/images/bg.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.about-hero-banner::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.4); /* black overlay */
+	z-index: 0;
+}
+
+.about-hero-banner > .col-lg-8 {
+	position: relative;
+	z-index: 1;
+}
+
+.about-hero-banner p {
+	color: rgba(255, 255, 255, 0.9) !important;
+}
