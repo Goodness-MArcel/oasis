@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head') %>
+  <body class="admin-layout bg-light">
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-header d-flex align-items-center justify-content-between mb-4">
+          <a href="/admin/dashboard" class="d-inline-flex align-items-center text-decoration-none admin-sidebar-brand">
+            <img src="/images/logo.png" alt="Integrated Oasis Logo" height="28" class="me-2" />
+            <span class="fw-semibold text-dark small admin-sidebar-brand-text">Admin</span>
+          </a>
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm admin-sidebar-toggle"
+            id="adminSidebarToggle"
+            aria-label="Toggle sidebar width"
+          >
+            <i class="fa-solid fa-angles-left"></i>
+          </button>
+        </div>
+
+        <nav class="admin-sidebar-nav nav flex-column mb-auto small">
+          <a href="/admin/dashboard" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/dashboard') || currentPath === '/admin' ? 'active' : 'text-muted' %>">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="/admin/courses" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/courses') ? 'active' : 'text-muted' %>">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Manage Courses</span>
+          </a>
+          <a href="/admin/users" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/users') ? 'active' : 'text-muted' %>">
+            <i class="fa-solid fa-users"></i>
+            <span>Users</span>
+          </a>
+
+          <a href="/admin/analytics" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/analytics') ? 'active' : 'text-muted' %>">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+          
+
+            <a href="/admin/revenue" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/revenue') ? 'active' : 'text-muted' %>">
+                <i class="fa-solid fa-naira-sign"></i>
+                <span>Revenue</span>
+            </a>
+
+          <a href="/admin/settings" class="nav-link d-flex align-items-center gap-2 mb-3 <%= currentPath.startsWith('/admin/settings') ? 'active' : 'text-muted' %>">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="admin-sidebar-footer mt-4 small">
+          <span class="badge bg-success-subtle text-success d-inline-flex align-items-center gap-1 mb-2 admin-sidebar-badge">
+            <i class="fa-solid fa-shield-halved"></i> Admin
+          </span>
+          <!-- Placeholder logout button (no auth wired yet) -->
+          <form action="/admin/login" method="get" class="m-0 p-0">
+            <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+              <i class="fa-solid fa-right-from-bracket me-1"></i>
+              <span class="admin-sidebar-logout-text">Logout</span>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <main class="admin-main container-fluid py-4 px-3 px-md-4">
+        <%- body %>
+      </main>
+    </div>
+
+    <!-- Scripts: reuse global JS stack -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="/js/main.js" defer></script>
+  </body>
+  
+</html>

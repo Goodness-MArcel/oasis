@@ -1,0 +1,63 @@
+<section class="admin-section" data-aos="fade-up">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h4 mb-1">Users</h1>
+      <p class="text-muted small mb-0">Sample table showing how user management could look.</p>
+    </div>
+    <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">
+      <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="admin-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h6 mb-0">Recent Users</h2>
+      <button class="btn btn-success btn-sm" type="button">
+        <i class="fa-solid fa-user-plus me-1"></i> Add User
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Role</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          <tr>
+            <td>Jane Doe</td>
+            <td>jane.doe@example.com</td>
+            <td>Student</td>
+            <td><span class="badge bg-success-soft">Active</span></td>
+            <td class="text-end">
+              <button class="btn btn-outline-secondary btn-xs">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td>John Smith</td>
+            <td>john.smith@example.com</td>
+            <td>Student</td>
+            <td><span class="badge bg-warning-soft">Pending</span></td>
+            <td class="text-end">
+              <button class="btn btn-outline-secondary btn-xs">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Admin User</td>
+            <td>admin@example.com</td>
+            <td>Admin</td>
+            <td><span class="badge bg-success-soft">Active</span></td>
+            <td class="text-end">
+              <button class="btn btn-outline-secondary btn-xs">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

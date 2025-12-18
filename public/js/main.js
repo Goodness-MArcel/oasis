@@ -62,4 +62,40 @@ document.addEventListener('DOMContentLoaded', () => {
 	  offset: 80,
 	});
   }
+
+  // Admin sidebar collapse/expand toggle with persisted state
+  const adminShell = document.querySelector('.admin-shell');
+  const adminSidebarToggle = document.getElementById('adminSidebarToggle');
+  if (adminShell && adminSidebarToggle) {
+    const STORAGE_KEY = 'io_admin_sidebar_collapsed';
+
+    const applySidebarState = (collapsed) => {
+      adminShell.classList.toggle('admin-shell-collapsed', collapsed);
+      const icon = adminSidebarToggle.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-angles-left', !collapsed);
+        icon.classList.toggle('fa-angles-right', collapsed);
+      }
+    };
+
+    // Initialise from localStorage
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved === 'true') {
+        applySidebarState(true);
+      }
+    } catch (e) {
+      // Ignore storage errors (e.g. private mode)
+    }
+
+    adminSidebarToggle.addEventListener('click', () => {
+      const willCollapse = !adminShell.classList.contains('admin-shell-collapsed');
+      applySidebarState(willCollapse);
+      try {
+        window.localStorage.setItem(STORAGE_KEY, String(willCollapse));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    });
+  }
 });
