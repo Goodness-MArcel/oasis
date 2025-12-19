@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "avnadmin",
-    "password": "AVNS_ZFT4HIkHTKrVi5H2XTT",
-    "database": "oasis",
-    "host": "pg-13995a4d-anyanwugoodness83-8325.b.aivencloud.com",
+    "username": "<DB_USERNAME>",
+    "password": "<DB_PASSWORD>",
+    "database": "<DB_NAME>",
+    "host": "<DB_HOST>",
     "port": 20252,
     "dialect": "postgres",
     "dialectOptions": {
