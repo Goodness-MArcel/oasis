@@ -1,17 +1,12 @@
 {
   "development": {
-    "username": "<DB_USERNAME>",
-    "password": "<DB_PASSWORD>",
-    "database": "<DB_NAME>",
-    "host": "<DB_HOST>",
-    "port": 20252,
-    "dialect": "postgres",
-    "dialectOptions": {
-      "ssl": {
-        "require": true,
-        "rejectUnauthorized": false
-      }
-    }
+    "username": "process.env.DB_USERNAME",
+    "password": "process.env.DB_PASSWORD",
+    "database": "process.env.DB_NAME",
+    "host": "process.env.DB_HOST",
+    "port": "process.env.DB_PORT",
+    "dialect": "postgres"
+   
   },
   "test": {
     "username": "process.env.DB_USERNAME",

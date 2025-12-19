@@ -49,14 +49,20 @@ for (const key in config) {
 }
 const db = {};
 
-// Add SSL options for Aiven PostgreSQL
+// Add SSL options for PostgreSQL only when requested.
+// Use DB_SSL=true in .env to enable SSL (useful for managed DBs like Aiven).
 if (config.dialect === 'postgres') {
-  config.dialectOptions = {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  };
+  const host = config.host || '';
+  const envRequiresSSL = process.env.DB_SSL === 'true' || process.env.DB_REQUIRE_SSL === 'true';
+  const hostLooksLikeAiven = typeof host === 'string' && host.includes('aiven');
+  if (envRequiresSSL || hostLooksLikeAiven || process.env.NODE_ENV === 'production') {
+    config.dialectOptions = {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    };
+  }
 }
 
 // Destructure config for Sequelize
