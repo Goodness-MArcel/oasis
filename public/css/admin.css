@@ -1,3 +1,38 @@
+/* Admin Logout Modal Custom Styles */
+.modal-admin-logout .modal-content {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 32px rgba(46, 139, 87, 0.10);
+}
+.modal-admin-logout .modal-header {
+  background: rgba(46, 139, 87, 0.08);
+  border-bottom: 1px solid #e5e7eb;
+}
+.modal-admin-logout .modal-title {
+  color: var(--primary-green);
+  font-weight: 600;
+}
+.modal-admin-logout .modal-footer {
+  border-top: 1px solid #e5e7eb;
+}
+.modal-admin-logout .btn-danger {
+  background: var(--primary-green);
+  border-color: var(--primary-green);
+}
+.modal-admin-logout .btn-danger:hover {
+  background: var(--secondary-green);
+  border-color: var(--secondary-green);
+}
+.modal-admin-logout .btn-secondary {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #fff;
+}
+.modal-admin-logout .btn-secondary:hover {
+  background: #357ab7;
+  border-color: #357ab7;
+}
 /* Admin auth page (no public nav/footer) */
 
 .admin-auth-wrapper {

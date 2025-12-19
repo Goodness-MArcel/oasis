@@ -1,21 +1,28 @@
-import { Router } from "express";
+// Admin logout route
 
+import { Router } from "express";
+import { adminAuth } from "../middleware/adminAuth.js";
+import { adminLogin } from "../controllers/admin/admin.auth.js";
 const router = Router();
 
+// Public admin login page
 router.get("/login", (req, res) => {
   res.render("admin/login", {
     layout: "layouts/admin-auth",
     title: "Admin Login",
     description: "Admin access to Integrated Oasis dashboard.",
     pageStyles: "admin.css",
+    error: res.locals.error && res.locals.error.length > 0 ? res.locals.error[0] : null,
+    success: res.locals.success && res.locals.success.length > 0 ? res.locals.success[0] : null,
   });
 });
 
-// Simple login handler (no real auth yet) – always redirects to dashboard
-router.post("/login", (req, res) => {
-  // TODO: replace with real authentication
-  res.redirect("/admin/dashboard");
-});
+
+// Admin login handler (public)
+router.post("/auth/login", adminLogin);
+
+// Protect all routes below this line
+router.use(adminAuth);
 
 // Redirect /admin to the main dashboard
 router.get("/", (req, res) => {
@@ -79,5 +86,14 @@ router.get("/settings", (req, res) => {
     pageStyles: "admin.css",
   });
 });
+
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("admin_token");
+  req.session.admin = null;
+  req.flash("success", "You have been logged out.");
+  res.redirect("/admin/login");
+});
+
 
 export default router;

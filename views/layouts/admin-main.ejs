@@ -55,18 +55,40 @@
             <i class="fa-solid fa-shield-halved"></i> Admin
           </span>
           <!-- Placeholder logout button (no auth wired yet) -->
-          <form action="/admin/login" method="get" class="m-0 p-0">
-            <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
-              <i class="fa-solid fa-right-from-bracket me-1"></i>
-              <span class="admin-sidebar-logout-text">Logout</span>
-            </button>
-          </form>
+          <button type="button" class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>
+            <span class="admin-sidebar-logout-text">Logout</span>
+          </button>
+
+          <!-- Logout Confirmation Modal moved to end of body for proper stacking -->
         </div>
       </aside>
 
       <main class="admin-main container-fluid py-4 px-3 px-md-4">
         <%- body %>
       </main>
+    </div>
+
+    <!-- Logout Confirmation Modal (moved for z-index fix) -->
+    <div class="modal fade modal-admin-logout" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header d-flex align-items-center gap-2">
+            <h5 class="modal-title mb-0" id="logoutModalLabel">Confirm Logout</h5>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <i class="fa-solid fa-right-from-bracket mb-3" style="color: var(--primary-green); font-size: 2.2rem;"></i>
+            <div>Are you sure you want to log out?</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="/admin/logout" method="post" class="d-inline m-0 p-0">
+              <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Scripts: reuse global JS stack -->

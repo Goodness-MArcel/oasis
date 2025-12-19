@@ -1,12 +1,20 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
+
+import session from "express-session";
+import flash from "connect-flash";
+import cookieParser from "cookie-parser";
+import { flashMessage } from "./middleware/flashMessage.js";
 import expressLayouts from "express-ejs-layouts";
 import pagesRouter from "./routes/pages.js";
 import adminRouter from "./routes/admin.js";
+import adminAuth from "./routes/admin.auth.js";
 
-dotenv.config();
+// Import database connection and models (after dotenv.config)
+import "./models/index.js";
 const app = express();
 
 // Helmet security headers (CSP disabled so external CDNs like Bootstrap/Unsplash can load)
@@ -20,6 +28,19 @@ app.use(morgan("dev"));
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+
+// Session and flash middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "oasis_secret_key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(flash());
+
+
+app.use(cookieParser());
 app.use(expressLayouts);
 app.set("layout", "layouts/main");
 
@@ -28,25 +49,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Default locals for views to avoid undefined references
+// Common view locals
 app.use((req, res, next) => {
-  // Common view locals
   res.locals.title = res.locals.title || "Integrated Oasis";
   res.locals.description =
     res.locals.description ||
     "Integrated Oasis is a modern learning and training platform.";
   res.locals.pageStyles = res.locals.pageStyles || null;
   res.locals.pageScript = res.locals.pageScript || null;
-
-  // Current path for active nav highlighting
   res.locals.currentPath = req.path;
-
   next();
 });
+
+// Flash message middleware (global)
+app.use(flashMessage);
 const PORT = process.env.PORT || 3000;
 
 // Page routes
 app.use("/", pagesRouter);
 app.use("/admin", adminRouter);
+app.use("/admin/auth", adminAuth);
 
 // 404 handler
 app.use((req, res) => {
