@@ -21,9 +21,21 @@ if (process.platform === 'win32' && __filename.startsWith('/')) {
 const __dirname = path.dirname(__filename);
 const basename = path.basename(__filename);
 
-// Use fs to read config.json for compatibility
+// Prefer JS env-based config if present, otherwise read JSON
 const configPath = path.join(__dirname, '../config/config.json');
-const configFile = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+const jsConfigPath = path.join(__dirname, '../config/config.js');
+let configFile;
+if (fs.existsSync(jsConfigPath)) {
+  try {
+    const imported = await import(`file://${jsConfigPath}`);
+    configFile = imported.default || imported;
+  } catch (err) {
+    console.error('Error importing config/config.js; falling back to config.json', err);
+  }
+}
+if (!configFile) {
+  configFile = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+}
 
 const env = process.env.NODE_ENV || 'development';
 // Replace string env references with actual values
