@@ -30,5 +30,5 @@ Thumbs.db
 .parcel-cache/
 
 # Local config containing sensitive credentials (do not commit)
-config/config.json
+config/
 

@@ -1,27 +1,44 @@
 {
   "development": {
-    "username": "process.env.DB_USERNAME",
-    "password": "process.env.DB_PASSWORD",
-    "database": "process.env.DB_NAME",
-    "host": "process.env.DB_HOST",
-    "port": "process.env.DB_PORT",
-    "dialect": "postgres"
-   
+    "username": "avnadmin",
+    "password": "AVNS_Op1tjG7G_cUwiSnbAzN",
+    "database": "oasis",
+    "host": "pg-13995a4d-anyanwugoodness83-8325.b.aivencloud.com",
+    "port": 20252,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "test": {
-    "username": "process.env.DB_USERNAME",
-    "password": "process.env.DB_PASSWORD",
-    "database": "process.env.DB_NAME",
-    "host": "process.env.DB_HOST",
+    "username": "postgres",
+    "password": "postgres",
+    "database": "oasis_test",
+    "host": "127.0.0.1",
     "port": 20252,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "production": {
-    "username": "process.env.DB_USERNAME",
-    "password": "process.env.DB_PASSWORD",
-    "database": "process.env.DB_NAME",
-    "host": "process.env.DB_HOST",
+    "username": "postgres",
+    "password": "postgres",
+    "database": "oasis_prod",
+    "host": "127.0.0.1",
     "port": 20252,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }

@@ -4,7 +4,16 @@ import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // define association here if needed
+      // enrolled courses (many-to-many)
+      User.belongsToMany(models.Course, {
+        through: models.Enrollment,
+        as: "enrolledCourses",
+        foreignKey: "userId",
+        otherKey: "courseId",
+      });
+
+      // allow eager-loading of enrollments
+      User.hasMany(models.Enrollment, { foreignKey: "userId", as: "enrollments" });
     }
   }
   User.init(

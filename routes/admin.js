@@ -3,6 +3,11 @@
 import { Router } from "express";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminLogin } from "../controllers/admin/admin.auth.js";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { listCourses, createCourse } from '../controllers/admin/courses.js';
+import { getCourse, updateCourse, deleteCourse } from '../controllers/admin/courses.js';
 const router = Router();
 
 // Public admin login page
@@ -39,14 +44,38 @@ router.get("/dashboard", (req, res) => {
   });
 });
 
-router.get("/courses", (req, res) => {
-  res.render("admin/ManageCourses", {
-    layout: "layouts/admin-main",
-    title: "Manage Courses",
-    description: "Create, edit, and manage courses.",
-    pageStyles: "admin.css",
-  });
+router.get('/courses', listCourses);
+
+// Multer setup for course images
+const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'courses');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2,8)}${ext}`;
+    cb(null, name);
+  }
 });
+
+const upload = multer({ storage });
+
+// Handle course creation (admin)
+router.post('/courses', upload.single('image'), createCourse);
+
+// Fetch a single course as JSON (used by edit modal)
+router.get('/courses/:id/json', getCourse);
+
+// Update a course (admin) — handles optional new image
+router.post('/courses/:id/update', upload.single('image'), updateCourse);
+
+// Delete a course (admin)
+router.post('/courses/:id/delete', deleteCourse);
 
 
 // Example page: manage users

@@ -76,7 +76,64 @@ if (!dialect) {
 }
 
 let sequelize;
-if (use_env_variable) {
+
+// If a full DATABASE_URL is provided in the environment (e.g. from Aiven), prefer it.
+// This enables quick switching to managed databases without changing config files.
+if (process.env.DATABASE_URL) {
+  const dbUrl = process.env.DATABASE_URL;
+  // Determine dialect (default to postgres for Aiven URLs)
+  const inferredDialect = (dbUrl && dbUrl.startsWith('postgres')) ? 'postgres' : (dialect || 'postgres');
+
+  // Build dialectOptions for SSL. Respect existing config.dialectOptions if present.
+  const envSsl = (config.dialectOptions && config.dialectOptions.ssl) ? config.dialectOptions.ssl : null;
+  let sslOptions = envSsl || {
+    require: true,
+    // default to allowing self-signed certs for convenience; can be tightened below
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true' ? true : false
+  };
+
+  // If a CA is provided (either PEM text, base64 PEM, or a file path), load it and enforce cert validation.
+  if (process.env.DB_SSL_CA) {
+    let ca = process.env.DB_SSL_CA;
+    try {
+      // if DB_SSL_CA points to an existing file path, read it
+      if (fs.existsSync(ca)) {
+        ca = fs.readFileSync(ca, 'utf8');
+      }
+    } catch (e) {
+      // ignore file-read errors; we'll try to interpret value as PEM/base64 below
+    }
+
+    // If the value doesn't look like PEM, try base64 decode (convenience for env files)
+    if (typeof ca === 'string' && !ca.includes('-----BEGIN CERTIFICATE-----')) {
+      try {
+        const decoded = Buffer.from(ca, 'base64').toString('utf8');
+        if (decoded.includes('-----BEGIN CERTIFICATE-----')) {
+          ca = decoded;
+        }
+      } catch (e) {
+        // ignore decode errors
+      }
+    }
+
+    // attach CA and enforce validation unless explicitly disabled
+    sslOptions.ca = ca;
+    if (process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false') {
+      sslOptions.rejectUnauthorized = true;
+    }
+  }
+
+  const dialectOpts = inferredDialect === 'postgres' ? { ssl: sslOptions } : {};
+
+  sequelize = new Sequelize(dbUrl, {
+    dialect: inferredDialect,
+    protocol: inferredDialect,
+    dialectOptions: dialectOpts,
+    logging: false,
+    ...restConfig
+  });
+
+} else if (use_env_variable) {
   sequelize = new Sequelize(process.env[use_env_variable], {
     host,
     port,
