@@ -3,14 +3,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const navToggle = document.getElementById('navToggle');
   const mobileMenu = document.getElementById('mobileMenu');
+  const mobileOverlay = document.getElementById('mobileMenuOverlay');
   if (navToggle && mobileMenu) {
     navToggle.addEventListener('click', () => {
       const isHidden = mobileMenu.hasAttribute('hidden');
       if (isHidden) {
         mobileMenu.removeAttribute('hidden');
+        if (mobileOverlay) mobileOverlay.classList.add('active');
       } else {
         mobileMenu.setAttribute('hidden', '');
+        if (mobileOverlay) mobileOverlay.classList.remove('active');
       }
+    });
+  }
+
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener('click', () => {
+      if (!mobileMenu.hasAttribute('hidden')) {
+        mobileMenu.setAttribute('hidden', '');
+      }
+      mobileOverlay.classList.remove('active');
     });
   }
 

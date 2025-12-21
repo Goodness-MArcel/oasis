@@ -1,0 +1,160 @@
+/* User-specific responsive tweaks to complement admin.css */
+
+/* Reduce sidebar padding and nav spacing on small screens */
+@media (max-width: 767.98px) {
+  .admin-sidebar {
+    padding: 0.5rem 0.5rem;
+    overflow-x: hidden;
+  }
+
+  .admin-sidebar .nav-link {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-main {
+    padding-top: 1rem;
+  }
+
+  /* Make admin-cards use full width with smaller padding */
+  .admin-card {
+    padding: 0.9rem 1rem;
+  }
+}
+
+/* Improve touch targets and spacing for mobile users */
+@media (max-width: 991.98px) {
+  .admin-sidebar-nav .nav-link {
+    padding: 0.5rem 0.75rem;
+    min-width: 80px;
+  }
+
+  .admin-sidebar-nav .nav-link i {
+    font-size: 1.05rem;
+  }
+}
+
+/* Ensure the hidden attribute does not hide the sidebar on desktop */
+@media (min-width: 992px) {
+  .admin-sidebar[hidden] {
+    display: block !important;
+    transform: none !important;
+  }
+}
+
+/* Ensure collapsed sidebar hides text labels (safety) */
+.admin-shell.admin-shell-collapsed .admin-sidebar-nav span {
+  display: none !important;
+}
+
+/* Mobile off-canvas behaviour for sidebar when toggled by hamburger */
+@media (max-width: 991.98px) {
+  /* Make sidebar fixed off-canvas by default */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    max-width: 85%;
+    transform: translateX(-110%);
+    transition: transform 280ms ease-in-out;
+    z-index: 1050;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.12);
+    background-color: #ffffff;
+    padding-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+  }
+
+  /* When the sidebar does NOT have the hidden attribute, slide it in */
+  .admin-sidebar:not([hidden]) {
+    transform: translateX(0);
+  }
+
+  /* Ensure the hidden attribute is usable for toggling state (override UA display:none) */
+  .admin-sidebar[hidden] {
+    display: block !important;
+    transform: translateX(-110%);
+  }
+
+  /* Push main content to the right slightly when menu visible (optional) */
+  .admin-main {
+    transition: margin-left 280ms ease-in-out;
+  }
+
+  /* Simple overlay when menu is open (element inserted in layout) */
+  .mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.36);
+    z-index: 1040;
+  }
+  .mobile-menu-overlay.active {
+    display: block;
+  }
+
+  /* Header/brand area inside sidebar */
+  .admin-sidebar .admin-sidebar-header {
+    padding: 0 1rem;
+  }
+
+  .admin-sidebar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Nav links: left aligned with larger touch area */
+  .admin-sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    justify-content: flex-start;
+    border-radius: 8px;
+  }
+
+  .admin-sidebar-nav .nav-link i {
+    width: 1.4rem;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .admin-sidebar-nav .nav-link span {
+    display: inline-block;
+  }
+
+  .admin-sidebar-footer {
+    padding: 1rem;
+  }
+
+  /* Make sure the logout button looks correct */
+  .admin-sidebar-footer .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .admin-sidebar-nav .nav-link {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .admin-sidebar-brand img {
+    height: 24px;
+  }
+}
+
+/* Slightly reduce header and footer spacing on small screens */
+@media (max-width: 575.98px) {
+  .admin-sidebar-header {
+    gap: .25rem;
+  }
+}

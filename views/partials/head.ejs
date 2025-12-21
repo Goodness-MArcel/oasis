@@ -47,9 +47,15 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="/css/main.css" />
-  <% if (typeof pageStyles !== "undefined") { %>
-    <link rel="stylesheet" href="/css/<%= pageStyles %>" />
-  <% } %>
+  <% if (typeof pageStyles !== "undefined") {
+       if (Array.isArray(pageStyles)) {
+         pageStyles.forEach(function(s){ %>
+           <link rel="stylesheet" href="/css/<%= s %>" />
+  <%     });
+       } else { %>
+         <link rel="stylesheet" href="/css/<%= pageStyles %>" />
+  <%   }
+     } %>
 
   <!-- AOS (Animate On Scroll) CSS -->
   <link

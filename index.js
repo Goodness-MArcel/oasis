@@ -12,6 +12,7 @@ import expressLayouts from "express-ejs-layouts";
 import pagesRouter from "./routes/pages.js";
 import adminRouter from "./routes/admin.js";
 import adminAuth from "./routes/admin.auth.js";
+import userRouter from "./routes/user.js";
 
 // Import database connection and models (after dotenv.config)
 import "./models/index.js";
@@ -69,6 +70,7 @@ const PORT = process.env.PORT || 3000;
 app.use("/", pagesRouter);
 app.use("/admin", adminRouter);
 app.use("/admin/auth", adminAuth);
+app.use("/user", userRouter);
 
 // 404 handler
 app.use((req, res) => {
