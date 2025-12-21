@@ -40,6 +40,17 @@
     display: block !important;
     transform: none !important;
   }
+
+  /* Keep the sidebar visible and sticky on desktop so it doesn't scroll with page */
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1020;
+  }
 }
 
 /* Ensure collapsed sidebar hides text labels (safety) */
