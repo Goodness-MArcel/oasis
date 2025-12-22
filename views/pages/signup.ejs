@@ -23,7 +23,25 @@
             Tell us a bit about yourself so we can personalize your learning experience.
           </p>
 
-          <form action="/signup" method="post" novalidate>
+          <% if (typeof errors !== 'undefined' && errors.length) { %>
+            <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+              <ul class="mb-0 ps-3">
+                <% errors.forEach(function(err){ %>
+                  <li><%= err.msg %></li>
+                <% }) %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <% if (success && success.length) { %>
+            <div class="alert alert-success alert-dismissible fade show small" role="alert">
+              <%= success[0] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <form action="/signup" method="post" novalidate id="signupForm">
             <div class="mb-3">
               <label for="fullName" class="form-label small text-muted">Full name</label>
               <input
@@ -32,6 +50,7 @@
                 id="fullName"
                 name="fullName"
                 placeholder="Enter your full name"
+                value="<%= old && old.fullName ? old.fullName : '' %>"
                 required
               />
             </div>
@@ -44,6 +63,7 @@
                 id="signupEmail"
                 name="email"
                 placeholder="you@example.com"
+                value="<%= old && old.email ? old.email : '' %>"
                 required
               />
             </div>
@@ -109,8 +129,11 @@
               </label>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mb-3">
-              <i class="fa-solid fa-user-plus me-1"></i> Create account
+            <button type="submit" class="btn btn-success w-100 mb-3" id="signupSubmitBtn">
+              <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+              <span class="signup-btn-text">
+                <i class="fa-solid fa-user-plus me-1"></i> Create account
+              </span>
             </button>
 
             <p class="small text-muted mb-0 text-center">

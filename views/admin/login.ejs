@@ -11,11 +11,12 @@
           </div>
 
           <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert alert-danger text-center mb-4" role="alert" style="border-radius: 10px;">
-              <%= error %>
-            </div>
-          <% } %>
-          <form action="/admin/auth/login" method="post" novalidate>
+      <div class="alert alert-danger alert-dismissible fade show text-center mb-4" role="alert" style="border-radius: 10px;">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <% } %>
+          <form action="/admin/auth/login" method="post" novalidate id="adminLoginForm">
             <div class="mb-3">
               <label for="adminEmail" class="form-label small text-muted">Admin email</label>
               <input
@@ -50,8 +51,11 @@
               <span class="text-muted">Admin only</span>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mb-2">
-              <i class="fa-solid fa-shield-halved me-1"></i> Login as Admin
+            <button type="submit" class="btn btn-success w-100 mb-2" id="adminLoginSubmitBtn">
+              <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+              <span class="admin-login-btn-text">
+                <i class="fa-solid fa-shield-halved me-1"></i> Login as Admin
+              </span>
             </button>
 
             <p class="small text-muted mb-0 text-center">

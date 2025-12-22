@@ -59,6 +59,7 @@ app.use((req, res, next) => {
   res.locals.pageStyles = res.locals.pageStyles || null;
   res.locals.pageScript = res.locals.pageScript || null;
   res.locals.currentPath = req.path;
+  res.locals.currentUser = req.user || req.session?.user || null;
   next();
 });
 

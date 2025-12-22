@@ -1,20 +1,161 @@
 <section class="admin-section" data-aos="fade-up">
+  <% const hasEnrolledCourses =
+    typeof enrolledCourses !== "undefined" &&
+    Array.isArray(enrolledCourses) &&
+    enrolledCourses.length > 0;
+  const hasAvailableCourses =
+    typeof availableCourses !== "undefined" &&
+    Array.isArray(availableCourses) &&
+    availableCourses.length > 0;
+  %>
+
   <div class="row g-4 align-items-center mb-3">
     <div class="col-12 col-md-8">
-      <h1 class="h3 mb-1">My Courses</h1>
-      <p class="text-muted small">View and resume your enrolled courses.</p>
+      <h1 class="h4 mb-1">My Courses</h1>
+      <p class="text-muted small mb-0">Search, resume and discover new courses.</p>
     </div>
-    <div class="col-12 col-md-4 text-md-end">
-      <a href="/user/dashboard" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <form class="d-flex" id="courseSearchForm" autocomplete="off">
+        <input
+          type="search"
+          id="courseSearchInput"
+          class="form-control form-control-sm"
+          placeholder="Search courses by title..."
+        >
+        <button type="submit" class="btn btn-primary btn-sm ms-2">Search</button>
+      </form>
     </div>
   </div>
 
-  <div class="admin-card">
-    <h2 class="h6">Enrolled Courses</h2>
-    <ul class="small mb-0">
-      <li>Intro to Node.js — Progress: 40%</li>
-      <li>Advanced CSS — Progress: 75%</li>
-      <li>Database Fundamentals — Progress: 10%</li>
-    </ul>
+  <div class="row g-4">
+    <!-- Enrolled courses -->
+    <div class="col-12 col-xl-6">
+      <div class="admin-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 mb-0">Enrolled Courses</h2>
+          <a href="/user/dashboard" class="small text-decoration-none">Back to dashboard</a>
+        </div>
+
+        <div id="enrolledCoursesList" class="mt-2">
+          <% if (hasEnrolledCourses) { %>
+            <% enrolledCourses.forEach(function(course) { %>
+              <article
+                class="border rounded-3 p-3 mb-2 course-card"
+                data-title="<%= course.title || '' %>"
+              >
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
+                    <p class="small text-muted mb-1">
+                      <%= course.description || 'No description available yet.' %>
+                    </p>
+                  </div>
+                  <% if (course.progress != null) { %>
+                    <span class="badge bg-success-subtle text-success small">
+                      <%= course.progress %>% complete
+                    </span>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2 small">
+                  <span class="text-muted">
+                    <%= course.level || 'All levels' %>
+                  </span>
+                  <a
+                    href="<%= course.link || '#' %>"
+                    class="btn btn-outline-primary btn-sm"
+                  >
+                    Continue
+                  </a>
+                </div>
+              </article>
+            <% }); %>
+          <% } else { %>
+            <div class="text-center py-4 text-muted small">
+              <p class="mb-1">You haven't enrolled in any course yet.</p>
+              <p class="mb-0">Browse the available courses on the right to get started.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available courses -->
+    <div class="col-12 col-xl-6">
+      <div class="admin-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 mb-0">Available Courses</h2>
+          <span class="badge bg-light text-muted small">
+            <% if (hasAvailableCourses) { %>
+              <%= availableCourses.length %> courses
+            <% } else { %>
+              0 courses
+            <% } %>
+          </span>
+        </div>
+
+        <div id="availableCoursesList" class="mt-2">
+          <% if (hasAvailableCourses) { %>
+            <% availableCourses.forEach(function(course) { %>
+              <article
+                class="border rounded-3 p-3 mb-2 course-card bg-light-subtle"
+                data-title="<%= course.title || '' %>"
+              >
+                <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
+                <p class="small text-muted mb-1">
+                  <%= course.description || 'No description available yet.' %>
+                </p>
+                <div class="d-flex justify-content-between align-items-center small">
+                  <span class="text-muted">
+                    <%= course.level || 'All levels' %>
+                  </span>
+                  <form
+                    action="/user/courses/enroll"
+                    method="post"
+                    class="mb-0"
+                  >
+                    <input type="hidden" name="courseId" value="<%= course.id %>">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      Enroll
+                    </button>
+                  </form>
+                </div>
+              </article>
+            <% }); %>
+          <% } else { %>
+            <div class="text-center py-4 text-muted small">
+              <p class="mb-1">No courses are available yet.</p>
+              <p class="mb-0">Please check back soon for new content.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      const searchForm = document.getElementById("courseSearchForm");
+      const searchInput = document.getElementById("courseSearchInput");
+      const courseCards = document.querySelectorAll(".course-card");
+
+      if (!searchForm || !searchInput || !courseCards.length) return;
+
+      const applyFilter = () => {
+        const query = searchInput.value.trim().toLowerCase();
+
+        courseCards.forEach((card) => {
+          const title = (card.getAttribute("data-title") || "").toLowerCase();
+          const matches = !query || title.includes(query);
+          card.style.display = matches ? "block" : "none";
+        });
+      };
+
+      searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyFilter();
+      });
+
+      searchInput.addEventListener("input", applyFilter);
+    })();
+  </script>
 </section>

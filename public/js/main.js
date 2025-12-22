@@ -143,4 +143,140 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Signup form submit spinner
+  const signupForm = document.getElementById('signupForm');
+  const signupSubmitBtn = document.getElementById('signupSubmitBtn');
+  if (signupForm && signupSubmitBtn) {
+    signupForm.addEventListener('submit', () => {
+      const spinner = signupSubmitBtn.querySelector('.spinner-border');
+      const textWrapper = signupSubmitBtn.querySelector('.signup-btn-text');
+      signupSubmitBtn.disabled = true;
+      if (spinner) {
+        spinner.classList.remove('d-none');
+      }
+      if (textWrapper) {
+        textWrapper.classList.add('opacity-75');
+      }
+    });
+  }
+
+  // Inline profile edit (user profile page)
+  const editProfileToggle = document.getElementById('editProfileToggle');
+  const profileStaticView = document.getElementById('profileStaticView');
+  const profileEditView = document.getElementById('profileEditView');
+  const profileUsernameValue = document.getElementById('profileUsernameValue');
+  const profileEmailValue = document.getElementById('profileEmailValue');
+  const editUsernameInput = document.getElementById('editUsername');
+  const editEmailInput = document.getElementById('editEmail');
+  const profileEditCancel = document.getElementById('profileEditCancel');
+
+  const profileEditForm = document.getElementById('profileEditView');
+  const profileEditSubmitBtn = profileEditForm
+    ? profileEditForm.querySelector('button[type="submit"]')
+    : null;
+
+  if (editProfileToggle && profileStaticView && profileEditView && editUsernameInput && editEmailInput) {
+    const showEdit = () => {
+      profileStaticView.classList.add('d-none');
+      profileEditView.classList.remove('d-none');
+      editUsernameInput.focus();
+    };
+
+    const hideEdit = () => {
+      profileEditView.classList.add('d-none');
+      profileStaticView.classList.remove('d-none');
+    };
+
+    editProfileToggle.addEventListener('click', showEdit);
+
+    if (profileEditCancel) {
+      profileEditCancel.addEventListener('click', () => {
+        // Reset inputs back to current static values
+        if (profileUsernameValue) {
+          editUsernameInput.value = profileUsernameValue.textContent.trim();
+        }
+        if (profileEmailValue) {
+          editEmailInput.value = profileEmailValue.textContent.trim();
+        }
+        hideEdit();
+      });
+    }
+
+    if (profileEditForm && profileEditSubmitBtn) {
+      profileEditForm.addEventListener('submit', () => {
+        profileEditSubmitBtn.disabled = true;
+        profileEditSubmitBtn.textContent = 'Saving...';
+      });
+    }
+
+  }
+
+  // User login form submit spinner
+  const loginForm = document.getElementById('loginForm');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  if (loginForm && loginSubmitBtn) {
+    loginForm.addEventListener('submit', () => {
+      const spinner = loginSubmitBtn.querySelector('.spinner-border');
+      const textWrapper = loginSubmitBtn.querySelector('.login-btn-text');
+      loginSubmitBtn.disabled = true;
+      if (spinner) {
+        spinner.classList.remove('d-none');
+      }
+      if (textWrapper) {
+        textWrapper.classList.add('opacity-75');
+      }
+    });
+  }
+
+  // Admin login form submit spinner
+  const adminLoginForm = document.getElementById('adminLoginForm');
+  const adminLoginSubmitBtn = document.getElementById('adminLoginSubmitBtn');
+  if (adminLoginForm && adminLoginSubmitBtn) {
+    adminLoginForm.addEventListener('submit', () => {
+      const spinner = adminLoginSubmitBtn.querySelector('.spinner-border');
+      const textWrapper = adminLoginSubmitBtn.querySelector('.admin-login-btn-text');
+      adminLoginSubmitBtn.disabled = true;
+      if (spinner) {
+        spinner.classList.remove('d-none');
+      }
+      if (textWrapper) {
+        textWrapper.classList.add('opacity-75');
+      }
+    });
+  }
+
+  // User logout confirmation modal
+  const userLogoutButton = document.getElementById('userLogoutButton');
+  const userLogoutForm = document.getElementById('userLogoutForm');
+  const userLogoutModalEl = document.getElementById('userLogoutModal');
+  const userLogoutConfirmBtn = document.getElementById('userLogoutConfirmBtn');
+
+  if (userLogoutButton && userLogoutForm) {
+    let logoutModal = null;
+
+    if (userLogoutModalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      logoutModal = new bootstrap.Modal(userLogoutModalEl);
+    }
+
+    userLogoutButton.addEventListener('click', () => {
+      if (logoutModal) {
+        logoutModal.show();
+      } else {
+        // Fallback: simple confirm or direct logout if Bootstrap/modal is unavailable
+        if (window.confirm('Are you sure you want to log out?')) {
+          userLogoutForm.submit();
+        }
+      }
+    });
+
+    if (userLogoutConfirmBtn) {
+      userLogoutConfirmBtn.addEventListener('click', () => {
+        if (logoutModal) {
+          logoutModal.hide();
+        }
+        userLogoutForm.submit();
+      });
+    }
+  }
 });

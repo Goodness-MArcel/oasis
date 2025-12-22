@@ -23,7 +23,25 @@
             Enter your details below to access your dashboard, courses, and progress.
           </p>
 
-          <form action="/auth" method="post" novalidate>
+          <% if (typeof errors !== 'undefined' && errors.length) { %>
+            <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+              <ul class="mb-0 ps-3">
+                <% errors.forEach(function(err){ %>
+                  <li><%= err.msg %></li>
+                <% }) %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <% if (success && success.length) { %>
+            <div class="alert alert-success alert-dismissible fade show small" role="alert">
+              <%= success[0] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <form action="/auth" method="post" novalidate id="loginForm">
             <div class="mb-3">
               <label for="authEmail" class="form-label small text-muted">Email address</label>
               <input
@@ -32,6 +50,7 @@
                 id="authEmail"
                 name="email"
                 placeholder="you@example.com"
+                value="<%= old && old.email ? old.email : '' %>"
                 required
               />
             </div>
@@ -58,8 +77,11 @@
               <a href="#" class="small text-decoration-none">Forgot password?</a>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mb-3">
-              <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+            <button type="submit" class="btn btn-success w-100 mb-3" id="loginSubmitBtn">
+              <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+              <span class="login-btn-text">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+              </span>
             </button>
 
             <p class="small text-muted mb-0 text-center">

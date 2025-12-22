@@ -10,9 +10,101 @@
   </div>
 
   <div class="admin-card">
-    <h2 class="h6">Your information</h2>
-    <p>Name: Example User</p>
-    <p>Email: user@example.com</p>
-    <button class="btn btn-sm btn-primary">Edit Profile</button>
+    <div class="row g-4 align-items-center">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center gap-3 mb-3 mb-md-0">
+          <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+            <span class="fw-bold text-success text-uppercase">
+              <%= (currentUser && (currentUser.username || currentUser.email) ? (currentUser.username || currentUser.email).charAt(0) : 'U') %>
+            </span>
+          </div>
+          <div>
+            <h2 class="h6 mb-1">
+              <%= currentUser && (currentUser.username || currentUser.email) ? (currentUser.username || currentUser.email) : 'Your account' %>
+            </h2>
+            <p class="small text-muted mb-1">
+              <%= currentUser && currentUser.email ? currentUser.email : 'Email not available' %>
+            </p>
+            <% if (currentUser && currentUser.role) { %>
+              <span class="badge bg-success-subtle text-success small text-uppercase">
+                <i class="fa-solid fa-user-graduate me-1"></i><%= currentUser.role %>
+              </span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          id="editProfileToggle"
+        >
+          Edit profile
+        </button>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <!-- Static view -->
+    <div class="row g-3 small" id="profileStaticView">
+      <div class="col-sm-6">
+        <div class="text-muted">Username</div>
+        <div class="fw-semibold" id="profileUsernameValue">
+          <%= currentUser && currentUser.username ? currentUser.username : 'Not set' %>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="text-muted">Email</div>
+        <div class="fw-semibold" id="profileEmailValue">
+          <%= currentUser && currentUser.email ? currentUser.email : 'Not available' %>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="text-muted">Role</div>
+        <div class="fw-semibold text-capitalize">
+          <%= currentUser && currentUser.role ? currentUser.role : 'Student' %>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="text-muted">Account ID</div>
+        <div class="fw-semibold">
+          <%= currentUser && currentUser.id ? ('#' + currentUser.id) : '—' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline edit view -->
+    <form
+      class="row g-3 small d-none mt-2"
+      id="profileEditView"
+      action="/user/profile"
+      method="post"
+    >
+      <div class="col-sm-6">
+        <label for="editUsername" class="text-muted small mb-1">Username</label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          id="editUsername"
+          name="username"
+          value="<%= currentUser && currentUser.username ? currentUser.username : '' %>"
+        />
+      </div>
+      <div class="col-sm-6">
+        <label for="editEmail" class="text-muted small mb-1">Email</label>
+        <input
+          type="email"
+          class="form-control form-control-sm"
+          id="editEmail"
+          name="email"
+          value="<%= currentUser && currentUser.email ? currentUser.email : '' %>"
+        />
+      </div>
+      <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+        <button type="button" class="btn btn-light btn-sm" id="profileEditCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+      </div>
+    </form>
   </div>
 </section>

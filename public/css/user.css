@@ -113,8 +113,8 @@
     } 
    
 
-  /* Overlay */
-  .mobile-menu-overlay{ display:block; position:fixed; inset:0; background:rgba(0,0,0,0.36); z-index:1140; opacity:0; pointer-events:none; transition:opacity .2s ease-in-out; }
+  /* Overlay (kept below Bootstrap modals/backdrop) */
+  .mobile-menu-overlay{ display:block; position:fixed; inset:0; background:rgba(0,0,0,0.36); z-index:900; opacity:0; pointer-events:none; transition:opacity .2s ease-in-out; }
   .mobile-menu-overlay.active{ opacity:1; pointer-events:auto; }
 
   /* Ensure links stack and stay visible */
@@ -154,4 +154,10 @@ body.sidebar-open{ overflow:hidden; }
   .mobile-topbar{ display:flex !important; }
   #navToggle{ display:inline-flex !important; }
 } */
+
+/* Ensure Bootstrap modals appear above the mobile menu overlay */
+.modal,
+.modal-backdrop{
+  z-index: 1300;
+}
 

@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { body } from "express-validator";
+import { registerUser, loginUser } from "../controllers/user/user.auth.js";
 
 const router = Router();
 
@@ -62,8 +64,18 @@ router.get("/auth", (req, res) => {
     description: "Access your Integrated Oasis learner account or create a new one.",
     pageStyles: "auth.css",
     pageScript: "auth.js",
+    old: { email: "" },
   });
 });
+
+router.post(
+  "/auth",
+  [
+    body("email").isEmail().withMessage("A valid email is required").normalizeEmail(),
+    body("password").notEmpty().withMessage("Password is required"),
+  ],
+  loginUser
+);
 
 router.get("/signup", (req, res) => {
   res.render("pages/signup", {
@@ -71,7 +83,20 @@ router.get("/signup", (req, res) => {
     description: "Sign up for an Integrated Oasis learner account.",
     pageStyles: "auth.css",
     pageScript: "auth.js",
+    old: { fullName: "", email: "" },
   });
 });
+
+router.post(
+  "/signup",
+  [
+    body("fullName").trim().notEmpty().withMessage("Full name is required"),
+    body("email").isEmail().withMessage("A valid email is required").normalizeEmail(),
+    body("password").isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
+    body("passwordConfirm").notEmpty().withMessage("Please confirm your password"),
+    body("terms").equals("1").withMessage("You must accept the terms"),
+  ],
+  registerUser
+);
 
 export default router;
