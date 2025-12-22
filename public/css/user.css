@@ -1,215 +1,157 @@
-/* User-specific responsive tweaks to complement admin.css */
+/* User-specific admin-style layout CSS
+   - Provides consistent desktop/admin look
+   - Collapsed/expanded states
+   - Mobile off-canvas behavior with overlay
+   - Centered icons in collapsed mode
+   - Lightweight, focused overrides only
+*/
 
-/* Reduce sidebar padding and nav spacing on small screens */
-@media (max-width: 767.98px) {
-  .admin-sidebar {
-    padding: 0.5rem 0.5rem;
-    overflow-x: hidden;
-  }
-
-  .admin-sidebar .nav-link {
-    padding: 0.35rem 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .admin-main {
-    padding-top: 1rem;
-  }
-
-  /* Make admin-cards use full width with smaller padding */
-  .admin-card {
-    padding: 0.9rem 1rem;
-  }
+:root{
+  --sidebar-width: 200px;
+  --sidebar-collapsed: 74px;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(15,23,42,0.08);
 }
 
-/* Improve touch targets and spacing for mobile users */
-@media (max-width: 991.98px) {
-  .admin-sidebar-nav .nav-link {
-    padding: 0.5rem 0.75rem;
-    min-width: 80px;
-  }
+/* DEBUG: temporary visual borders to help diagnose layout during development */
+/* .admin-sidebar { outline: 3px dashed magenta !important; }
+.admin-sidebar-header { outline: 2px dashed cyan !important; }
+.admin-sidebar-nav .nav-link { outline: 1px dashed orange !important; }
+.mobile-topbar { outline: 2px dashed lime !important; } */
 
-  .admin-sidebar-nav .nav-link i {
-    font-size: 1.05rem;
-  }
-}
+/* Remove debug outlines quickly by commenting above when done */
 
-/* Ensure the hidden attribute does not hide the sidebar on desktop */
-@media (min-width: 992px) {
-  .admin-sidebar[hidden] {
-    display: block !important;
-    transform: none !important;
-  }
+/* ---------- Desktop (>=992px) ---------- */
+@media (min-width: 992px){
+  .admin-shell { display:flex; }
 
-  /* Keep the sidebar visible and sticky on desktop so it doesn't scroll with page */
-  .admin-sidebar {
+  .admin-sidebar{
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    padding: 1.25rem 1rem;
+    min-height: 100vh;
     position: sticky;
     top: 0;
     align-self: flex-start;
-    height: 100vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     z-index: 1020;
   }
+
+  .admin-main{ min-height:100vh; }
+
+  .admin-sidebar-header{ display:flex; align-items:center; justify-content:space-between; }
+
+  .admin-sidebar-brand{ display:inline-flex; align-items:center; gap:.5rem; }
+
+  .admin-sidebar-nav .nav-link{
+    display:flex; align-items:center; gap:.75rem;
+    padding:.45rem .75rem; border-radius:999px; color:#6b7280;
+  }
+  .admin-sidebar-nav .nav-link i{ width:1.1rem; text-align:center; }
+  .admin-sidebar-nav .nav-link.active{ background: rgba(22,163,74,0.08); color:#166534; font-weight:600; }
+
+  .admin-sidebar-footer{ margin-top:auto; padding-top: .75rem; }
+
+  /* Collapsed desktop */
+  .admin-shell.admin-shell-collapsed .admin-sidebar{ width:var(--sidebar-collapsed); padding-inline:.75rem; }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-brand,
+  .admin-shell.admin-shell-collapsed .admin-sidebar-brand-text,
+  .admin-shell.admin-shell-collapsed .admin-sidebar-badge{ display:none !important; }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-nav span{ display:none !important; }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-nav .nav-link{ justify-content:center; padding:.45rem .35rem; }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-nav .nav-link i{
+    width:1.4rem; display:inline-flex; align-items:center; justify-content:center; margin:0 auto;
+  }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-logout-text{ display:none !important; }
 }
 
-/* Ensure collapsed sidebar hides text labels (safety) */
-.admin-shell.admin-shell-collapsed .admin-sidebar-nav span {
-  display: none !important;
-}
+/* ---------- Mobile (<=991.98px) ---------- */
+@media (max-width: 991.98px){
+  /* Topbar */
+  .mobile-topbar{ display:flex; align-items:center; gap:.5rem; padding:.5rem .75rem; background:#fff; position:sticky; top:0; z-index:1200; }
+  #navToggle{ width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; }
 
-/* Mobile off-canvas behaviour for sidebar when toggled by hamburger */
-@media (max-width: 991.98px) {
-  /* Make sidebar fixed off-canvas by default */
-  .admin-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 260px;
-    max-width: 85%;
-    transform: translateX(-110%);
-    transition: transform 280ms ease-in-out;
-    z-index: 1050;
-    box-shadow: 0 12px 30px rgba(2,6,23,0.12);
-    background-color: #ffffff;
-    padding-top: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    overflow-y: auto;
+  /* Sidebar off-canvas + fade */
+  .admin-sidebar{
+    position:fixed; top:0; left:0; height:100vh; width:var(--sidebar-width); max-width:85%;
+    transform:translateX(-110%); opacity:0; pointer-events:none;
+    transition:transform .28s ease-in-out, opacity .2s ease-in-out;
+    z-index:1160; background:var(--sidebar-bg); padding:1.25rem 1rem; overflow-y:auto; box-shadow:0 14px 30px rgba(0,0,0,0.06);
+  }
+  .me{
+    /* border: thin solid blue; */
+    /* justify-content: center; */
+    align-items: center;
+    /* height: 500px; */
+    padding-inline: 0.58rem;
   }
 
-  /* When the sidebar does NOT have the hidden attribute, slide it in */
-  .admin-sidebar:not([hidden]) {
-    transform: translateX(0);
-  }
-
-  /* Ensure the hidden attribute is usable for toggling state (override UA display:none) */
-  .admin-sidebar[hidden] {
+  .me a[href="/user/dashboard"] , a[ href="/user/profile"] , a[href="/user/settings"] {
+    /* border: thick solid green; */
     display: block !important;
-    transform: translateX(-110%);
   }
+  
 
-  /* Push main content to the right slightly when menu visible (optional) */
-  .admin-main {
-    transition: margin-left 280ms ease-in-out;
-  }
-
-  /* Simple overlay when menu is open (element inserted in layout) */
-  .mobile-menu-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.36);
-    z-index: 1045;
-  }
-  .mobile-menu-overlay.active {
-    display: block;
-  }
-
-  /* Header/brand area inside sidebar */
-  .admin-sidebar .admin-sidebar-header {
-    padding: 0 1rem;
-  }
-
-  .admin-sidebar-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  /* Nav links: left aligned with larger touch area */
-  .admin-sidebar-nav .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 1rem;
-    justify-content: flex-start;
-    border-radius: 8px;
-  }
-
-  .admin-sidebar-nav .nav-link i {
-    width: 1.4rem;
-    text-align: center;
-    font-size: 1.05rem;
-  }
-
-  .admin-sidebar-nav .nav-link span {
-    display: inline-block;
-  }
-
-  .admin-sidebar-footer {
-    padding: 1rem;
-  }
-
-  /* Make sure the logout button looks correct */
-  .admin-sidebar-footer .btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  .me .admin-sidebar-header{
+    /* border: thin solid orange; */
     justify-content: center;
-  }
-}
-
-/* Mobile topbar: fix to top and keep above overlay/sidebar */
-@media (max-width: 991.98px) {
-  .mobile-topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    z-index: 1060;
-    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    background: #fff;
+    width: 100%;
   }
 
-  /* Ensure the main content is pushed below the fixed topbar */
-  .admin-main {
-    padding-top: 70px; /* allow space for topbar + small breathing room */
-  }
+  /* Open state */
+  .admin-sidebar.is-open{
+     transform:translateX(0); 
+     opacity:1;
+      pointer-events:auto; 
+      /* border: thick solid red; */
+       padding-inline: 0.50px; 
+       background-color: #166534;
+       
+    } 
+   
 
-  /* Make overlay sit below header but above other content */
-  .mobile-menu-overlay {
-    z-index: 1045;
-  }
+  /* Overlay */
+  .mobile-menu-overlay{ display:block; position:fixed; inset:0; background:rgba(0,0,0,0.36); z-index:1140; opacity:0; pointer-events:none; transition:opacity .2s ease-in-out; }
+  .mobile-menu-overlay.active{ opacity:1; pointer-events:auto; }
 
-  /* Keep sidebar under the header when opened */
-  .admin-sidebar {
-    z-index: 1050;
-    margin-top: 0; /* remove accidental offset */
-  }
+  /* Ensure links stack and stay visible */
+  /* .admin-sidebar-nav{ display:flex !important; flex-direction:column !important; overflow:visible !important; } */
+  .admin-sidebar-nav .nav-link{ display:flex !important; color:#374151 !important; opacity:1 !important; visibility:visible !important; }
+  .admin-sidebar-nav .nav-link i{ display:inline-flex !important; }
+  .admin-sidebar-nav .nav-link span{ display:inline !important; }
+  .admin-sidebar-nav{ overflow-x: hidden !important; white-space: normal !important; }
 
-  /* Larger clickable area for hamburger */
-  #navToggle {
-    width: 44px;
-    height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.35rem;
-  }
+  /* Collapsed class shouldn't hide text on mobile */
+  .admin-shell.admin-shell-collapsed .admin-sidebar-nav span{ display:inline !important; }
+  .admin-shell.admin-shell-collapsed .admin-sidebar-nav .nav-link{ justify-content:flex-start !important; }
+
+  /* Footer & logout button */
+  .admin-sidebar-footer .btn{ display:flex; align-items:center; justify-content:center; gap:.5rem; }
 }
 
-@media (max-width: 575.98px) {
-  .admin-sidebar-nav .nav-link {
-    padding: 0.5rem 0.9rem;
-    font-size: 0.95rem;
-  }
+/* Small screens tweaks */
+/* @media (max-width:575.98px){
+    .admin-sidebar-nav{
+    background-color: #166534;
+    }
+    
+  .admin-sidebar-nav .nav-link{ padding:.45rem .7rem; font-size:.95rem; }
+  .admin-sidebar-brand img{ height:24px; }
+} */
 
-  .admin-sidebar-brand img {
-    height: 24px;
-  }
-}
+/* General safety */
+.admin-shell.admin-shell-collapsed .admin-sidebar-nav span{ display:none !important; }
 
-/* Slightly reduce header and footer spacing on small screens */
-@media (max-width: 575.98px) {
-  .admin-sidebar-header {
-    gap: .25rem;
-  }
-}
+/* Prevent horizontal bleed */
+/* .admin-sidebar{ overflow-x:hidden; } */
+body.sidebar-open{ overflow:hidden; }
+
+/* Mobile force-visible overrides (fixes unintended hides/row layout) */
+/* @media (max-width: 991.98px) {
+  .mobile-topbar{ display:flex !important; }
+  #navToggle{ display:inline-flex !important; }
+} */
+

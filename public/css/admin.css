@@ -104,8 +104,8 @@
 }
 
 .admin-shell.admin-shell-collapsed .admin-sidebar {
-  width: 72px;
-  padding-inline: 0.75rem;
+  width: 74px;
+  /* padding-inline: 0.85rem; */
 }
 
 .admin-shell.admin-shell-collapsed .admin-sidebar-header {

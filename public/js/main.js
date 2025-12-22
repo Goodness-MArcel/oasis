@@ -4,25 +4,59 @@ document.addEventListener('DOMContentLoaded', () => {
   const navToggle = document.getElementById('navToggle');
   const mobileMenu = document.getElementById('mobileMenu');
   const mobileOverlay = document.getElementById('mobileMenuOverlay');
+  const adminShell = document.querySelector('.admin-shell');
+  const MOBILE_BREAKPOINT = 992;
+  const openSidebar = () => {
+    mobileMenu.classList.add('is-open');
+    mobileMenu.removeAttribute('hidden');
+    if (mobileOverlay) mobileOverlay.classList.add('active');
+    document.body.classList.add('sidebar-open');
+  };
+  const closeSidebar = () => {
+    mobileMenu.classList.remove('is-open');
+    mobileMenu.setAttribute('hidden', '');
+    if (mobileOverlay) mobileOverlay.classList.remove('active');
+    document.body.classList.remove('sidebar-open');
+  };
+
+  // Ensure sidebar/overlay state matches viewport
+  const ensureSidebarForViewport = () => {
+    if (!mobileMenu) return;
+    if (window.innerWidth < MOBILE_BREAKPOINT) {
+      closeSidebar();
+      if (adminShell) adminShell.classList.remove('admin-shell-collapsed');
+    } else {
+      mobileMenu.classList.remove('is-open');
+      if (mobileMenu.hasAttribute('hidden')) mobileMenu.removeAttribute('hidden');
+      if (mobileOverlay) mobileOverlay.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+    }
+  };
+
+  ensureSidebarForViewport();
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(ensureSidebarForViewport, 120);
+  });
+
   if (navToggle && mobileMenu) {
     navToggle.addEventListener('click', () => {
-      const isHidden = mobileMenu.hasAttribute('hidden');
-      if (isHidden) {
-        mobileMenu.removeAttribute('hidden');
-        if (mobileOverlay) mobileOverlay.classList.add('active');
+      if (window.innerWidth >= MOBILE_BREAKPOINT) return;
+      if (mobileMenu.classList.contains('is-open')) {
+        closeSidebar();
       } else {
-        mobileMenu.setAttribute('hidden', '');
-        if (mobileOverlay) mobileOverlay.classList.remove('active');
+        openSidebar();
       }
     });
   }
 
   if (mobileOverlay) {
     mobileOverlay.addEventListener('click', () => {
-      if (!mobileMenu.hasAttribute('hidden')) {
-        mobileMenu.setAttribute('hidden', '');
+      if (!mobileMenu) return;
+      if (mobileMenu.classList.contains('is-open')) {
+        closeSidebar();
       }
-      mobileOverlay.classList.remove('active');
     });
   }
 
@@ -76,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Admin sidebar collapse/expand toggle with persisted state
-  const adminShell = document.querySelector('.admin-shell');
   const adminSidebarToggle = document.getElementById('adminSidebarToggle');
   if (adminShell && adminSidebarToggle) {
     const STORAGE_KEY = 'io_admin_sidebar_collapsed';
