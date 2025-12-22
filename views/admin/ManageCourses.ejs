@@ -239,6 +239,18 @@
                                         <input id="editCourseProgress" name="progress" type="number" class="form-control" min="0" max="100" />
                                     </div>
                                 </div>
+                                <div class="mb-3 mt-2">
+                                    <label class="form-label small">Duration (optional)</label>
+                                    <input id="editCourseDuration" name="duration" type="text" class="form-control" placeholder="e.g. 6 weeks or 12 hours" />
+                                </div>
+                                <div class="mb-3 mt-2">
+                                    <label class="form-label small">Price (optional)</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">₦</span>
+                                        <input id="editCoursePrice" name="price" type="number" class="form-control" min="0" step="100" />
+                                    </div>
+                                    <div class="form-text small">Leave empty for free courses.</div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small">Current Image</label>
@@ -309,6 +321,10 @@
                         document.getElementById('editCourseLessons').value = course.lessons || 0;
                         document.getElementById('editCourseEnrolled').value = course.enrolled || 0;
                         document.getElementById('editCourseProgress').value = course.progress || 0;
+                        const editDurationEl = document.getElementById('editCourseDuration');
+                        if (editDurationEl) editDurationEl.value = course.duration || '';
+                        const editPriceEl = document.getElementById('editCoursePrice');
+                        if (editPriceEl) editPriceEl.value = (course.price != null ? course.price : '');
                         document.getElementById('editCourseCurrentImage').src = course.image || '/images/python.png';
                         document.getElementById('editCourseMeta').textContent = `ID: ${course.id} • Created: ${new Date(course.createdAt).toLocaleString()}`;
                         // set form action
@@ -387,6 +403,18 @@
                                     <input id="courseEnrolled" name="enrolled" type="number" class="form-control" placeholder="2450" min="0" />
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Duration (optional)</label>
+                                <input id="courseDuration" name="duration" type="text" class="form-control" placeholder="e.g. 6 weeks or 12 hours" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Price (optional)</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">₦</span>
+                                    <input id="coursePrice" name="price" type="number" class="form-control" placeholder="65000" min="0" step="100" />
+                                </div>
+                                <div class="form-text small">Leave empty for free courses.</div>
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -409,6 +437,9 @@
                                         <p id="previewDesc" class="text-muted small">Master Python programming and data analysis with hands-on projects.</p>
                                         <div class="d-flex justify-content-between align-items-center mt-3">
                                             <span id="previewEnrolled" class="text-muted small"><i class="fa-solid fa-users"></i> 2,450 students</span>
+                                            <span id="previewPrice" class="text-success small fw-semibold">₦65,000</span>
+                                        </div>
+                                        <div class="mt-2">
                                             <a id="previewLink" href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
                                         </div>
                                     </div>
@@ -436,6 +467,8 @@
         const desc = document.getElementById('courseDescription');
         const lessons = document.getElementById('courseLessons');
         const enrolled = document.getElementById('courseEnrolled');
+        const duration = document.getElementById('courseDuration');
+        const price = document.getElementById('coursePrice');
 
         const pTitle = document.getElementById('previewTitle');
         const pCategory = document.getElementById('previewCategory');
@@ -444,6 +477,7 @@
         const pImage = document.getElementById('previewImage');
         const pDesc = document.getElementById('previewDesc');
         const pEnrolled = document.getElementById('previewEnrolled');
+        const pPrice = document.getElementById('previewPrice');
 
         let lastImageUrl = null;
 
@@ -470,10 +504,21 @@
 
             pDesc.textContent = desc.value || 'Short course summary';
             pEnrolled.innerHTML = `<i class="fa-solid fa-users"></i> ${enrolled.value || '0'} students`;
+
+            if (pPrice) {
+                const raw = price && price.value ? price.value.trim() : '';
+                if (raw) {
+                    pPrice.textContent = `₦${raw}`;
+                    pPrice.style.display = '';
+                } else {
+                    pPrice.textContent = '';
+                    pPrice.style.display = 'none';
+                }
+            }
         }
 
         // attach listeners: use 'change' for file input, 'input' for others
-        [title, category, badge, instructor, desc, lessons, enrolled].forEach(el => {
+        [title, category, badge, instructor, desc, lessons, enrolled, duration, price].forEach(el => {
             if (el) el.addEventListener('input', updatePreview);
         });
         if (image) image.addEventListener('change', updatePreview);

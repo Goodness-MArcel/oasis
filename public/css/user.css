@@ -155,9 +155,12 @@ body.sidebar-open{ overflow:hidden; }
   #navToggle{ display:inline-flex !important; }
 } */
 
-/* Ensure Bootstrap modals appear above the mobile menu overlay */
-.modal,
+/* Ensure Bootstrap modals appear above the mobile menu overlay and its backdrop */
+.modal{
+  z-index: 2000 !important;
+}
+
 .modal-backdrop{
-  z-index: 1300;
+  z-index: 1900 !important;
 }
 

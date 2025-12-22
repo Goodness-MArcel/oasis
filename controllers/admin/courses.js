@@ -26,7 +26,7 @@ export async function listCourses(req, res) {
 
 export async function createCourse(req, res) {
   try {
-    const { title, category, badge, description, lessons, enrolled, instructorName } = req.body;
+    const { title, category, badge, description, lessons, enrolled, instructorName, duration, price } = req.body;
 
     // validation
     if (!title || !title.trim()) {
@@ -78,6 +78,8 @@ export async function createCourse(req, res) {
       description: description || null,
       lessons: lessons ? parseInt(lessons, 10) : 0,
       enrolled: enrolled ? parseInt(enrolled, 10) : 0,
+      duration: duration || null,
+      price: price ? parseInt(price, 10) : null,
       instructorName: instructorName || null,
     });
 
@@ -111,7 +113,7 @@ export async function updateCourse(req, res) {
       return res.redirect('/admin/courses');
     }
 
-    const { title, category, badge, description, lessons, enrolled, instructorName, progress } = req.body;
+    const { title, category, badge, description, lessons, enrolled, instructorName, duration, progress, price } = req.body;
 
     if (!title || !title.trim()) {
       req.flash('error', 'Course title is required.');
@@ -165,6 +167,8 @@ export async function updateCourse(req, res) {
     course.lessons = lessons ? parseInt(lessons, 10) : 0;
     course.enrolled = enrolled ? parseInt(enrolled, 10) : 0;
     course.instructorName = instructorName || null;
+    course.duration = duration || null;
+    course.price = price ? parseInt(price, 10) : null;
     if (typeof progress !== 'undefined') {
       const p = parseInt(progress, 10);
       course.progress = isNaN(p) ? 0 : Math.max(0, Math.min(100, p));

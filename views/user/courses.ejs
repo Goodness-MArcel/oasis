@@ -40,7 +40,7 @@
           <% if (hasEnrolledCourses) { %>
             <% enrolledCourses.forEach(function(course) { %>
               <article
-                class="border rounded-3 p-3 mb-3 course-card shadow-sm bg-white"
+                class="border rounded-3 p-3 mb-3 course-card course-search-item shadow-sm bg-white"
                 data-title="<%= course.title || '' %>"
               >
                 <div class="d-flex align-items-start gap-3">
@@ -82,6 +82,12 @@
                       <i class="fa-solid fa-users me-1"></i>
                       Enrolled: <%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>
                     </p>
+                    <% if (typeof course.price !== 'undefined' && course.price !== null) { %>
+                      <p class="small mb-2 text-success fw-semibold">
+                        <i class="fa-solid fa-tag me-1"></i>
+                        ₦<%= course.price %>
+                      </p>
+                    <% } %>
                     <% if (course.progress != null) { %>
                       <div class="progress mb-2" style="height: 6px; background-color: #e9f5ee;">
                         <div
@@ -138,13 +144,12 @@
           <% if (hasAvailableCourses) { %>
             <div class="row g-3">
               <% availableCourses.forEach(function(course) { %>
-                <div class="col-12 col-md-6 col-xl-4">
-                  <article
-                    class="border rounded-3 p-3 h-100 course-card bg-white shadow-sm"
-                    data-title="<%= course.title || '' %>"
+                <div class="col-12 col-md-6 col-xl-4 course-search-item" data-aos="fade-up" data-title="<%= course.title || '' %>">
+                  <div
+                    class="course-card h-100 d-flex flex-column border rounded-3 bg-white shadow-sm"
                   >
-                    <div class="d-flex align-items-start gap-3">
-                      <div class="flex-shrink-0">
+                    <div class="course-card-body p-3 pb-2">
+                      <div class="mb-3">
                         <img
                           src="<%= course.image
                             ? (course.image.startsWith('/')
@@ -152,50 +157,62 @@
                                 : '/' + course.image)
                             : '/images/python.png' %>"
                           alt="<%= course.title || 'Course image' %>"
-                          class="rounded-3 border"
-                          style="width: 104px; height: 104px; object-fit: cover;"
+                          class="rounded-3 border w-100"
+                          style="max-height: 190px; object-fit: cover;"
                         >
                       </div>
-                      <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                          <div>
-                            <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
-                            <% if (course.level) { %>
-                              <span class="badge bg-success-subtle text-success small">
-                                <%= course.level %>
-                              </span>
-                            <% } %>
-                          </div>
-                        </div>
-                        <p class="small text-muted mb-2">
-                          <%= course.description || 'No description available yet.' %>
+                      <% if (course.level || course.category) { %>
+                        <span class="badge rounded-pill bg-outline-primary small mb-2">
+                          <%= course.level || 'All levels' %>
+                        </span>
+                      <% } %>
+                      <h3 class="h6 fw-bold mb-2"><%= course.title || 'Untitled course' %></h3>
+                      <p class="small text-muted mb-2">
+                        <%= course.description || 'No description available yet.' %>
+                      </p>
+                      <p class="small mb-1">
+                        <strong>Lessons:</strong>
+                        <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
+                        &nbsp;·&nbsp;
+                        <strong>Enrolled:</strong>
+                        <%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>
+                      </p>
+                      <% if (typeof course.price !== 'undefined' && course.price !== null) { %>
+                        <p class="small mb-1 text-success fw-semibold">
+                          <i class="fa-solid fa-tag me-1"></i>
+                          ₦<%= course.price %>
                         </p>
-                        <p class="small text-muted mb-2">
-                          <i class="fa-solid fa-book-open me-1"></i>
-                          Lessons: <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
-                          &nbsp;·&nbsp;
-                          <i class="fa-solid fa-users me-1"></i>
-                          Enrolled: <%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center small mt-1">
-                          <span class="text-muted">
-                            <i class="fa-solid fa-layer-group me-1"></i>
-                            <%= course.level || 'All levels' %>
-                          </span>
-                          <form
-                            action="/user/courses/enroll"
-                            method="post"
-                            class="mb-0"
-                          >
-                            <input type="hidden" name="courseId" value="<%= course.id %>">
-                            <button type="submit" class="btn btn-outline-success btn-sm">
-                              Enroll
-                            </button>
-                          </form>
-                        </div>
-                      </div>
+                      <% } %>
                     </div>
-                  </article>
+                    <div class="course-card-footer px-3 pb-3 mt-auto">
+                      <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                        <span><strong>Duration:</strong> <%= course.duration || 'Self-paced' %></span>
+                        <span><strong>Level:</strong> <%= course.level || 'All levels' %></span>
+                      </div>
+                      <a
+                        href="#"
+                        class="btn btn-outline-success w-100 btn-sm btn-course-details"
+                        role="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#userCourseDetailsModal"
+                        data-id="<%= course.id %>"
+                        data-title="<%= course.title || 'Untitled course' %>"
+                        data-description="<%= course.description || 'No description available yet.' %>"
+                        data-image="<%= course.image
+                          ? (course.image.startsWith('/')
+                              ? course.image
+                              : '/' + course.image)
+                          : '/images/python.png' %>"
+                        data-level="<%= course.level || 'All levels' %>"
+                        data-duration="<%= course.duration || 'Self-paced' %>"
+                        data-lessons="<%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>"
+                        data-enrolled="<%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>"
+                        data-price="<%= typeof course.price !== 'undefined' && course.price !== null ? course.price : '' %>"
+                      >
+                        Details
+                      </a>
+                    </div>
+                  </div>
                 </div>
               <% }); %>
             </div>
@@ -214,17 +231,17 @@
     (function () {
       const searchForm = document.getElementById("courseSearchForm");
       const searchInput = document.getElementById("courseSearchInput");
-      const courseCards = document.querySelectorAll(".course-card");
+      const courseItems = document.querySelectorAll(".course-search-item");
 
-      if (!searchForm || !searchInput || !courseCards.length) return;
+      if (!searchForm || !searchInput || !courseItems.length) return;
 
       const applyFilter = () => {
         const query = searchInput.value.trim().toLowerCase();
 
-        courseCards.forEach((card) => {
-          const title = (card.getAttribute("data-title") || "").toLowerCase();
+        courseItems.forEach((item) => {
+          const title = (item.getAttribute("data-title") || "").toLowerCase();
           const matches = !query || title.includes(query);
-          card.style.display = matches ? "block" : "none";
+          item.style.display = matches ? "" : "none";
         });
       };
 
@@ -234,6 +251,52 @@
       });
 
       searchInput.addEventListener("input", applyFilter);
+
+      // Details modal handlers
+      const detailsButtons = document.querySelectorAll(".btn-course-details");
+
+      if (detailsButtons.length) {
+        detailsButtons.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const d = e.currentTarget.dataset;
+
+            // Resolve modal elements at click time so they exist
+            const imgEl = document.getElementById("detailsCourseImage");
+            const titleEl = document.getElementById("detailsCourseTitle");
+            const levelEl = document.getElementById("detailsCourseLevel");
+            const durationEl = document.getElementById("detailsCourseDuration");
+            const priceEl = document.getElementById("detailsCoursePrice");
+            const metaEl = document.getElementById("detailsCourseMeta");
+            const descEl = document.getElementById("detailsCourseDescription");
+            const idInput = document.getElementById("detailsCourseIdInput");
+
+            if (imgEl) imgEl.src = d.image || "/images/python.png";
+            if (titleEl) titleEl.textContent = d.title || "Course title";
+            if (levelEl) levelEl.textContent = d.level || "All levels";
+            if (durationEl) durationEl.textContent = d.duration || "Self-paced";
+
+            if (priceEl) {
+              if (d.price) {
+                priceEl.textContent = `₦${d.price}`;
+                priceEl.style.display = "";
+              } else {
+                priceEl.textContent = "";
+                priceEl.style.display = "none";
+              }
+            }
+
+            if (metaEl) {
+              const lessons = d.lessons || "0";
+              const enrolled = d.enrolled || "0";
+              metaEl.textContent = `Lessons: ${lessons} • Enrolled: ${enrolled}`;
+            }
+
+            if (descEl) descEl.textContent = d.description || "No description available yet.";
+
+            if (idInput) idInput.value = d.id || "";
+          });
+        });
+      }
     })();
   </script>
 </section>

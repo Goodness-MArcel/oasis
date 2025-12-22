@@ -55,6 +55,14 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0,
       },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      duration: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       instructorName: {
         type: DataTypes.STRING,
         allowNull: true,

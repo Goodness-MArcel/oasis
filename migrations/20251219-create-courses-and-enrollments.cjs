@@ -40,6 +40,10 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       instructorName: {
         type: Sequelize.STRING,
         allowNull: true,
