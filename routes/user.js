@@ -47,6 +47,7 @@ router.get("/courses", async (req, res) => {
           id: enrollment.course.id,
           title: enrollment.course.title,
           description: enrollment.course.description,
+          image: enrollment.course.image,
           level: enrollment.course.category,
           progress:
             typeof enrollment.progress !== "undefined" && enrollment.progress !== null
@@ -69,6 +70,7 @@ router.get("/courses", async (req, res) => {
       id: course.id,
       title: course.title,
       description: course.description,
+      image: course.image,
       level: course.category,
     }));
 
