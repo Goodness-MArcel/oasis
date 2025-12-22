@@ -49,6 +49,8 @@ router.get("/courses", async (req, res) => {
           description: enrollment.course.description,
           image: enrollment.course.image,
           level: enrollment.course.category,
+          lessons: enrollment.course.lessons,
+          enrolledCount: enrollment.course.enrolled,
           progress:
             typeof enrollment.progress !== "undefined" && enrollment.progress !== null
               ? Number(enrollment.progress)
@@ -72,6 +74,8 @@ router.get("/courses", async (req, res) => {
       description: course.description,
       image: course.image,
       level: course.category,
+      lessons: course.lessons,
+      enrolledCount: course.enrolled,
     }));
 
     res.render("user/courses", {

@@ -29,7 +29,7 @@
 
   <div class="row g-4">
     <!-- Enrolled courses -->
-    <div class="col-12 col-xl-6">
+    <div class="col-12">
       <div class="admin-card h-100">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h2 class="h6 mb-0">Enrolled Courses</h2>
@@ -40,7 +40,7 @@
           <% if (hasEnrolledCourses) { %>
             <% enrolledCourses.forEach(function(course) { %>
               <article
-                class="border rounded-3 p-3 mb-2 course-card"
+                class="border rounded-3 p-3 mb-3 course-card shadow-sm bg-white"
                 data-title="<%= course.title || '' %>"
               >
                 <div class="d-flex align-items-start gap-3">
@@ -52,26 +52,51 @@
                             : '/' + course.image)
                         : '/images/python.png' %>"
                       alt="<%= course.title || 'Course image' %>"
-                      class="rounded"
-                      style="width: 72px; height: 72px; object-fit: cover;"
+                      class="rounded-3 border"
+                      style="width: 104px; height: 104px; object-fit: cover;"
                     >
                   </div>
                   <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
                       <div>
                         <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
-                        <p class="small text-muted mb-1">
-                          <%= course.description || 'No description available yet.' %>
-                        </p>
+                        <% if (course.level) { %>
+                          <span class="badge bg-success-subtle text-success small">
+                            <%= course.level %>
+                          </span>
+                        <% } %>
                       </div>
                       <% if (course.progress != null) { %>
                         <span class="badge bg-success-subtle text-success small ms-2">
-                          <%= course.progress %>% complete
+                          <%= course.progress %>%
                         </span>
                       <% } %>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mt-1 small">
+                    <p class="small text-muted mb-2">
+                      <%= course.description || 'No description available yet.' %>
+                    </p>
+                    <p class="small text-muted mb-2">
+                      <i class="fa-solid fa-book-open me-1"></i>
+                      Lessons: <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
+                      &nbsp;·&nbsp;
+                      <i class="fa-solid fa-users me-1"></i>
+                      Enrolled: <%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>
+                    </p>
+                    <% if (course.progress != null) { %>
+                      <div class="progress mb-2" style="height: 6px; background-color: #e9f5ee;">
+                        <div
+                          class="progress-bar bg-success"
+                          role="progressbar"
+                          style="width: <%= Math.max(0, Math.min(100, course.progress)) %>%"
+                          aria-valuenow="<%= course.progress %>"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    <% } %>
+                    <div class="d-flex justify-content-between align-items-center small mt-1">
                       <span class="text-muted">
+                        <i class="fa-solid fa-layer-group me-1"></i>
                         <%= course.level || 'All levels' %>
                       </span>
                       <a
@@ -96,7 +121,7 @@
     </div>
 
     <!-- Available courses -->
-    <div class="col-12 col-xl-6">
+    <div class="col-12">
       <div class="admin-card h-100">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h2 class="h6 mb-0">Available Courses</h2>
@@ -111,48 +136,69 @@
 
         <div id="availableCoursesList" class="mt-2">
           <% if (hasAvailableCourses) { %>
-            <% availableCourses.forEach(function(course) { %>
-              <article
-                class="border rounded-3 p-3 mb-2 course-card bg-light-subtle"
-                data-title="<%= course.title || '' %>"
-              >
-                <div class="d-flex align-items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <img
-                      src="<%= course.image
-                        ? (course.image.startsWith('/')
-                            ? course.image
-                            : '/' + course.image)
-                        : '/images/python.png' %>"
-                      alt="<%= course.title || 'Course image' %>"
-                      class="rounded"
-                      style="width: 72px; height: 72px; object-fit: cover;"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
-                    <p class="small text-muted mb-1">
-                      <%= course.description || 'No description available yet.' %>
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center small">
-                      <span class="text-muted">
-                        <%= course.level || 'All levels' %>
-                      </span>
-                      <form
-                        action="/user/courses/enroll"
-                        method="post"
-                        class="mb-0"
-                      >
-                        <input type="hidden" name="courseId" value="<%= course.id %>">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                          Enroll
-                        </button>
-                      </form>
+            <div class="row g-3">
+              <% availableCourses.forEach(function(course) { %>
+                <div class="col-12 col-md-6 col-xl-4">
+                  <article
+                    class="border rounded-3 p-3 h-100 course-card bg-white shadow-sm"
+                    data-title="<%= course.title || '' %>"
+                  >
+                    <div class="d-flex align-items-start gap-3">
+                      <div class="flex-shrink-0">
+                        <img
+                          src="<%= course.image
+                            ? (course.image.startsWith('/')
+                                ? course.image
+                                : '/' + course.image)
+                            : '/images/python.png' %>"
+                          alt="<%= course.title || 'Course image' %>"
+                          class="rounded-3 border"
+                          style="width: 104px; height: 104px; object-fit: cover;"
+                        >
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <h3 class="h6 mb-1"><%= course.title || 'Untitled course' %></h3>
+                            <% if (course.level) { %>
+                              <span class="badge bg-success-subtle text-success small">
+                                <%= course.level %>
+                              </span>
+                            <% } %>
+                          </div>
+                        </div>
+                        <p class="small text-muted mb-2">
+                          <%= course.description || 'No description available yet.' %>
+                        </p>
+                        <p class="small text-muted mb-2">
+                          <i class="fa-solid fa-book-open me-1"></i>
+                          Lessons: <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
+                          &nbsp;·&nbsp;
+                          <i class="fa-solid fa-users me-1"></i>
+                          Enrolled: <%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center small mt-1">
+                          <span class="text-muted">
+                            <i class="fa-solid fa-layer-group me-1"></i>
+                            <%= course.level || 'All levels' %>
+                          </span>
+                          <form
+                            action="/user/courses/enroll"
+                            method="post"
+                            class="mb-0"
+                          >
+                            <input type="hidden" name="courseId" value="<%= course.id %>">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                              Enroll
+                            </button>
+                          </form>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </article>
                 </div>
-              </article>
-            <% }); %>
+              <% }); %>
+            </div>
           <% } else { %>
             <div class="text-center py-4 text-muted small">
               <p class="mb-1">No courses are available yet.</p>
