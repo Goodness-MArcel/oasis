@@ -3,6 +3,7 @@
 import { Router } from "express";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminLogin } from "../controllers/admin/admin.auth.js";
+import db from "../models/index.js";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -35,13 +36,48 @@ router.get("/", (req, res) => {
 });
 
 // Admin dashboard main page
-router.get("/dashboard", (req, res) => {
-  res.render("admin/dashboard", {
-    layout: "layouts/admin-main",
-    title: "Admin Dashboard",
-    description: "Overview of key metrics and shortcuts.",
-    pageStyles: "admin.css",
-  });
+router.get("/dashboard", async (req, res) => {
+  try {
+    // Fetch key metrics
+    const [totalUsers, newUsersLast24h, totalCourses, recentUsers] = await Promise.all([
+      db.User.count(),
+      db.User.count({
+        where: {
+          createdAt: {
+            [db.Sequelize.Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          },
+        },
+      }),
+      db.Course.count(),
+      db.User.findAll({
+        order: [["createdAt", "DESC"]],
+        limit: 5,
+      }),
+    ]);
+
+    res.render("admin/dashboard", {
+      layout: "layouts/admin-main",
+      title: "Admin Dashboard",
+      description: "Overview of key metrics and shortcuts.",
+      pageStyles: "admin.css",
+      recentUsers,
+      totalUsers,
+      newUsersLast24h,
+      totalCourses,
+    });
+  } catch (err) {
+    console.error("Error loading admin dashboard:", err);
+    res.render("admin/dashboard", {
+      layout: "layouts/admin-main",
+      title: "Admin Dashboard",
+      description: "Overview of key metrics and shortcuts.",
+      pageStyles: "admin.css",
+      recentUsers: [],
+      totalUsers: 0,
+      newUsersLast24h: 0,
+      totalCourses: 0,
+    });
+  }
 });
 
 router.get('/courses', listCourses);
@@ -80,12 +116,27 @@ router.post('/courses/:id/delete', deleteCourse);
 
 // Example page: manage users
 router.get("/users", (req, res) => {
-  res.render("admin/users", {
-    layout: "layouts/admin-main",
-    title: "Manage Users",
-    description: "View and manage registered users.",
-    pageStyles: "admin.css",
-  });
+  db.User.findAll({ order: [["createdAt", "DESC"]] })
+    .then((users) => {
+      res.render("admin/users", {
+        layout: "layouts/admin-main",
+        title: "Manage Users",
+        description: "View and manage registered users.",
+        pageStyles: "admin.css",
+        users,
+      });
+    })
+    .catch((err) => {
+      console.error("Error fetching users for admin:", err);
+      req.flash("error", "Unable to load users.");
+      res.render("admin/users", {
+        layout: "layouts/admin-main",
+        title: "Manage Users",
+        description: "View and manage registered users.",
+        pageStyles: "admin.css",
+        users: [],
+      });
+    });
 });
 
 router.get("/Revenue", (req, res) => {

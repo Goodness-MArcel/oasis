@@ -279,4 +279,44 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
+
+  // Admin dashboard: meetings calendar (FullCalendar)
+  const adminCalendarEl = document.getElementById('adminMeetingsCalendar');
+  if (adminCalendarEl && typeof FullCalendar !== 'undefined' && FullCalendar.Calendar) {
+    try {
+      const calendar = new FullCalendar.Calendar(adminCalendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        height: '100%',
+        selectable: true,
+        selectMirror: true,
+        select: function (info) {
+          const title = window.prompt('Meeting title for ' + info.startStr + '?');
+          if (title) {
+            calendar.addEvent({
+              title: title,
+              start: info.start,
+              end: info.end,
+              allDay: info.allDay
+            });
+          }
+          calendar.unselect();
+        },
+        eventClick: function (info) {
+          const shouldRemove = window.confirm('Remove meeting "' + info.event.title + '"?');
+          if (shouldRemove) {
+            info.event.remove();
+          }
+        },
+        events: []
+      });
+      calendar.render();
+    } catch (err) {
+      console.error('Error initialising admin meetings calendar:', err);
+    }
+  }
 });

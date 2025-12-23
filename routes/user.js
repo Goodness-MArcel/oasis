@@ -80,6 +80,9 @@ router.get("/courses", async (req, res) => {
       enrolledCount: course.enrolled,
       duration: course.duration,
       price: course.price,
+      instructorName: course.instructorName,
+      category: course.category,
+      badge: course.badge,
     }));
 
     res.render("user/courses", {

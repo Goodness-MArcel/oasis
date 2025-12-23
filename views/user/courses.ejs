@@ -205,6 +205,9 @@
                           : '/images/python.png' %>"
                         data-level="<%= course.level || 'All levels' %>"
                         data-duration="<%= course.duration || 'Self-paced' %>"
+                        data-category="<%= course.category || '' %>"
+                        data-instructor="<%= course.instructorName || '' %>"
+                        data-badge="<%= course.badge || '' %>"
                         data-lessons="<%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>"
                         data-enrolled="<%= typeof course.enrolledCount !== 'undefined' && course.enrolledCount != null ? course.enrolledCount : 0 %>"
                         data-price="<%= typeof course.price !== 'undefined' && course.price !== null ? course.price : '' %>"
@@ -265,6 +268,9 @@
             const titleEl = document.getElementById("detailsCourseTitle");
             const levelEl = document.getElementById("detailsCourseLevel");
             const durationEl = document.getElementById("detailsCourseDuration");
+            const badgeEl = document.getElementById("detailsCourseBadge");
+            const instructorEl = document.getElementById("detailsCourseInstructor");
+            const categoryEl = document.getElementById("detailsCourseCategory");
             const priceEl = document.getElementById("detailsCoursePrice");
             const metaEl = document.getElementById("detailsCourseMeta");
             const descEl = document.getElementById("detailsCourseDescription");
@@ -274,6 +280,36 @@
             if (titleEl) titleEl.textContent = d.title || "Course title";
             if (levelEl) levelEl.textContent = d.level || "All levels";
             if (durationEl) durationEl.textContent = d.duration || "Self-paced";
+
+            if (badgeEl) {
+              if (d.badge) {
+                badgeEl.textContent = d.badge;
+                badgeEl.style.display = "";
+              } else {
+                badgeEl.textContent = "";
+                badgeEl.style.display = "none";
+              }
+            }
+
+            if (instructorEl) {
+              if (d.instructor) {
+                instructorEl.textContent = `Instructor: ${d.instructor}`;
+                instructorEl.style.display = "";
+              } else {
+                instructorEl.textContent = "";
+                instructorEl.style.display = "none";
+              }
+            }
+
+            if (categoryEl) {
+              if (d.category) {
+                categoryEl.textContent = `Category: ${d.category}`;
+                categoryEl.style.display = "";
+              } else {
+                categoryEl.textContent = "";
+                categoryEl.style.display = "none";
+              }
+            }
 
             if (priceEl) {
               if (d.price) {

@@ -107,6 +107,7 @@ export async function loginUser(req, res) {
 			id: user.id,
 			email: user.email,
 			username: user.username,
+			gender: user.gender,
 			role: user.role,
 		};
 
@@ -145,9 +146,10 @@ export async function updateUserProfile(req, res) {
 		return res.redirect("/auth");
 	}
 
-	let { username, email } = req.body;
+	let { username, email, gender } = req.body;
 	username = (username || "").trim();
 	email = (email || "").trim();
+	gender = (gender || "").trim();
 
 	if (!username || !email) {
 		req.flash("error", "Username and email are required.");
@@ -175,6 +177,7 @@ export async function updateUserProfile(req, res) {
 
 		user.username = username;
 		user.email = email;
+		user.gender = gender || null;
 		await user.save();
 
 		// Re-issue JWT with updated data
@@ -182,6 +185,7 @@ export async function updateUserProfile(req, res) {
 			id: user.id,
 			email: user.email,
 			username: user.username,
+			gender: user.gender,
 			role: user.role,
 		};
 
