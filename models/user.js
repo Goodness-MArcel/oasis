@@ -50,6 +50,16 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "student",
       },
+      resetToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null,
+      },
+      resetTokenExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,

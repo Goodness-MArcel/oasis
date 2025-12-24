@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { registerUser, loginUser } from "../controllers/user/user.auth.js";
+import { registerUser, loginUser, forgotPassword, resetPassword } from "../controllers/user/user.auth.js";
 import db from "../models/index.js";
 
 const router = Router();
@@ -124,6 +124,51 @@ router.post(
     body("terms").equals("1").withMessage("You must accept the terms"),
   ],
   registerUser
+);
+
+router.get("/forgot-password", (req, res) => {
+  res.render("pages/forgot-password", {
+    title: "Forgot Password",
+    description: "Reset your Integrated Oasis account password.",
+    pageStyles: "auth.css",
+    pageScript: "auth.js",
+  });
+});
+
+router.post(
+  "/forgot-password",
+  [
+    body("email").isEmail().withMessage("A valid email is required").normalizeEmail(),
+  ],
+  forgotPassword
+);
+
+router.get("/reset-password/:token", (req, res) => {
+  res.render("pages/reset-password", {
+    title: "Reset Password",
+    description: "Enter your new password.",
+    pageStyles: "auth.css",
+    pageScript: "auth.js",
+    token: req.params.token,
+  });
+});
+
+router.post(
+  "/reset-password",
+  [
+    body("token").notEmpty().withMessage("Reset token is required"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters")
+      .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
+      .withMessage("Password must include letters, numbers and special characters"),
+    body("passwordConfirm")
+      .notEmpty()
+      .withMessage("Please confirm your password")
+      .custom((value, { req }) => value === req.body.password)
+      .withMessage("Passwords do not match"),
+  ],
+  resetPassword
 );
 
 export default router;

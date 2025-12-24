@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
+import crypto from "crypto";
 import { validationResult } from "express-validator";
 import db from "../../models/index.js";
 import { Op } from "sequelize";
@@ -273,5 +274,158 @@ export async function updateUserProfile(req, res) {
 		console.error("Error updating user profile", err);
 		req.flash("error", "Could not update profile. Please try again.");
 		return res.redirect("/user/profile");
+	}
+}
+
+export async function forgotPassword(req, res) {
+	const errors = validationResult(req);
+	const { email } = req.body;
+
+	const renderWithErrors = (errs) =>
+		res.status(400).render("pages/forgot-password", {
+			title: "Forgot Password",
+			description: "Reset your Integrated Oasis account password.",
+			pageStyles: "auth.css",
+			pageScript: "auth.js",
+			errors: errs,
+			old: { email },
+		});
+
+	if (!errors.isEmpty()) {
+		return renderWithErrors(errors.array());
+	}
+
+	try {
+		const user = await User.findOne({ where: { email } });
+		if (!user) {
+			// Don't reveal if email exists or not for security
+			req.flash("success", "If an account with that email exists, we've sent a password reset link.");
+			return res.redirect("/auth");
+		}
+
+		// Generate reset token
+		const resetToken = crypto.randomBytes(32).toString('hex');
+		const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+		// Save token to user
+		await user.update({
+			resetToken,
+			resetTokenExpires
+		});
+
+		// Send reset email
+		try {
+			const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+			const smtpPort = parseInt(process.env.SMTP_PORT) || 465;
+			const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : true;
+
+			const userEmail = process.env.GMAIL_USER;
+			const pass = process.env.APP_PASSWORD;
+			if (!userEmail || !pass) {
+				console.error('Email credentials not configured');
+				req.flash("error", "Email service is not configured. Please contact support.");
+				return res.redirect("/auth");
+			}
+
+			const transporter = nodemailer.createTransport({
+				host: smtpHost,
+				port: smtpPort,
+				secure: smtpSecure,
+				auth: { user: userEmail, pass },
+			});
+
+			const from = process.env.EMAIL_FROM || `Integrated Oasis <${userEmail}>`;
+			const subject = 'Password Reset - Integrated Oasis';
+			const appUrl = process.env.APP_URL || 'http://localhost:3000';
+			const resetUrl = `${appUrl}/reset-password/${resetToken}`;
+
+			// Render email template
+			const templatePath = path.join(process.cwd(), 'views', 'emails', 'password-reset.ejs');
+			let html = '';
+			try {
+				html = await ejs.renderFile(templatePath, {
+					fullName: user.username,
+					email: user.email,
+					resetUrl,
+					appUrl
+				});
+			} catch (tplErr) {
+				// fallback to basic html
+				html = `<p>Hi ${user.username},</p><p>You requested a password reset for your Integrated Oasis account.</p><p>Click here to reset your password: <a href="${resetUrl}">${resetUrl}</a></p><p>This link will expire in 1 hour.</p><p>If you didn't request this, please ignore this email.</p>`;
+			}
+
+			const text = `Hi ${user.username},\n\nYou requested a password reset for your Integrated Oasis account.\n\nReset your password here: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nThanks,\nThe Oasis team`;
+
+			await transporter.sendMail({ from, to: email, subject, text, html });
+
+			req.flash("success", "If an account with that email exists, we've sent a password reset link.");
+			return res.redirect("/auth");
+
+		} catch (mailErr) {
+			console.error('Password reset email failed:', mailErr);
+			req.flash("error", "Failed to send reset email. Please try again.");
+			return res.redirect("/forgot-password");
+		}
+
+	} catch (err) {
+		console.error("Error processing forgot password", err);
+		return renderWithErrors([{ msg: "Something went wrong. Please try again." }]);
+	}
+}
+
+export async function resetPassword(req, res) {
+	const errors = validationResult(req);
+	const { token, password, passwordConfirm } = req.body;
+
+	const renderWithErrors = (errs) =>
+		res.status(400).render("pages/reset-password", {
+			title: "Reset Password",
+			description: "Enter your new password.",
+			pageStyles: "auth.css",
+			pageScript: "auth.js",
+			token,
+			errors: errs,
+		});
+
+	if (!errors.isEmpty()) {
+		return renderWithErrors(errors.array());
+	}
+
+	if (password !== passwordConfirm) {
+		return renderWithErrors([{ msg: "Passwords do not match" }]);
+	}
+
+	try {
+		// Find user with valid reset token
+		const user = await User.findOne({
+			where: {
+				resetToken: token,
+				resetTokenExpires: {
+					[Op.gt]: new Date()
+				}
+			}
+		});
+
+		if (!user) {
+			return renderWithErrors([{ msg: "Invalid or expired reset token" }]);
+		}
+
+		// Hash new password
+		const saltRounds = 12;
+		const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+		// Update user password and clear reset token
+		await user.update({
+			password: hashedPassword,
+			resetToken: null,
+			resetTokenExpires: null
+		});
+
+		req.flash("success", "Password reset successfully. Please log in with your new password.");
+		return res.redirect("/auth");
+
+	} catch (err) {
+		console.error("Error resetting password", err);
+		return renderWithErrors([{ msg: "Something went wrong. Please try again." }]);
 	}
 }
