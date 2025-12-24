@@ -143,7 +143,8 @@ export async function getAnalyticsPage(req, res) {
 			trafficEnrollments,
 		});
 	} catch (err) {
-		console.error("Error loading analytics page:", err);
+		console.error("Error loading analytics page:", err && err.stack ? err.stack : err);
+		res.status(500);
 		return res.render("admin/analytics", {
 			layout: "layouts/admin-main",
 			title: "Analytics",
