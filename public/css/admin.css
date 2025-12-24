@@ -33,6 +33,33 @@
   background: #357ab7;
   border-color: #357ab7;
 }
+
+/* Admin meeting modal styles */
+.modal-admin-meeting .modal-content {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+}
+
+.modal-admin-meeting .modal-header {
+  background: rgba(22, 163, 74, 0.06);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-admin-meeting .modal-title {
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.modal-admin-meeting .btn-success {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.modal-admin-meeting .btn-success:hover {
+  background-color: var(--secondary-green);
+  border-color: var(--secondary-green);
+}
 /* Admin auth page (no public nav/footer) */
 
 .admin-auth-wrapper {
@@ -195,6 +222,55 @@
   padding: 1.25rem 1.5rem;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* Admin dashboard calendar tweaks */
+.admin-calendar-card {
+  padding: 1rem 1.1rem;
+}
+
+.admin-calendar-container {
+  min-height: 280px;
+}
+
+.fc {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.fc .fc-button-primary {
+  background-color: rgba(22, 163, 74, 0.9);
+  border-color: rgba(22, 163, 74, 0.9);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.fc .fc-button-primary:hover,
+.fc .fc-button-primary:focus {
+  background-color: #166534;
+  border-color: #166534;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+.fc .fc-day-today {
+  background-color: rgba(74, 144, 226, 0.08);
+}
+
+.fc .fc-event {
+  background-color: rgba(22, 163, 74, 0.9);
+  border-color: rgba(22, 163, 74, 0.9);
+  font-size: 0.7rem;
+  padding: 0.05rem 0.1rem;
 }
 
 .admin-activity-list li + li {

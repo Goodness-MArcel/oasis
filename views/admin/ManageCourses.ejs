@@ -14,25 +14,25 @@
 <section class="admin-overview row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="admin-card p-3 text-center">
-            <div class="h3 mb-0">24</div>
+            <div class="h3 mb-0"><%= typeof totalCourses !== 'undefined' ? totalCourses : (Array.isArray(courses) ? courses.length : 0) %></div>
             <div class="small text-muted">Online Courses</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="admin-card p-3 text-center">
-            <div class="h3 mb-0">12</div>
+            <div class="h3 mb-0"><%= typeof trainingProgramsCount !== 'undefined' ? trainingProgramsCount : 0 %></div>
             <div class="small text-muted">Training Programs</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="admin-card p-3 text-center">
-            <div class="h3 mb-0">56</div>
+            <div class="h3 mb-0"><%= typeof tutorialsCount !== 'undefined' ? tutorialsCount : 0 %></div>
             <div class="small text-muted">Tutorials</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="admin-card p-3 text-center">
-            <div class="h3 mb-0">1,230</div>
+            <div class="h3 mb-0"><%= typeof activeEnrollments !== 'undefined' ? activeEnrollments : 0 %></div>
             <div class="small text-muted">Active Enrollments</div>
         </div>
     </div>

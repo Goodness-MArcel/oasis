@@ -9,6 +9,8 @@ import path from 'path';
 import fs from 'fs';
 import { listCourses, createCourse } from '../controllers/admin/courses.js';
 import { getCourse, updateCourse, deleteCourse } from '../controllers/admin/courses.js';
+import { getAnalyticsPage } from "../controllers/admin/analytics.js";
+import { listMeetings, createMeeting, updateMeeting, deleteMeeting } from "../controllers/admin/meetings.js";
 const router = Router();
 
 // Public admin login page
@@ -38,13 +40,15 @@ router.get("/", (req, res) => {
 // Admin dashboard main page
 router.get("/dashboard", async (req, res) => {
   try {
-    // Fetch key metrics
+    const Op = db.Sequelize.Op;
+
+    // Fetch key metrics and recent users
     const [totalUsers, newUsersLast24h, totalCourses, recentUsers] = await Promise.all([
       db.User.count(),
       db.User.count({
         where: {
           createdAt: {
-            [db.Sequelize.Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000),
+            [Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000),
           },
         },
       }),
@@ -55,6 +59,16 @@ router.get("/dashboard", async (req, res) => {
       }),
     ]);
 
+    // Upcoming meetings: next 5 meetings from now onwards
+    const now = new Date();
+    const upcomingMeetings = await db.Meeting.findAll({
+      where: {
+        start: { [Op.gte]: now },
+      },
+      order: [["start", "ASC"]],
+      limit: 5,
+    });
+
     res.render("admin/dashboard", {
       layout: "layouts/admin-main",
       title: "Admin Dashboard",
@@ -64,6 +78,7 @@ router.get("/dashboard", async (req, res) => {
       totalUsers,
       newUsersLast24h,
       totalCourses,
+      upcomingMeetings,
     });
   } catch (err) {
     console.error("Error loading admin dashboard:", err);
@@ -76,6 +91,7 @@ router.get("/dashboard", async (req, res) => {
       totalUsers: 0,
       newUsersLast24h: 0,
       totalCourses: 0,
+      upcomingMeetings: [],
     });
   }
 });
@@ -148,14 +164,13 @@ router.get("/Revenue", (req, res) => {
   });
 });
 
-router.get("/analytics", (req, res) => {
-  res.render("admin/analytics", {
-    layout: "layouts/admin-main",
-    title: "Analytics",
-    description: "View site analytics and reports.",
-    pageStyles: "admin.css",
-  });
-});
+router.get("/analytics", getAnalyticsPage);
+
+// Meetings API for admin dashboard calendar
+router.get("/meetings", listMeetings);
+router.post("/meetings", createMeeting);
+router.put("/meetings/:id", updateMeeting);
+router.delete("/meetings/:id", deleteMeeting);
 
 // Example page: site settings
 router.get("/settings", (req, res) => {

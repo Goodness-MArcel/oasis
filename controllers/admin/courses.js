@@ -7,20 +7,42 @@ const uploadPublicPath = '/uploads/courses';
 
 export async function listCourses(req, res) {
   try {
-    const courses = await db.Course.findAll({ order: [['createdAt', 'DESC']] });
+    const [courses, totalCourses, activeEnrollments] = await Promise.all([
+      db.Course.findAll({ order: [['createdAt', 'DESC']] }),
+      db.Course.count(),
+      db.Enrollment.count({ where: { status: 'enrolled' } }),
+    ]);
+
+    // Currently, dedicated models for training programs and tutorials do not exist,
+    // so these reflect real tracked items (zero until such data is introduced).
+    const trainingProgramsCount = 0;
+    const tutorialsCount = 0;
     return res.render('admin/ManageCourses', {
       layout: 'layouts/admin-main',
       title: 'Manage Courses',
       description: 'Create, edit, and manage courses.',
       pageStyles: 'admin.css',
       courses,
+      totalCourses,
+      trainingProgramsCount,
+      tutorialsCount,
+      activeEnrollments,
       error: res.locals.error && res.locals.error.length > 0 ? res.locals.error[0] : null,
       success: res.locals.success && res.locals.success.length > 0 ? res.locals.success[0] : null,
     });
   } catch (err) {
     console.error('Error fetching courses:', err);
     req.flash('error', 'Unable to fetch courses.');
-    return res.render('admin/ManageCourses', { layout: 'layouts/admin-main', title: 'Manage Courses', pageStyles: 'admin.css', courses: [] });
+    return res.render('admin/ManageCourses', {
+      layout: 'layouts/admin-main',
+      title: 'Manage Courses',
+      pageStyles: 'admin.css',
+      courses: [],
+      totalCourses: 0,
+      trainingProgramsCount: 0,
+      tutorialsCount: 0,
+      activeEnrollments: 0,
+    });
   }
 }
 

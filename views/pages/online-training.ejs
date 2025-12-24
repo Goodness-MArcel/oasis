@@ -38,146 +38,58 @@
               <label class="form-label small text-muted" for="filterLevel">Level</label>
               <select id="filterLevel" class="form-select form-select-sm">
                 <option selected>Any</option>
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <label class="form-label small text-muted" for="filterDuration">Duration</label>
-              <select id="filterDuration" class="form-select form-select-sm">
-                <option selected>Any</option>
-                <option>&lt; 4 weeks</option>
-                <option>4 - 8 weeks</option>
-                <option>&gt; 8 weeks</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label class="form-label small text-muted" for="filterPrice">Price</label>
-              <select id="filterPrice" class="form-select form-select-sm">
-                <option selected>All courses</option>
-                <option>Free</option>
-                <option>Paid</option>
-              </select>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Course Listings -->
-    <div class="row g-4">
-      <!-- Web Development Course -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up">
-        <div class="course-card h-100 d-flex flex-column">
-          <div class="course-card-body p-4 pb-3">
-            <span class="badge rounded-pill bg-outline-primary small mb-2">Web Development · Beginner</span>
-            <h3 class="h5 fw-bold mb-2">Full-Stack Web Development Foundations</h3>
-            <p class="small text-muted mb-2">
-              Learn how to build responsive websites and simple full-stack applications using HTML, CSS, JavaScript, and
-              a modern backend.
-            </p>
-            <p class="small mb-1"><strong>Instructor:</strong> Engr. Chinedu Okafor</p>
-            <p class="small mb-2 course-rating">
-              <span class="text-warning">★★★★★</span> <span class="text-muted">(4.8 · 120 reviews)</span>
-            </p>
-            <p class="small text-muted mb-1"><strong>Prerequisites:</strong> Basic computer usage, willingness to learn</p>
-            <p class="small text-muted mb-2"><strong>Learning outcomes:</strong> Build simple web apps, deploy them, and
-              understand the full development cycle.</p>
-          </div>
-          <div class="course-card-footer px-4 pb-4 mt-auto">
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-              <span><strong>Duration:</strong> 6 weeks</span>
-              <span><strong>Price:</strong> <span class="text-success">₦65,000</span></span>
-            </div>
-            <button class="btn btn-success w-100 btn-sm">Enroll</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Data Science Course (Free) -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="50">
-        <div class="course-card h-100 d-flex flex-column">
-          <div class="course-card-body p-4 pb-3">
-            <span class="badge rounded-pill bg-outline-success small mb-2">Data Science · Free</span>
-            <h3 class="h5 fw-bold mb-2">Intro to Data Analytics with Excel &amp; Power BI</h3>
-            <p class="small text-muted mb-2">
-              Learn how to clean data, build dashboards, and present insights using tools your team already uses.
-            </p>
-            <p class="small mb-1"><strong>Instructor:</strong> Adaeze Nwosu</p>
-            <p class="small mb-2 course-rating">
-              <span class="text-warning">★★★★☆</span> <span class="text-muted">(4.6 · 200 reviews)</span>
-            </p>
-            <p class="small text-muted mb-1"><strong>Prerequisites:</strong> Comfort with basic Excel operations</p>
-            <p class="small text-muted mb-2"><strong>Learning outcomes:</strong> Prepare datasets, build interactive
-              visualizations, and communicate data-driven decisions.</p>
-          </div>
-          <div class="course-card-footer px-4 pb-4 mt-auto">
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-              <span><strong>Duration:</strong> 4 weeks</span>
-              <span><strong>Price:</strong> <span class="text-success">Free</span></span>
-            </div>
-            <button class="btn btn-outline-success w-100 btn-sm">Enroll</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI / ML Course -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="course-card h-100 d-flex flex-column">
-          <div class="course-card-body p-4 pb-3">
-            <span class="badge rounded-pill bg-outline-primary small mb-2">AI / ML · Intermediate</span>
-            <h3 class="h5 fw-bold mb-2">Practical Machine Learning with Python</h3>
-            <p class="small text-muted mb-2">
-              Build and evaluate ML models using real-world datasets, from regression to classification and clustering.
-            </p>
-            <p class="small mb-1"><strong>Instructor:</strong> Dr. Ibrahim Musa</p>
-            <p class="small mb-2 course-rating">
-              <span class="text-warning">★★★★☆</span> <span class="text-muted">(4.7 · 95 reviews)</span>
-            </p>
-            <p class="small text-muted mb-1"><strong>Prerequisites:</strong> Basic Python and statistics</p>
-            <p class="small text-muted mb-2"><strong>Learning outcomes:</strong> Implement ML workflows, choose
-              appropriate models, and interpret results.</p>
-          </div>
-          <div class="course-card-footer px-4 pb-4 mt-auto">
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-              <span><strong>Duration:</strong> 8 weeks</span>
-              <span><strong>Price:</strong> <span class="text-success">₦95,000</span></span>
-            </div>
-            <button class="btn btn-success w-100 btn-sm">Enroll</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cybersecurity Course -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up">
-        <div class="course-card h-100 d-flex flex-column">
-          <div class="course-card-body p-4 pb-3">
-            <span class="badge rounded-pill bg-outline-warning small mb-2">Cybersecurity · Beginner</span>
-            <h3 class="h5 fw-bold mb-2">Cybersecurity Essentials for IT &amp; Business</h3>
-            <p class="small text-muted mb-2">
-              Understand common threats, best practices, and how to protect systems and data in small and medium
-              organizations.
-            </p>
-            <p class="small mb-1"><strong>Instructor:</strong> Emmanuel Eze</p>
-            <p class="small mb-2 course-rating">
-              <span class="text-warning">★★★★☆</span> <span class="text-muted">(4.5 · 80 reviews)</span>
-            </p>
-            <p class="small text-muted mb-1"><strong>Prerequisites:</strong> General IT familiarity (no deep security
-              background required)</p>
-            <p class="small text-muted mb-2"><strong>Learning outcomes:</strong> Recognize attacks, reduce risk, and
-              implement basic security controls.</p>
-          </div>
-          <div class="course-card-footer px-4 pb-4 mt-auto">
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-              <span><strong>Duration:</strong> 5 weeks</span>
-              <span><strong>Price:</strong> <span class="text-success">₦55,000</span></span>
-            </div>
-            <button class="btn btn-success w-100 btn-sm">Enroll</button>
-          </div>
-        </div>
-      </div>
-
+                <!-- Course Listings -->
+                <div class="row g-4">
+                  <% const courseList = Array.isArray(courses) ? courses : []; %>
+                  <% if (courseList.length) { %>
+                    <% courseList.forEach(function(course) { %>
+                      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <div class="course-card h-100 d-flex flex-column">
+                          <div class="course-card-body p-4 pb-3">
+                            <span class="badge rounded-pill bg-outline-primary small mb-2">
+                              <%= course.category || 'General' %>
+                              <% if (course.badge) { %>
+                                · <%= course.badge %>
+                              <% } %>
+                            </span>
+                            <h3 class="h5 fw-bold mb-2"><%= course.title || 'Untitled course' %></h3>
+                            <p class="small text-muted mb-2">
+                              <%= course.description || 'Details will be available soon.' %>
+                            </p>
+                            <% if (course.instructorName) { %>
+                              <p class="small mb-1"><strong>Instructor:</strong> <%= course.instructorName %></p>
+                            <% } %>
+                            <p class="small text-muted mb-1">
+                              <strong>Lessons:</strong>
+                              <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
+                              &nbsp;·&nbsp;
+                              <strong>Enrolled:</strong>
+                              <%= typeof course.enrolled !== 'undefined' && course.enrolled != null ? course.enrolled : 0 %>
+                            </p>
+                          </div>
+                          <div class="course-card-footer px-4 pb-4 mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                              <span><strong>Duration:</strong> <%= course.duration || 'Self-paced' %></span>
+                              <span><strong>Price:</strong>
+                                <% if (typeof course.price !== 'undefined' && course.price !== null) { %>
+                                  <span class="text-success">8<%= course.price %></span>
+                                <% } else { %>
+                                  <span class="text-success">Contact us</span>
+                                <% } %>
+                              </span>
+                            </div>
+                            <a href="/auth" class="btn btn-success w-100 btn-sm">Enroll</a>
+                          </div>
+                        </div>
+                      </div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="col-12 text-center text-muted py-4">
+                      <p class="mb-1">No online courses are available yet.</p>
+                      <p class="mb-0 small">Please check back soon for new programs.</p>
+                    </div>
+                  <% } %>
+                </div>
       <!-- Mobile App Development Course -->
       <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="50">
         <div class="course-card h-100 d-flex flex-column">

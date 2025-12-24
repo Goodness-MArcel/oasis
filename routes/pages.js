@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { registerUser, loginUser } from "../controllers/user/user.auth.js";
+import db from "../models/index.js";
 
 const router = Router();
 
@@ -31,13 +32,31 @@ router.get("/contact", (req, res) => {
   });
 });
 
-router.get("/online-training", (req, res) => {
-  res.render("pages/online-training", {
-    title: "Online Training",
-    description: "Flexible online courses in Web Development, Data, AI, Cybersecurity and more.",
-    pageStyles: "online-training.css",
-    pageScript: null,
-  });
+router.get("/online-training", async (req, res) => {
+  try {
+    const courses = await db.Course.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.render("pages/online-training", {
+      title: "Online Training",
+      description:
+        "Flexible online courses in Web Development, Data, AI, Cybersecurity and more.",
+      pageStyles: "online-training.css",
+      pageScript: null,
+      courses,
+    });
+  } catch (err) {
+    console.error("Error loading online training courses:", err);
+    res.render("pages/online-training", {
+      title: "Online Training",
+      description:
+        "Flexible online courses in Web Development, Data, AI, Cybersecurity and more.",
+      pageStyles: "online-training.css",
+      pageScript: null,
+      courses: [],
+    });
+  }
 });
 
 router.get("/in-house-training", (req, res) => {

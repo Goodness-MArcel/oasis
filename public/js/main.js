@@ -282,6 +282,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Admin dashboard: meetings calendar (FullCalendar)
   const adminCalendarEl = document.getElementById('adminMeetingsCalendar');
+  const adminMeetingModalEl = document.getElementById('adminMeetingModal');
+  const adminMeetingForm = document.getElementById('adminMeetingForm');
+  const adminMeetingTitleInput = document.getElementById('adminMeetingTitle');
+  const adminMeetingDateInput = document.getElementById('adminMeetingDate');
+  const adminMeetingTimeInput = document.getElementById('adminMeetingTime');
+
+  let adminMeetingModalInstance = null;
+  let pendingMeetingSelection = null;
+
+  if (adminMeetingModalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    adminMeetingModalInstance = new bootstrap.Modal(adminMeetingModalEl);
+  }
+
   if (adminCalendarEl && typeof FullCalendar !== 'undefined' && FullCalendar.Calendar) {
     try {
       const calendar = new FullCalendar.Calendar(adminCalendarEl, {
@@ -291,30 +304,148 @@ document.addEventListener('DOMContentLoaded', () => {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        height: '100%',
+        height: 'auto',
         selectable: true,
         selectMirror: true,
-        select: function (info) {
-          const title = window.prompt('Meeting title for ' + info.startStr + '?');
-          if (title) {
-            calendar.addEvent({
-              title: title,
-              start: info.start,
-              end: info.end,
-              allDay: info.allDay
+        events: function (fetchInfo, successCallback, failureCallback) {
+          const url = '/admin/meetings?start=' + encodeURIComponent(fetchInfo.startStr) + '&end=' + encodeURIComponent(fetchInfo.endStr);
+          fetch(url)
+            .then((res) => res.json())
+            .then((data) => {
+              successCallback(data || []);
+            })
+            .catch((err) => {
+              console.error('Failed to load meetings:', err);
+              if (failureCallback) failureCallback(err);
             });
+        },
+        select: function (info) {
+          pendingMeetingSelection = info;
+
+          if (adminMeetingDateInput) {
+            // Pre-fill date from selection
+            adminMeetingDateInput.value = info.startStr.slice(0, 10);
           }
-          calendar.unselect();
+          if (adminMeetingTimeInput) {
+            adminMeetingTimeInput.value = '';
+          }
+          if (adminMeetingTitleInput) {
+            adminMeetingTitleInput.value = '';
+            adminMeetingTitleInput.focus();
+          }
+
+          if (adminMeetingModalInstance) {
+            adminMeetingModalInstance.show();
+          } else {
+            // Fallback to prompt if modal is not available
+            const title = window.prompt('Meeting title for ' + info.startStr + '?');
+            if (title) {
+              fetch('/admin/meetings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: title,
+                  start: info.startStr,
+                  end: info.endStr,
+                  allDay: info.allDay
+                })
+              })
+                .then((res) => res.ok ? res.json() : Promise.reject(res))
+                .then((eventData) => {
+                  calendar.addEvent(eventData);
+                })
+                .catch((err) => {
+                  console.error('Failed to create meeting:', err);
+                  window.alert('Failed to create meeting.');
+                });
+            }
+            calendar.unselect();
+          }
         },
         eventClick: function (info) {
           const shouldRemove = window.confirm('Remove meeting "' + info.event.title + '"?');
           if (shouldRemove) {
-            info.event.remove();
+            fetch('/admin/meetings/' + encodeURIComponent(info.event.id), {
+              method: 'DELETE'
+            })
+              .then((res) => {
+                if (!res.ok && res.status !== 204) {
+                  throw new Error('Failed to delete meeting');
+                }
+                info.event.remove();
+              })
+              .catch((err) => {
+                console.error('Failed to delete meeting:', err);
+                window.alert('Failed to delete meeting.');
+              });
           }
         },
-        events: []
+        eventChange: function (info) {
+          // Persist drag/resize updates
+          fetch('/admin/meetings/' + encodeURIComponent(info.event.id), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: info.event.title,
+              start: info.event.startStr,
+              end: info.event.endStr,
+              allDay: info.event.allDay
+            })
+          }).catch((err) => {
+            console.error('Failed to update meeting:', err);
+          });
+        }
       });
       calendar.render();
+
+      // Handle meeting creation via modal form
+      if (adminMeetingForm && adminMeetingTitleInput && adminMeetingDateInput) {
+        adminMeetingForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!pendingMeetingSelection) {
+            if (adminMeetingModalInstance) adminMeetingModalInstance.hide();
+            return;
+          }
+
+          const title = adminMeetingTitleInput.value.trim();
+          const date = adminMeetingDateInput.value;
+          const time = adminMeetingTimeInput ? adminMeetingTimeInput.value : '';
+
+          if (!title || !date) {
+            return;
+          }
+
+          let startIso;
+          if (time) {
+            startIso = date + 'T' + time;
+          } else {
+            // Use all-day event when no time is provided
+            startIso = date;
+          }
+
+          fetch('/admin/meetings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: title,
+              start: startIso,
+              end: null,
+              allDay: !time,
+            })
+          })
+            .then((res) => res.ok ? res.json() : Promise.reject(res))
+            .then((eventData) => {
+              calendar.addEvent(eventData);
+              pendingMeetingSelection = null;
+              adminMeetingForm.reset();
+              if (adminMeetingModalInstance) adminMeetingModalInstance.hide();
+            })
+            .catch((err) => {
+              console.error('Failed to create meeting:', err);
+              window.alert('Failed to create meeting.');
+            });
+        });
+      }
     } catch (err) {
       console.error('Error initialising admin meetings calendar:', err);
     }

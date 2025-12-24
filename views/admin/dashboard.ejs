@@ -110,15 +110,49 @@
     </div>
   </div>
 
-  <div class="row g-4 mt-2">
-    <div class="col-12">
-      <div class="admin-card h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="row g-3 mt-3">
+    <div class="col-12 col-lg-8">
+      <div class="admin-card admin-calendar-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
           <h2 class="h6 mb-0">Meetings Calendar</h2>
-          <span class="small text-muted">Schedule office meetings</span>
+          <span class="small text-muted">Schedule and track office meetings</span>
         </div>
-        <div id="adminMeetingsCalendar" style="min-height: 500px;"></div>
+        <div id="adminMeetingsCalendar" class="admin-calendar-container"></div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="admin-card h-100 small">
+        <% const upcomingList = Array.isArray(upcomingMeetings) ? upcomingMeetings : []; %>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 mb-0">Upcoming Meetings</h2>
+          <span class="text-muted small"><%= upcomingList.length ? upcomingList.length + ' scheduled' : 'No upcoming' %></span>
+        </div>
+        <p class="text-muted mb-2">Select a day on the calendar to add a meeting. Click an event to remove it.</p>
+        <ul class="list-unstyled mb-0">
+          <% if (upcomingList.length) { %>
+            <% upcomingList.forEach(function(meeting) { %>
+              <% const start = meeting.start ? meeting.start.toISOString().slice(0, 16).replace('T', ' ') : ''; %>
+              <li class="mb-2 d-flex align-items-start">
+                <span class="badge bg-success-soft me-2 mt-1">
+                  <i class="fa-solid fa-circle"></i>
+                </span>
+                <div>
+                  <div class="fw-semibold"><%= meeting.title %></div>
+                  <% if (start) { %>
+                    <div class="text-muted"><%= start %></div>
+                  <% } %>
+                </div>
+              </li>
+            <% }); %>
+          <% } else { %>
+            <li class="text-muted d-flex align-items-center">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              No upcoming meetings scheduled.
+            </li>
+          <% } %>
+        </ul>
       </div>
     </div>
   </div>
+
 </section>
