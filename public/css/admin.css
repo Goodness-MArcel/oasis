@@ -6,11 +6,11 @@
   box-shadow: 0 8px 32px rgba(46, 139, 87, 0.10);
 }
 .modal-admin-logout .modal-header {
-  background: rgba(46, 139, 87, 0.08);
+  background: rgba(22, 163, 74, 0.08);
   border-bottom: 1px solid #e5e7eb;
 }
 .modal-admin-logout .modal-title {
-  color: var(--primary-green);
+  color: #166534;
   font-weight: 600;
 }
 .modal-admin-logout .modal-footer {
@@ -19,6 +19,7 @@
 .modal-admin-logout .btn-danger {
   background: var(--primary-green);
   border-color: var(--primary-green);
+  color: #fff;
 }
 .modal-admin-logout .btn-danger:hover {
   background: var(--secondary-green);
@@ -42,13 +43,13 @@
 }
 
 .modal-admin-meeting .modal-header {
-  background: rgba(22, 163, 74, 0.06);
+  background: rgba(22, 163, 74, 0.08);
   border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-admin-meeting .modal-title {
   font-weight: 600;
-  color: var(--primary-green);
+  color: #166534;
 }
 
 .modal-admin-meeting .btn-success {
@@ -311,4 +312,92 @@
   --bs-btn-padding-y: 0.125rem;
   --bs-btn-padding-x: 0.45rem;
   --bs-btn-font-size: 0.7rem;
+}
+
+/* Activity badges for different types */
+.badge.bg-success-soft {
+  background-color: rgba(34, 197, 94, 0.08);
+  color: #166534;
+}
+
+.badge.bg-info-soft {
+  background-color: rgba(6, 182, 212, 0.08);
+  color: #0e7490;
+}
+
+.badge.bg-primary-soft {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8;
+}
+
+.badge.bg-danger-soft {
+  background-color: rgba(220, 53, 69, 0.08);
+  color: #b91c1c;
+}
+
+/* Toast notification styles */
+.toast-success {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.toast-error {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.toast-info {
+  background-color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+.toast-success .btn-close,
+.toast-error .btn-close,
+.toast-info .btn-close {
+  filter: invert(1);
+}
+
+/* Consistent button styles for admin interface */
+.admin-section .btn-success {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+  color: #fff;
+}
+
+.admin-section .btn-success:hover {
+  background-color: var(--secondary-green);
+  border-color: var(--secondary-green);
+}
+
+.admin-section .btn-outline-secondary {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+.admin-section .btn-outline-secondary:hover {
+  background-color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #fff;
+}
+
+.admin-section .btn-primary {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+  color: #fff;
+}
+
+.admin-section .btn-primary:hover {
+  background-color: var(--secondary-green);
+  border-color: var(--secondary-green);
+}
+
+.admin-section .btn-outline-primary {
+  color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.admin-section .btn-outline-primary:hover {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+  color: #fff;
 }

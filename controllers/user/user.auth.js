@@ -1,5 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import ejs from "ejs";
+import path from "path";
 import { validationResult } from "express-validator";
 import db from "../../models/index.js";
 import { Op } from "sequelize";
@@ -41,6 +44,12 @@ export async function registerUser(req, res) {
 		return renderWithErrors([{ msg: "Passwords do not match" }]);
 	}
 
+	// Defensive server-side strength check (letters, numbers, special chars, min 8)
+	const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+	if (!pwRegex.test(password)) {
+		return renderWithErrors([{ msg: "Password must be at least 8 characters and include letters, numbers, and special characters" }]);
+	}
+
 	try {
 		// Check duplicates
 		const existing = await User.findOne({ where: { email } });
@@ -58,12 +67,70 @@ export async function registerUser(req, res) {
 
 		const hashed = await bcrypt.hash(password, 10);
 
-		await User.create({
+		const newUser = await User.create({
 			username,
 			email,
 			password: hashed,
 			role: "student",
 		});
+
+		// Log user signup activity
+		try {
+			const db = await import("../../models/index.js");
+			await db.default.Activity.create({
+				type: 'user_signup',
+				description: `New user ${username} (${email}) registered`,
+				metadata: {
+					userId: newUser.id,
+					username,
+					email
+				}
+			});
+		} catch (activityErr) {
+			console.error('Failed to log user signup activity:', activityErr);
+			// Don't fail registration if activity logging fails
+		}
+
+		// Send welcome email (best-effort; do not block signup on mail errors)
+		(async function sendWelcome() {
+			try {
+				// Use Gmail SMTP if not otherwise configured
+				const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+				const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465;
+				const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : true;
+
+				const user = process.env.GMAIL_USER;
+				const pass = process.env.APP_PASSWORD;
+				if (!user || !pass) return; // no credentials
+
+				const transporter = nodemailer.createTransport({
+					host: smtpHost,
+					port: smtpPort,
+					secure: smtpSecure,
+					auth: { user, pass },
+				});
+
+				const from = process.env.EMAIL_FROM || `Integrated Oasis <${user}>`;
+				const subject = 'Welcome to Integrated Oasis';
+				const appUrl = process.env.APP_URL || '';
+
+				// Render email template
+				const templatePath = path.join(process.cwd(), 'views', 'emails', 'welcome.ejs');
+				let html = '';
+				try {
+					html = await ejs.renderFile(templatePath, { fullName, email, appUrl });
+				} catch (tplErr) {
+					// fallback to basic html
+					html = `<p>Hi ${fullName || ''},</p><p>Welcome to Integrated Oasis — your account has been created. Log in at ${appUrl || '/auth'} to get started.</p>`;
+				}
+
+				const text = `Hi ${fullName || ''},\n\nWelcome to Integrated Oasis — your account has been created. Log in at ${appUrl || '/auth'} to get started.\n\nThanks,\nThe Oasis team`;
+
+				await transporter.sendMail({ from, to: email, subject, text, html });
+			} catch (mailErr) {
+				console.error('Welcome email failed:', mailErr);
+			}
+		})();
 
 		req.flash("success", "Account created successfully. Please log in.");
 		return res.redirect("/auth");

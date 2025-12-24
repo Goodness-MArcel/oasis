@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ready to Start Learning?</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #2e8b57, #3cb371); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .button { display: inline-block; background: #2e8b57; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌟 Ready to Start Learning?</h1>
+    </div>
+    <div class="content">
+      <p>Hi <%= username %>,</p>
+
+      <p>We noticed you've joined Integrated Oasis but haven't enrolled in any courses yet. That's completely okay! We're here to help you find the perfect course to kickstart your learning journey.</p>
+
+      <p>Our platform offers a variety of courses designed to help you achieve your goals. Whether you're looking to advance your career, learn new skills, or explore new interests, we have something for everyone.</p>
+
+      <div style="text-align: center;">
+        <a href="<%= appUrl %>/courses" class="button">Browse Our Courses</a>
+      </div>
+
+      <p><strong>What you can expect:</strong></p>
+      <ul>
+        <li>Expert instructors with real-world experience</li>
+        <li>Flexible learning schedules</li>
+        <li>Interactive content and hands-on projects</li>
+        <li>Certificates upon completion</li>
+        <li>Community support and networking opportunities</li>
+      </ul>
+
+      <p>If you have any questions about our courses or need recommendations based on your interests, please don't hesitate to reply to this email. We're here to help!</p>
+
+      <p>Ready to take the next step? <a href="<%= appUrl %>/courses">Start exploring now</a>.</p>
+
+      <p>Best regards,<br>
+      <strong>The Integrated Oasis Team</strong></p>
+
+      <div class="footer">
+        <p>This email was sent to <%= email %> because you signed up for an account at Integrated Oasis.</p>
+        <p>If you no longer wish to receive these emails, you can <a href="<%= appUrl %>/settings">update your preferences</a> in your account settings.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

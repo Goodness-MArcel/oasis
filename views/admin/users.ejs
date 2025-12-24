@@ -14,6 +14,8 @@
   <% const adminCount = userList.filter(u => u.role === 'admin').length; %>
   <% const studentCount = userList.filter(u => u.role !== 'admin').length; %>
   <% const genderSetCount = userList.filter(u => u.gender).length; %>
+  <% const usersWithoutEnrollments = userList.filter(user => !user.enrollments || user.enrollments.length === 0); %>
+  <% const totalAwaitingUsers = usersWithoutEnrollments.length; %>
 
   <div class="row g-3 mb-4">
     <div class="col-12 col-md-3">
@@ -45,10 +47,10 @@
     </div>
     <div class="col-12 col-md-3">
       <div class="admin-card h-100">
-        <p class="text-muted small mb-1">Profiles with Gender</p>
+        <p class="text-muted small mb-1">Awaiting Enrollment</p>
         <div class="d-flex align-items-end justify-content-between">
-          <span class="h4 mb-0"><%= genderSetCount %></span>
-          <i class="fa-solid fa-venus-mars text-muted"></i>
+          <span class="h4 mb-0"><%= totalAwaitingUsers %></span>
+          <i class="fa-solid fa-user-clock text-muted"></i>
         </div>
       </div>
     </div>
@@ -117,7 +119,8 @@
                   <span class="badge bg-success-soft">Active</span>
                 </td>
                 <td class="text-end">
-                  <button class="btn btn-outline-secondary btn-xs" type="button">View</button>
+                  <button class="btn btn-outline-secondary btn-xs view-user-btn" type="button" 
+                    data-user='<%- JSON.stringify(user) %>'>View</button>
                 </td>
               </tr>
             <% }); %>
@@ -152,6 +155,105 @@
           </li>
           <li class="page-item">
             <button class="page-link" type="button" id="adminUserNext">Next</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Users Without Course Enrollment Section -->
+  <div class="admin-card mt-4">
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h2 class="h6 mb-1">Users Awaiting Course Enrollment</h2>
+          <p class="text-muted small mb-0">Users who have signed up but haven't enrolled in any courses yet. Perfect for follow-up emails.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" id="sendFollowUpEmailsBtn">
+          <i class="fa-solid fa-envelope me-1"></i> Send Follow-up Emails
+        </button>
+      </div>
+    </div>
+
+    <div class="alert alert-info small mb-3" role="alert">
+      <i class="fa-solid fa-info-circle me-2"></i>
+      <strong><%= totalAwaitingUsers %></strong> users are waiting to enroll in courses.
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Role</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Joined</th>
+            <th scope="col">Days Since Signup</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          <% if (usersWithoutEnrollments.length) { %>
+            <% usersWithoutEnrollments.forEach(function(user) { %>
+              <tr class="awaiting-user-row" data-name="<%= (user.username || '').toLowerCase() %>">
+                <td>
+                  <div class="fw-semibold"><%= user.username %></div>
+                  <div class="text-muted">#<%= user.id %></div>
+                </td>
+                <td><%= user.email %></td>
+                <td class="text-capitalize">
+                  <span class="badge bg-light text-dark"><%= user.role || 'student' %></span>
+                </td>
+                <td class="text-capitalize">
+                  <%= user.gender || '—' %>
+                </td>
+                <td>
+                  <%= user.createdAt ? user.createdAt.toISOString().slice(0, 10) : '—' %>
+                </td>
+                <td>
+                  <% 
+                    const daysSinceSignup = user.createdAt ? Math.floor((new Date() - new Date(user.createdAt)) / (1000 * 60 * 60 * 24)) : 0;
+                    const badgeClass = daysSinceSignup > 30 ? 'bg-warning' : daysSinceSignup > 7 ? 'bg-info' : 'bg-secondary';
+                  %>
+                  <span class="badge <%= badgeClass %>"><%= daysSinceSignup %> days</span>
+                </td>
+                <td class="text-end">
+                  <button class="btn btn-outline-primary btn-xs send-followup-btn" type="button" 
+                    data-user-id="<%= user.id %>" data-user-email="<%= user.email %>" data-user-name="<%= user.username %>">
+                    <i class="fa-solid fa-envelope"></i> Follow-up
+                  </button>
+                  <button class="btn btn-outline-secondary btn-xs view-user-btn ms-1" type="button" 
+                    data-user='<%- JSON.stringify(user) %>'>View</button>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">
+                <i class="fa-solid fa-check-circle me-2"></i>
+                All users have enrolled in at least one course!
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3 small" id="awaitingUserPagination" style="display: none;">
+      <div>
+        Showing <span id="awaitingUserPageFrom">0</span>–<span id="awaitingUserPageTo">0</span>
+        of <span id="awaitingUserTotal">0</span> users awaiting enrollment
+      </div>
+      <nav aria-label="Awaiting users pagination">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item">
+            <button class="page-link" type="button" id="awaitingUserPrev">Prev</button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link" id="awaitingUserPageLabel">Page 1 of 1</span>
+          </li>
+          <li class="page-item">
+            <button class="page-link" type="button" id="awaitingUserNext">Next</button>
           </li>
         </ul>
       </nav>
@@ -243,6 +345,180 @@
 
       // Initial render
       render();
+    })();
+
+    // Pagination for Awaiting Users Section
+    (function () {
+      const awaitingRows = Array.from(document.querySelectorAll(".awaiting-user-row"));
+      const awaitingPagination = document.getElementById("awaitingUserPagination");
+      const awaitingPageFromEl = document.getElementById("awaitingUserPageFrom");
+      const awaitingPageToEl = document.getElementById("awaitingUserPageTo");
+      const awaitingTotalEl = document.getElementById("awaitingUserTotal");
+      const awaitingPrevBtn = document.getElementById("awaitingUserPrev");
+      const awaitingNextBtn = document.getElementById("awaitingUserNext");
+      const awaitingPageLabel = document.getElementById("awaitingUserPageLabel");
+      const awaitingPageSize = 5; // Display 5 users at a time
+      let awaitingCurrentPage = 1;
+
+      if (!awaitingRows.length) return;
+
+      const renderAwaitingUsers = () => {
+        const total = awaitingRows.length;
+
+        // Hide all awaiting rows by default
+        awaitingRows.forEach((row) => {
+          row.style.display = "none";
+        });
+
+        if (total === 0) {
+          if (awaitingPagination) awaitingPagination.style.display = "none";
+          return;
+        }
+
+        const totalPages = Math.ceil(total / awaitingPageSize);
+        if (awaitingCurrentPage > totalPages) awaitingCurrentPage = totalPages;
+        if (awaitingCurrentPage < 1) awaitingCurrentPage = 1;
+
+        const startIndex = (awaitingCurrentPage - 1) * awaitingPageSize;
+        const endIndex = Math.min(startIndex + awaitingPageSize, total);
+
+        for (let i = startIndex; i < endIndex; i++) {
+          awaitingRows[i].style.display = "";
+        }
+
+        if (awaitingPagination && awaitingPageFromEl && awaitingPageToEl && awaitingTotalEl && awaitingPrevBtn && awaitingNextBtn && awaitingPageLabel) {
+          awaitingPagination.style.display = totalPages > 1 ? "" : "none";
+          awaitingPageFromEl.textContent = startIndex + 1;
+          awaitingPageToEl.textContent = endIndex;
+          awaitingTotalEl.textContent = total;
+          awaitingPageLabel.textContent = `Page ${awaitingCurrentPage} of ${totalPages}`;
+          awaitingPrevBtn.disabled = awaitingCurrentPage === 1;
+          awaitingNextBtn.disabled = awaitingCurrentPage === totalPages;
+        }
+      };
+
+      if (awaitingPrevBtn && awaitingNextBtn) {
+        awaitingPrevBtn.addEventListener("click", () => {
+          if (awaitingCurrentPage > 1) {
+            awaitingCurrentPage -= 1;
+            renderAwaitingUsers();
+          }
+        });
+
+        awaitingNextBtn.addEventListener("click", () => {
+          awaitingCurrentPage += 1;
+          renderAwaitingUsers();
+        });
+      }
+
+      // Initial render for awaiting users
+      renderAwaitingUsers();
+    })();
+
+    // Follow-up email functionality
+    (function () {
+      const sendFollowUpEmailsBtn = document.getElementById('sendFollowUpEmailsBtn');
+      const followUpButtons = document.querySelectorAll('.send-followup-btn');
+
+      // Toast notification function
+      function showToast(message, type = 'success') {
+        const toastEl = document.getElementById('emailToast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Set message
+        toastMessage.textContent = message;
+
+        // Set icon and styling based on type
+        toastEl.className = 'toast align-items-center text-white border-0';
+        switch(type) {
+          case 'success':
+            toastEl.classList.add('toast-success');
+            toastIcon.className = 'fa-solid fa-check-circle me-2';
+            break;
+          case 'error':
+            toastEl.classList.add('toast-error');
+            toastIcon.className = 'fa-solid fa-exclamation-triangle me-2';
+            break;
+          case 'info':
+            toastEl.classList.add('toast-info');
+            toastIcon.className = 'fa-solid fa-info-circle me-2';
+            break;
+        }
+
+        // Show toast
+        const toast = new bootstrap.Toast(toastEl, {
+          delay: 5000 // Auto hide after 5 seconds
+        });
+        toast.show();
+      }
+
+      // Helper function to send AJAX request
+      async function sendFollowUpEmail(userIds = null, userEmails = null) {
+        try {
+          showToast('Sending follow-up emails...', 'info');
+
+          const response = await fetch('/admin/users/send-followup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userIds: userIds,
+              userEmails: userEmails
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showToast(result.message, 'success');
+          } else {
+            showToast('Error: ' + result.message, 'error');
+          }
+        } catch (error) {
+          console.error('Error sending follow-up email:', error);
+          showToast('Failed to send follow-up email. Please try again.', 'error');
+        }
+      }
+
+      // Send follow-up to individual user
+      followUpButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          const userEmail = this.getAttribute('data-user-email');
+          const userName = this.getAttribute('data-user-name');
+
+          if (confirm(`Send follow-up email to ${userName} (${userEmail})?`)) {
+            sendFollowUpEmail([parseInt(userId)], null);
+          }
+        });
+      });
+
+      // Send follow-up to all awaiting users
+      if (sendFollowUpEmailsBtn) {
+        sendFollowUpEmailsBtn.addEventListener('click', function() {
+          const awaitingUsers = document.querySelectorAll('.awaiting-user-row');
+          if (awaitingUsers.length === 0) {
+            showToast('No users are awaiting course enrollment.', 'info');
+            return;
+          }
+
+          if (confirm(`Send follow-up emails to all ${awaitingUsers.length} users who haven't enrolled in courses yet?`)) {
+            // Get all user IDs from the table
+            const userIds = Array.from(awaitingUsers).map(row => {
+              const viewBtn = row.querySelector('.view-user-btn');
+              if (viewBtn) {
+                const userData = JSON.parse(viewBtn.getAttribute('data-user') || '{}');
+                return userData.id;
+              }
+              return null;
+            }).filter(id => id !== null);
+
+            sendFollowUpEmail(userIds, null);
+          }
+        });
+      }
     })();
   </script>
 </section>

@@ -111,8 +111,16 @@ router.post(
   [
     body("fullName").trim().notEmpty().withMessage("Full name is required"),
     body("email").isEmail().withMessage("A valid email is required").normalizeEmail(),
-    body("password").isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
-    body("passwordConfirm").notEmpty().withMessage("Please confirm your password"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters")
+      .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
+      .withMessage("Password must include letters, numbers and special characters"),
+    body("passwordConfirm")
+      .notEmpty()
+      .withMessage("Please confirm your password")
+      .custom((value, { req }) => value === req.body.password)
+      .withMessage("Passwords do not match"),
     body("terms").equals("1").withMessage("You must accept the terms"),
   ],
   registerUser

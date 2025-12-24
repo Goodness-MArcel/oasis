@@ -11,7 +11,74 @@ import { listCourses, createCourse } from '../controllers/admin/courses.js';
 import { getCourse, updateCourse, deleteCourse } from '../controllers/admin/courses.js';
 // analytics logic is handled inline below (moved from controller)
 import { listMeetings, createMeeting, updateMeeting, deleteMeeting } from "../controllers/admin/meetings.js";
+import nodemailer from "nodemailer";
+import ejs from "ejs";
 const router = Router();
+
+// Function to send follow-up email to a user
+async function sendFollowUpEmail(user) {
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465;
+  const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : true;
+
+  const emailUser = process.env.GMAIL_USER;
+  const pass = process.env.APP_PASSWORD;
+
+  if (!emailUser || !pass) {
+    throw new Error('Email credentials not configured');
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
+    auth: { user: emailUser, pass },
+  });
+
+  const from = process.env.EMAIL_FROM || `Integrated Oasis <${emailUser}>`;
+  const subject = 'Ready to Start Learning? Explore Our Courses!';
+  const appUrl = process.env.APP_URL || '';
+
+  // Render email template
+  const templatePath = path.join(process.cwd(), 'views', 'emails', 'followup.ejs');
+  let html = '';
+  try {
+    html = await ejs.renderFile(templatePath, {
+      username: user.username,
+      email: user.email,
+      appUrl
+    });
+  } catch (tplErr) {
+    // Fallback to basic HTML
+    html = `
+      <p>Hi ${user.username || 'there'},</p>
+      <p>We noticed you signed up for Integrated Oasis but haven't enrolled in any courses yet. We're here to help you get started!</p>
+      <p>Explore our available courses and start your learning journey today:</p>
+      <p><a href="${appUrl}/courses" style="background: #2e8b57; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Browse Courses</a></p>
+      <p>If you have any questions, feel free to reply to this email.</p>
+      <p>Best regards,<br>The Integrated Oasis Team</p>
+    `;
+  }
+
+  const text = `Hi ${user.username || 'there'},
+
+We noticed you signed up for Integrated Oasis but haven't enrolled in any courses yet. We're here to help you get started!
+
+Explore our available courses and start your learning journey today at: ${appUrl}/courses
+
+If you have any questions, feel free to reply to this email.
+
+Best regards,
+The Integrated Oasis Team`;
+
+  await transporter.sendMail({
+    from,
+    to: user.email,
+    subject,
+    text,
+    html
+  });
+}
 
 // Public admin login page
 router.get("/login", (req, res) => {
@@ -42,8 +109,8 @@ router.get("/dashboard", async (req, res) => {
   try {
     const Op = db.Sequelize.Op;
 
-    // Fetch key metrics and recent users
-    const [totalUsers, newUsersLast24h, totalCourses, recentUsers] = await Promise.all([
+    // Fetch key metrics, recent users, and recent activities
+    const [totalUsers, newUsersLast24h, totalCourses, recentUsers, recentActivities] = await Promise.all([
       db.User.count(),
       db.User.count({
         where: {
@@ -56,6 +123,10 @@ router.get("/dashboard", async (req, res) => {
       db.User.findAll({
         order: [["createdAt", "DESC"]],
         limit: 5,
+      }),
+      db.Activity.findAll({
+        order: [["createdAt", "DESC"]],
+        limit: 10, // Show more activities than users
       }),
     ]);
 
@@ -75,6 +146,7 @@ router.get("/dashboard", async (req, res) => {
       description: "Overview of key metrics and shortcuts.",
       pageStyles: "admin.css",
       recentUsers,
+      recentActivities,
       totalUsers,
       newUsersLast24h,
       totalCourses,
@@ -132,7 +204,22 @@ router.post('/courses/:id/delete', deleteCourse);
 
 // Example page: manage users
 router.get("/users", (req, res) => {
-  db.User.findAll({ order: [["createdAt", "DESC"]] })
+  db.User.findAll({
+    order: [["createdAt", "DESC"]],
+    include: [
+      {
+        model: db.Enrollment,
+        as: "enrollments",
+        include: [
+          {
+            model: db.Course,
+            as: "course",
+            attributes: ["id", "title", "category"]
+          }
+        ]
+      }
+    ]
+  })
     .then((users) => {
       res.render("admin/users", {
         layout: "layouts/admin-main",
@@ -332,6 +419,165 @@ router.post("/logout", (req, res) => {
   req.session.admin = null;
   req.flash("success", "You have been logged out.");
   res.redirect("/admin/login");
+});
+
+// Send follow-up emails to users awaiting course enrollment
+router.post("/users/send-followup", adminAuth, async (req, res) => {
+  try {
+    const { userIds, userEmails } = req.body;
+
+    if ((!userIds || !Array.isArray(userIds)) && (!userEmails || !Array.isArray(userEmails))) {
+      return res.status(400).json({ success: false, message: "User IDs or emails are required" });
+    }
+
+    let users = [];
+
+    if (userIds && userIds.length > 0) {
+      // Find users by IDs
+      users = await db.User.findAll({
+        where: { id: userIds },
+        attributes: ['id', 'username', 'email']
+      });
+    } else if (userEmails && userEmails.length > 0) {
+      // Find users by emails
+      users = await db.User.findAll({
+        where: { email: userEmails },
+        attributes: ['id', 'username', 'email']
+      });
+    }
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: "No users found" });
+    }
+
+    // Send follow-up emails
+    const results = await Promise.all(users.map(async (user) => {
+      try {
+        await sendFollowUpEmail(user);
+
+        // Log successful activity
+        await db.Activity.create({
+          type: 'followup_email',
+          description: `Follow-up email sent to ${user.username} (${user.email})`,
+          metadata: {
+            userId: user.id,
+            userEmail: user.email,
+            userName: user.username
+          }
+        });
+
+        return { userId: user.id, success: true };
+      } catch (error) {
+        console.error(`Failed to send follow-up email to ${user.email}:`, error);
+        return { userId: user.id, success: false, error: error.message };
+      }
+    }));
+
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+
+    // Log bulk activity if multiple emails were sent
+    if (users.length > 1) {
+      await db.Activity.create({
+        type: 'followup_email',
+        description: `Bulk follow-up emails sent: ${successful} successful, ${failed} failed`,
+        metadata: {
+          totalUsers: users.length,
+          successful,
+          failed,
+          userIds: users.map(u => u.id)
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Follow-up emails sent: ${successful} successful, ${failed} failed`,
+      results
+    });
+
+  } catch (error) {
+    console.error("Error sending follow-up emails:", error);
+    res.status(500).json({ success: false, message: "Failed to send follow-up emails" });
+  }
+});
+
+// Delete user and all related data
+router.delete("/users/:userId", adminAuth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const userIdNum = parseInt(userId);
+
+    if (!userIdNum || isNaN(userIdNum)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID" });
+    }
+
+    // Check if user exists
+    const user = await db.User.findByPk(userIdNum);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Start a transaction to ensure data consistency
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      // Delete related data in order (to handle foreign key constraints)
+      await db.Enrollment.destroy({
+        where: { userId: userIdNum },
+        transaction
+      });
+
+      await db.Payment.destroy({
+        where: { userId: userIdNum },
+        transaction
+      });
+
+      // Delete user activities
+      await db.Activity.destroy({
+        where: {
+          [db.Sequelize.Op.or]: [
+            { type: 'user_signup', metadata: { userId: userIdNum } },
+            { type: 'followup_email', metadata: { userId: userIdNum } }
+          ]
+        },
+        transaction
+      });
+
+      // Finally delete the user
+      await db.User.destroy({
+        where: { id: userIdNum },
+        transaction
+      });
+
+      // Log the deletion activity
+      await db.Activity.create({
+        type: 'user_deleted',
+        description: `User ${user.username} (${user.email}) was deleted by admin`,
+        metadata: {
+          deletedUserId: userIdNum,
+          deletedUsername: user.username,
+          deletedEmail: user.email,
+          deletedBy: req.session.admin?.id || 'admin'
+        }
+      }, { transaction });
+
+      await transaction.commit();
+
+      res.json({
+        success: true,
+        message: `User ${user.username} and all related data have been deleted successfully`
+      });
+
+    } catch (deleteError) {
+      await transaction.rollback();
+      throw deleteError;
+    }
+
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ success: false, message: "Failed to delete user" });
+  }
 });
 
 

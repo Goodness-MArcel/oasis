@@ -1,13 +1,203 @@
 <section>
     <div class="admin-section" data-aos="fade-up">
         <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h4 mb-1">Manage Revenue</h1>
-            <p class="text-muted small mb-0">View and manage revenue details.</p>
+            <div>
+                <h1 class="h4 mb-1">Revenue</h1>
+                <p class="text-muted small mb-0">Overview of income, trends and recent transactions.</p>
+            </div>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i>Dashboard
+            </a>
         </div>
-        <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">
-            <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
-        </a>
+
+        <!-- Use global admin styles: replace local glass-card with admin-card and utilities -->
+
+        <div class="row gx-3 gy-3 mb-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="admin-card d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-5 fw-bold">$
+                                <%= typeof totalRevenue !== "undefined" ? totalRevenue : '0.00' %>
+                            </div>
+                            <div class="text-muted small">Total Revenue</div>
+                        </div>
+                        <div class="text-success">
+                            <i class="fa-solid fa-circle-dollar-to-slot fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">Period: <%= typeof revenueRange !== "undefined" ? revenueRange : 'All time' %></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="admin-card d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-5 fw-bold">$
+                                <%= typeof mrr !== "undefined" ? mrr : '0.00' %>
+                            </div>
+                            <div class="text-muted small">Monthly Recurring</div>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fa-solid fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">New: <%= typeof newCustomers !== "undefined" ? newCustomers : 0 %></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="admin-card d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-5 fw-bold">$
+                                <%= typeof refunds !== "undefined" ? refunds : '0.00' %>
+                            </div>
+                            <div class="text-muted small">Refunds</div>
+                        </div>
+                        <div class="text-danger">
+                            <i class="fa-solid fa-undo fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">Rate: <%= typeof refundRate !== "undefined" ? refundRate : '0%' %></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="admin-card d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-5 fw-bold">
+                                <%= typeof avgOrder !== "undefined" ? avgOrder : '0.00' %>
+                            </div>
+                            <div class="text-muted small">Avg Order</div>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fa-solid fa-receipt fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">Orders: <%= typeof ordersCount !== "undefined" ? ordersCount : 0 %></div>
+                </div>
+            </div>
         </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-xl-8">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Revenue Trend</h5>
+                        <div>
+                            <select id="revenueRange" class="form-select form-select-sm">
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last 12 months</option>
+                            </select>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart" height="160"></canvas>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="admin-card mb-3">
+                    <h6 class="mb-3">Revenue Breakdown</h6>
+                    <ul class="list-unstyled mb-0">
+                        <% let breakdownLocal = typeof breakdown !== "undefined" ? breakdown : []; %>
+                        <% if (breakdownLocal.length === 0) { %>
+                            <li class="text-muted small">No breakdown data available.</li>
+                        <% } else { %>
+                            <% breakdownLocal.forEach(item => { %>
+                                <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                    <div>
+                                        <div><strong><%= item.label %></strong></div>
+                                        <div class="text-muted small"><%= item.subtitle %></div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div><strong>$<%= item.amount %></strong></div>
+                                        <div class="text-muted small"><%= item.pct %></div>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        <% } %>
+                    </ul>
+                </div>
+
+                <div class="admin-card">
+                    <h6 class="mb-3">Top Courses</h6>
+                    <ul class="list-unstyled mb-0">
+                        <% let topLocal = typeof topCourses !== "undefined" ? topCourses : []; %>
+                        <% if (topLocal.length === 0) { %>
+                            <li class="text-muted small">No course data yet.</li>
+                        <% } else { %>
+                            <% topLocal.slice(0,5).forEach(c => { %>
+                                <li class="d-flex justify-content-between py-2 border-bottom align-items-center">
+                                    <div><%= c.title %></div>
+                                    <div class="text-muted small">$<%= c.revenue %></div>
+                                </li>
+                            <% }) %>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Recent Transactions</h5>
+                        <a href="/admin/transactions" class="text-muted small">View all</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>When</th>
+                                    <th>Customer</th>
+                                    <th>Item</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% let txLocal = typeof transactions !== "undefined" ? transactions : []; %>
+                                <% if (txLocal.length === 0) { %>
+                                    <tr><td colspan="4" class="text-muted small">No recent transactions</td></tr>
+                                <% } else { %>
+                                    <% txLocal.slice(0,8).forEach(t => { %>
+                                        <tr>
+                                            <td><%= t.when %></td>
+                                            <td><%= t.customer %></td>
+                                            <td><%= t.item %></td>
+                                            <td class="text-end">$<%= t.amount %></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const labels = <%= typeof revenueLabels !== "undefined" ? JSON.stringify(revenueLabels) : '[]' %>;
+                const values = <%= typeof revenueValues !== "undefined" ? JSON.stringify(revenueValues) : '[]' %>;
+
+                function renderChart(){
+                    if (!window.Chart) return;
+                    const ctx = document.getElementById('revenueChart');
+                    if(!ctx) return;
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: { labels: labels, datasets: [{ label: 'Revenue', data: values, fill: true, backgroundColor: 'rgba(54,162,235,0.08)', borderColor: 'rgba(54,162,235,0.9)', tension: 0.25 }] },
+                        options: { plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{ticks:{beginAtZero:true}}} }
+                    });
+                }
+
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderChart); else renderChart();
+            })();
+        </script>
     </div>
 </section>

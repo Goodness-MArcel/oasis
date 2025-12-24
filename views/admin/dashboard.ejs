@@ -55,18 +55,58 @@
     <div class="col-12 col-lg-8">
       <div class="admin-card h-100">
         <% const recentUsersList = Array.isArray(recentUsers) ? recentUsers : []; %>
+        <% const recentActivitiesList = Array.isArray(recentActivities) ? recentActivities : []; %>
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="h6 mb-0">Recent Activity</h2>
           <span class="small text-muted">
-            <% if (recentUsersList.length) { %>
+            <% if (recentActivitiesList.length) { %>
+              Latest <%= recentActivitiesList.length %> activities
+            <% } else if (recentUsersList.length) { %>
               Latest <%= recentUsersList.length %> user signups
             <% } else { %>
-              No recent user signups
+              No recent activities
             <% } %>
           </span>
         </div>
         <ul class="list-unstyled small mb-0 admin-activity-list">
-          <% if (recentUsersList.length) { %>
+          <% if (recentActivitiesList.length) { %>
+            <% recentActivitiesList.forEach(function(activity) { %>
+              <li class="mb-2">
+                <% if (activity.type === 'followup_email') { %>
+                  <span class="badge bg-primary-soft me-2">
+                    <i class="fa-solid fa-envelope"></i>
+                  </span>
+                  <%= activity.description %>
+                  <span class="text-muted">
+                    <%= activity.createdAt ? new Date(activity.createdAt).toLocaleString() : '' %>
+                  </span>.
+                <% } else if (activity.type === 'user_signup') { %>
+                  <span class="badge bg-success-soft me-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                  </span>
+                  <%= activity.description %>
+                  <span class="text-muted">
+                    <%= activity.createdAt ? new Date(activity.createdAt).toLocaleString() : '' %>
+                  </span>.
+                <% } else if (activity.type === 'user_deleted') { %>
+                  <span class="badge bg-danger-soft me-2">
+                    <i class="fa-solid fa-user-minus"></i>
+                  </span>
+                  <%= activity.description %>
+                  <span class="text-muted">
+                    <%= activity.createdAt ? new Date(activity.createdAt).toLocaleString() : '' %>
+                  </span>.
+                  <span class="badge bg-info-soft me-2">
+                    <i class="fa-solid fa-circle-info"></i>
+                  </span>
+                  <%= activity.description %>
+                  <span class="text-muted">
+                    <%= activity.createdAt ? new Date(activity.createdAt).toLocaleString() : '' %>
+                  </span>.
+                <% } %>
+              </li>
+            <% }); %>
+          <% } else if (recentUsersList.length) { %>
             <% recentUsersList.forEach(function(user) { %>
               <li class="mb-2">
                 <span class="badge bg-success-soft me-2">
@@ -86,7 +126,7 @@
               <span class="badge bg-light me-2">
                 <i class="fa-solid fa-circle-info"></i>
               </span>
-              No user registrations have been recorded yet.
+              No activities have been recorded yet.
             </li>
           <% } %>
         </ul>

@@ -91,6 +91,272 @@
       </div>
     </div>
 
+    <!-- User Details Modal (moved here for z-index fix) -->
+    <div class="modal fade modal-admin-logout" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header align-items-center" style="border-bottom: 1px solid #e5e7eb; background: rgba(22, 163, 74, 0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-user-circle fa-2x" style="color: #166534;"></i>
+              <div>
+                <h5 class="modal-title mb-0" id="userDetailsModalLabel" style="color: #166534; font-weight: 600;">User Details</h5>
+                <div class="small text-muted" id="userDetailsUsername"></div>
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3" style="color: #166534;"><i class="fa-solid fa-user me-2"></i>Personal Information</h6>
+                <ul class="list-group list-group-flush mb-4" id="personalInfoList">
+                  <!-- Populated by JS -->
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3" style="color: #166534;"><i class="fa-solid fa-calendar me-2"></i>Account Details</h6>
+                <ul class="list-group list-group-flush mb-4" id="accountInfoList">
+                  <!-- Populated by JS -->
+                </ul>
+                <h6 class="fw-bold mb-3" style="color: #166534;"><i class="fa-solid fa-book me-2"></i>Enrolled Courses</h6>
+                <ul class="list-group list-group-flush" id="coursesList">
+                  <!-- Populated by JS -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between" style="border-top: 1px solid #e5e7eb;">
+            <div>
+              <button type="button" class="btn btn-danger me-2" id="deleteUserBtn"><i class="fa-solid fa-trash me-1"></i> Delete</button>
+              <button type="button" class="btn btn-warning" id="suspendUserBtn"><i class="fa-solid fa-user-slash me-1"></i> Suspend</button>
+            </div>
+            <button type="button" class="btn" style="background: var(--accent-blue); border-color: var(--accent-blue); color: #fff;" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Force modal and backdrop above all overlays */
+      .modal-admin-logout {
+        z-index: 9999 !important;
+      }
+      .modal-backdrop.show {
+        z-index: 9998 !important;
+      }
+      .modal-admin-logout .modal-content {
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 8px 32px rgba(46, 139, 87, 0.10);
+      }
+      .modal-admin-logout .modal-header {
+        background: rgba(22, 163, 74, 0.08);
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .modal-admin-logout .modal-title {
+        color: #166534;
+        font-weight: 600;
+      }
+      .modal-admin-logout .modal-footer {
+        border-top: 1px solid #e5e7eb;
+      }
+      .modal-admin-logout .btn-danger {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: #fff;
+      }
+      .modal-admin-logout .btn-danger:hover {
+        background: var(--secondary-green);
+        border-color: var(--secondary-green);
+      }
+      .modal-admin-logout .btn-secondary {
+        background: var(--accent-blue);
+        border-color: var(--accent-blue);
+        color: #fff;
+      }
+      .modal-admin-logout .btn-secondary:hover {
+        background: #357ab7;
+        border-color: #357ab7;
+      }
+      .modal-admin-logout .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 1px solid #f1f1f1;
+        font-size: 1rem;
+      }
+      .modal-admin-logout .list-group-item:last-child {
+        border-bottom: none;
+      }
+      .modal-admin-logout .fw-bold {
+        color: #166534;
+      }
+    </style>
+
+    <script>
+      // Fix for Bootstrap modal stacking and ensure visibility
+      document.addEventListener('shown.bs.modal', function (event) {
+        if (event.target.id === 'userDetailsModal') {
+          document.body.classList.add('modal-open');
+          event.target.style.zIndex = 9999;
+          var backdrops = document.getElementsByClassName('modal-backdrop');
+          for (var i = 0; i < backdrops.length; i++) {
+            backdrops[i].style.zIndex = 9998;
+          }
+        }
+      });
+
+      // Modal logic for user details
+      document.addEventListener('DOMContentLoaded', function() {
+        // Toast notification function
+        function showToast(message, type = 'success') {
+          const toastEl = document.getElementById('emailToast');
+          const toastIcon = document.getElementById('toastIcon');
+          const toastMessage = document.getElementById('toastMessage');
+
+          if (!toastEl || !toastIcon || !toastMessage) return;
+
+          // Set message
+          toastMessage.textContent = message;
+
+          // Set icon and styling based on type
+          toastEl.className = 'toast align-items-center text-white border-0';
+          switch(type) {
+            case 'success':
+              toastEl.classList.add('toast-success');
+              toastIcon.className = 'fa-solid fa-check-circle me-2';
+              break;
+            case 'error':
+              toastEl.classList.add('toast-error');
+              toastIcon.className = 'fa-solid fa-exclamation-triangle me-2';
+              break;
+            case 'info':
+              toastEl.classList.add('toast-info');
+              toastIcon.className = 'fa-solid fa-info-circle me-2';
+              break;
+          }
+
+          // Show toast
+          const toast = new bootstrap.Toast(toastEl, {
+            delay: 5000 // Auto hide after 5 seconds
+          });
+          toast.show();
+        }
+
+        const userDetailsModal = document.getElementById('userDetailsModal');
+        const personalInfoList = document.getElementById('personalInfoList');
+        const accountInfoList = document.getElementById('accountInfoList');
+        const coursesList = document.getElementById('coursesList');
+        let currentUser = null;
+
+        document.querySelectorAll('.view-user-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const user = JSON.parse(this.getAttribute('data-user'));
+            currentUser = user;
+            personalInfoList.innerHTML = '';
+            accountInfoList.innerHTML = '';
+            coursesList.innerHTML = '';
+            // Show username in header
+            document.getElementById('userDetailsUsername').textContent = user.username ? `@${user.username}` : '';
+
+            // Personal Info
+            const personalFields = ['id', 'username', 'email', 'gender', 'role'];
+            personalFields.forEach(key => {
+              if (user[key] !== undefined && key !== 'password') {
+                personalInfoList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${key.charAt(0).toUpperCase() + key.slice(1)}</span><span class="fw-semibold">${user[key] ?? ''}</span></li>`;
+              }
+            });
+
+            // Account Info
+            const accountFields = ['createdAt', 'updatedAt'];
+            accountFields.forEach(key => {
+              if (user[key] !== undefined) {
+                let value = user[key];
+                if (key === 'createdAt' || key === 'updatedAt') {
+                  value = value ? new Date(value).toLocaleString() : '';
+                }
+                accountInfoList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${key === 'createdAt' ? 'Joined' : 'Last Updated'}</span><span class="fw-semibold">${value}</span></li>`;
+              }
+            });
+
+            // Courses
+            if (user.enrollments && user.enrollments.length > 0) {
+              user.enrollments.forEach(enrollment => {
+                if (enrollment.course) {
+                  coursesList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${enrollment.course.title}</span><span class="badge bg-success">${enrollment.course.category}</span></li>`;
+                }
+              });
+            } else {
+              coursesList.innerHTML = '<li class="list-group-item text-muted"><i class="fa-solid fa-info-circle me-2"></i>No courses yet</li>';
+            }
+
+            // Show modal (Bootstrap 5)
+            const modal = new bootstrap.Modal(userDetailsModal);
+            modal.show();
+          });
+        });
+
+        document.getElementById('deleteUserBtn').onclick = async function() {
+          if (!currentUser) return;
+
+          if (confirm('Are you sure you want to delete this user? This action cannot be undone and will delete all related data (enrollments, payments, activities).')) {
+            try {
+              showToast('Deleting user...', 'info');
+
+              const response = await fetch(`/admin/users/${currentUser.id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                showToast(result.message, 'success');
+
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(userDetailsModal);
+                modal.hide();
+
+                // Remove the user row from the table
+                const userRow = document.querySelector(`[data-user*='"id":${currentUser.id}']`);
+                if (userRow) {
+                  userRow.closest('tr').remove();
+                }
+
+                // Also remove from awaiting users table if present
+                const awaitingRow = document.querySelector(`.awaiting-user-row [data-user*='"id":${currentUser.id}']`);
+                if (awaitingRow) {
+                  awaitingRow.closest('tr').remove();
+                }
+
+                // Refresh the page after a short delay to update statistics
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+
+              } else {
+                showToast('Error: ' + result.message, 'error');
+              }
+            } catch (error) {
+              console.error('Error deleting user:', error);
+              showToast('Failed to delete user. Please try again.', 'error');
+            }
+          }
+        };
+        document.getElementById('suspendUserBtn').onclick = function() {
+          if (!currentUser) return;
+          if (confirm('Suspend this user account?')) {
+            // TODO: Implement AJAX call to suspend user
+            alert('Suspend user: ' + currentUser.id);
+          }
+        };
+      });
+    </script>
+
     <!-- New Meeting Modal (admin dashboard) -->
     <div class="modal fade modal-admin-meeting" id="adminMeetingModal" tabindex="-1" aria-labelledby="adminMeetingModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -125,6 +391,42 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+      <div id="emailToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body d-flex align-items-center">
+            <i id="toastIcon" class="fa-solid me-2"></i>
+            <span id="toastMessage"></span>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Styles -->
+    <style>
+      .toast-container {
+        z-index: 9999;
+      }
+      .toast-success {
+        background-color: #198754 !important;
+        border-color: #198754 !important;
+      }
+      .toast-error {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+      }
+      .toast-info {
+        background-color: #0dcaf0 !important;
+        border-color: #0dcaf0 !important;
+        color: #000 !important;
+      }
+      .toast-info .btn-close-white {
+        filter: invert(1);
+      }
+    </style>
 
     <!-- Scripts: reuse global JS stack -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
