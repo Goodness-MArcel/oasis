@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import path from "path";
+import { fileURLToPath } from "url";
 import morgan from "morgan";
 import helmet from "helmet";
 
@@ -28,8 +29,10 @@ app.use(
 app.use(morgan("dev"));
 
 app.set("view engine", "ejs");
-// Use an absolute path for views to avoid deployment issues on case-sensitive filesystems
-app.set("views", path.join(process.cwd(), "views"));
+// Resolve __dirname for ES modules and set an absolute views path to avoid deployment issues
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.set("views", path.join(__dirname, "views"));
 
 
 // Session and flash middleware
