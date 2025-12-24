@@ -7,6 +7,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 
 import session from "express-session";
+import fs from "fs";
 import flash from "connect-flash";
 import cookieParser from "cookie-parser";
 import { flashMessage } from "./middleware/flashMessage.js";
@@ -33,6 +34,16 @@ app.set("view engine", "ejs");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set("views", path.join(__dirname, "views"));
+
+// Emit runtime debug info about views during startup so deployed logs show exact path and file presence
+try {
+  const viewsPath = app.get("views");
+  console.log("Express views path:", viewsPath);
+  const analyticsView = path.join(viewsPath, "admin", "analytics.ejs");
+  console.log("Analytics view exists:", fs.existsSync(analyticsView), analyticsView);
+} catch (e) {
+  console.error("Error while checking views path:", e && e.stack ? e.stack : e);
+}
 
 
 // Session and flash middleware
