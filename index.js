@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import path from "path";
 import morgan from "morgan";
 import helmet from "helmet";
 
@@ -27,7 +28,8 @@ app.use(
 app.use(morgan("dev"));
 
 app.set("view engine", "ejs");
-app.set("views", "views");
+// Use an absolute path for views to avoid deployment issues on case-sensitive filesystems
+app.set("views", path.join(process.cwd(), "views"));
 
 
 // Session and flash middleware
