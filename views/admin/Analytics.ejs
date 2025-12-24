@@ -53,7 +53,7 @@
                 <span class="small text-muted">Avg. completion rate</span>
                 <span class="text-success"><i class="fa-solid fa-chart-line"></i></span>
             </div>
-            <div class="h3 mb-1"><%= typeof avgCompletionRate !== 'undefined' ? avgCompletionRate : 0 %>%</div>
+            <div class="h3 mb-1"><%= typeof avgCompletionRate !== 'undefined' ? avgCompletionRate : 0 %>&percnt;</div>
             <div class="small text-muted">Based on completed vs total enrollments</div>
         </div>
     </div>
@@ -70,8 +70,8 @@
                 </div>
                 <select id="trafficRangeSelect" class="form-select form-select-sm" style="max-width: 140px;">
                     <option value="7" <%= (typeof rangeDays !== 'undefined' ? rangeDays : 7) === 7 ? 'selected' : '' %>>Last 7 days</option>
-                    <option value="30" <%= rangeDays === 30 ? 'selected' : '' %>>Last 30 days</option>
-                    <option value="90" <%= rangeDays === 90 ? 'selected' : '' %>>Last 90 days</option>
+                    <option value="30" <%= (typeof rangeDays !== 'undefined' && rangeDays === 30) ? 'selected' : '' %>>Last 30 days</option>
+                    <option value="90" <%= (typeof rangeDays !== 'undefined' && rangeDays === 90) ? 'selected' : '' %>>Last 90 days</option>
                 </select>
             </div>
             <div class="analytics-chart-placeholder rounded-3 border border-dashed p-3">
@@ -132,7 +132,7 @@
                                         <div class="text-muted"><%= course.category || 'Course' %></div>
                                     </td>
                                     <td><%= course.totalEnrollments %></td>
-                                    <td><%= course.completionRate %>%</td>
+                                    <td><%= course.completionRate %>&percnt;</td>
                                     <td class="text-end">
                                         <span class="badge <%= course.statusLabel === 'Growing' ? 'bg-success-soft' : (course.statusLabel === 'Stable' ? 'bg-primary-soft' : 'bg-warning-soft') %>"><%= course.statusLabel %></span>
                                     </td>
@@ -207,9 +207,9 @@
         const ctxEl = document.getElementById('trafficEngagementChart');
         if (!ctxEl || typeof Chart === 'undefined') return;
 
-        const labels = <%- JSON.stringify(typeof trafficLabels !== 'undefined' ? trafficLabels : []) %>;
-        const signups = <%- JSON.stringify(typeof trafficSignups !== 'undefined' ? trafficSignups : []) %>;
-        const enrollments = <%- JSON.stringify(typeof trafficEnrollments !== 'undefined' ? trafficEnrollments : []) %>;
+        const labels = <%- JSON.stringify(typeof trafficLabels !== "undefined" ? trafficLabels : []) %>;
+        const signups = <%- JSON.stringify(typeof trafficSignups !== "undefined" ? trafficSignups : []) %>;
+        const enrollments = <%- JSON.stringify(typeof trafficEnrollments !== "undefined" ? trafficEnrollments : []) %>;
 
         const ctx = ctxEl.getContext('2d');
 
