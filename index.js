@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import morgan from "morgan";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 import session from "express-session";
 import fs from "fs";
@@ -27,6 +28,69 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
+
+// Rate limiting configuration
+const createRateLimitHandler = (message, retryAfter) => {
+  return (req, res) => {
+    const isApiRequest = req.path.startsWith('/api') || req.headers.accept?.includes('application/json');
+
+    if (isApiRequest) {
+      return res.status(429).json({
+        error: 'Too Many Requests',
+        message: message,
+        retryAfter: retryAfter
+      });
+    } else {
+      // For web requests, return an error page since flash middleware may not be loaded yet
+      return res.status(429).render('error', {
+        title: 'Too Many Requests',
+        status: 429,
+        message: `${message} Please wait ${retryAfter} before trying again.`
+      });
+    }
+  };
+};
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  handler: createRateLimitHandler(
+    "Too many requests from this IP address.",
+    "15 minutes"
+  ),
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 authentication attempts per windowMs
+  handler: createRateLimitHandler(
+    "Too many authentication attempts.",
+    "15 minutes"
+  ),
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Removed skipSuccessfulRequests - count ALL auth attempts for maximum security
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Limit each IP to 50 API requests per windowMs
+  handler: createRateLimitHandler(
+    "Too many API requests.",
+    "15 minutes"
+  ),
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting
+app.use(generalLimiter); // General rate limiting for all routes
+app.use('/auth', authLimiter); // Stricter limits for authentication routes
+app.use('/admin/auth', authLimiter); // Stricter limits for admin authentication
+app.use('/api', apiLimiter); // API-specific rate limiting
+
 app.use(morgan("dev"));
 
 app.set("view engine", "ejs");

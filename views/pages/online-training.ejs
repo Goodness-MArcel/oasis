@@ -33,89 +33,269 @@
       <div class="col-lg-5">
         <div class="online-filters p-3 p-md-4">
           <h3 class="h6 fw-bold mb-3">Filter options</h3>
+          
+          <!-- Search Input -->
+          <div class="mb-3">
+            <label class="form-label small text-muted" for="searchCourses">Search courses</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="fa-solid fa-search"></i>
+              </span>
+              <input type="text" id="searchCourses" class="form-control form-control-sm border-start-0" placeholder="Search by title or instructor...">
+            </div>
+          </div>
+          
           <form class="row g-2" novalidate>
             <div class="col-6">
               <label class="form-label small text-muted" for="filterLevel">Level</label>
               <select id="filterLevel" class="form-select form-select-sm">
                 <option selected>Any</option>
-                <!-- Course Listings -->
-                <div class="row g-4">
-                  <% const courseList = Array.isArray(courses) ? courses : []; %>
-                  <% if (courseList.length) { %>
-                    <% courseList.forEach(function(course) { %>
-                      <div class="col-md-6 col-lg-4" data-aos="fade-up">
-                        <div class="course-card h-100 d-flex flex-column">
-                          <div class="course-card-body p-4 pb-3">
-                            <span class="badge rounded-pill bg-outline-primary small mb-2">
-                              <%= course.category || 'General' %>
-                              <% if (course.badge) { %>
-                                · <%= course.badge %>
-                              <% } %>
-                            </span>
-                            <h3 class="h5 fw-bold mb-2"><%= course.title || 'Untitled course' %></h3>
-                            <p class="small text-muted mb-2">
-                              <%= course.description || 'Details will be available soon.' %>
-                            </p>
-                            <% if (course.instructorName) { %>
-                              <p class="small mb-1"><strong>Instructor:</strong> <%= course.instructorName %></p>
-                            <% } %>
-                            <p class="small text-muted mb-1">
-                              <strong>Lessons:</strong>
-                              <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
-                              &nbsp;·&nbsp;
-                              <strong>Enrolled:</strong>
-                              <%= typeof course.enrolled !== 'undefined' && course.enrolled != null ? course.enrolled : 0 %>
-                            </p>
-                          </div>
-                          <div class="course-card-footer px-4 pb-4 mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-                              <span><strong>Duration:</strong> <%= course.duration || 'Self-paced' %></span>
-                              <span><strong>Price:</strong>
-                                <% if (typeof course.price !== 'undefined' && course.price !== null) { %>
-                                  <span class="text-success">8<%= course.price %></span>
-                                <% } else { %>
-                                  <span class="text-success">Contact us</span>
-                                <% } %>
-                              </span>
-                            </div>
-                            <a href="/auth" class="btn btn-success w-100 btn-sm">Enroll</a>
-                          </div>
-                        </div>
-                      </div>
-                    <% }); %>
-                  <% } else { %>
-                    <div class="col-12 text-center text-muted py-4">
-                      <p class="mb-1">No online courses are available yet.</p>
-                      <p class="mb-0 small">Please check back soon for new programs.</p>
-                    </div>
-                  <% } %>
-                </div>
-      <!-- Mobile App Development Course -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="50">
-        <div class="course-card h-100 d-flex flex-column">
-          <div class="course-card-body p-4 pb-3">
-            <span class="badge rounded-pill bg-outline-primary small mb-2">Mobile Development · Intermediate</span>
-            <h3 class="h5 fw-bold mb-2">Building Mobile Apps with Flutter</h3>
-            <p class="small text-muted mb-2">
-              Learn how to design and build cross-platform mobile applications for Android and iOS using Flutter.
-            </p>
-            <p class="small mb-1"><strong>Instructor:</strong> Kelechi Umeh</p>
-            <p class="small mb-2 course-rating">
-              <span class="text-warning">★★★★☆</span> <span class="text-muted">(4.6 · 60 reviews)</span>
-            </p>
-            <p class="small text-muted mb-1"><strong>Prerequisites:</strong> Basic programming experience</p>
-            <p class="small text-muted mb-2"><strong>Learning outcomes:</strong> Build and deploy functional mobile apps
-              with modern UI patterns.</p>
-          </div>
-          <div class="course-card-footer px-4 pb-4 mt-auto">
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-              <span><strong>Duration:</strong> 6 weeks</span>
-              <span><strong>Price:</strong> <span class="text-success">₦80,000</span></span>
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+              </select>
             </div>
-            <button class="btn btn-success w-100 btn-sm">Enroll</button>
+            <div class="col-6">
+              <label class="form-label small text-muted" for="filterCategory">Category</label>
+              <select id="filterCategory" class="form-select form-select-sm">
+                <option selected>All</option>
+                <option>Web Development</option>
+                <option>Data Science</option>
+                <option>AI/ML</option>
+                <option>Cybersecurity</option>
+                <option>Mobile Development</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted" for="filterPrice">Price Range</label>
+              <select id="filterPrice" class="form-select form-select-sm">
+                <option selected>Any</option>
+                <option>Free</option>
+                <option>Under ₦50,000</option>
+                <option>₦50,000 - ₦100,000</option>
+                <option>Over ₦100,000</option>
+              </select>
+            </div>
+          </form>
+          
+          <!-- Clear Filters Button -->
+          <div class="mt-3">
+            <button type="button" id="clearFilters" class="btn btn-outline-secondary btn-sm w-100">
+              <i class="fa-solid fa-times me-1"></i> Clear All Filters
+            </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Course Listings -->
+    <% const courseList = Array.isArray(courses) ? courses : []; %>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="h5 fw-bold mb-0">Available Courses</h3>
+        <p class="text-muted small mb-0" id="resultsCount">
+          Showing <span id="visibleCount"><%= courseList.length %></span> of <span id="totalCount"><%= courseList.length %></span> courses
+        </p>
+      </div>
+    </div>
+    <div class="row g-4" id="coursesContainer">
+      <% if (courseList.length) { %>
+        <% courseList.forEach(function(course) { %>
+          <div class="col-md-6 col-lg-4 course-item" 
+               data-category="<%= course.category || '' %>" 
+               data-level="<%= course.badge || '' %>" 
+               data-price="<%= course.price || 0 %>"
+               data-title="<%= (course.title || '').toLowerCase() %>"
+               data-instructor="<%= (course.instructorName || '').toLowerCase() %>">
+            <div class="course-card h-100 d-flex flex-column">
+              <% if (course.image) { %>
+                <img src="<%= course.image %>" alt="<%= course.title || 'Course image' %>" class="course-image w-100">
+              <% } else { %>
+                <div class="course-image-placeholder w-100 d-flex align-items-center justify-content-center bg-light">
+                  <i class="fas fa-graduation-cap text-muted" style="font-size: 3rem;"></i>
+                </div>
+              <% } %>
+              <div class="course-card-body p-4 pb-3">
+                <span class="badge rounded-pill bg-outline-primary small mb-2">
+                  <%= course.category || 'General' %>
+                  <% if (course.level) { %>
+                    · <%= course.level %>
+                  <% } %>
+                </span>
+                <h3 class="h5 fw-bold mb-2"><%= course.title || 'Untitled course' %></h3>
+                <p class="small text-muted mb-2">
+                  <%= course.description || 'Details will be available soon.' %>
+                </p>
+                <% if (course.instructorName) { %>
+                  <p class="small mb-1"><strong>Instructor:</strong> <%= course.instructorName %></p>
+                <% } %>
+                <p class="small text-muted mb-1">
+                  <strong>Lessons:</strong>
+                  <%= typeof course.lessons !== 'undefined' && course.lessons != null ? course.lessons : 0 %>
+                  &nbsp;·&nbsp;
+                  <strong>Enrolled:</strong>
+                  <%= typeof course.enrolled !== 'undefined' && course.enrolled != null ? course.enrolled : 0 %>
+                </p>
+              </div>
+              <div class="course-card-footer px-4 pb-4 mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                  <span><strong>Duration:</strong> <%= course.duration || 'Self-paced' %></span>
+                  <span><strong>Price:</strong>
+                    <% if (typeof course.price !== 'undefined' && course.price !== null) { %>
+                      <span class="text-success">₦<%= course.price %></span>
+                    <% } else { %>
+                      <span class="text-success">Contact us</span>
+                    <% } %>
+                  </span>
+                </div>
+                <a href="/auth" class="btn btn-success w-100 btn-sm">Enroll</a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="col-12 text-center text-muted py-4" id="noCoursesMessage">
+          <p class="mb-1">No online courses are available yet.</p>
+          <p class="mb-0 small">Please check back soon for new programs.</p>
+        </div>
+      <% } %>
+    </div>
   </div>
 </section>
+
+<script>
+(function() {
+  // Get DOM elements
+  const searchInput = document.getElementById('searchCourses');
+  const filterLevel = document.getElementById('filterLevel');
+  const filterCategory = document.getElementById('filterCategory');
+  const filterPrice = document.getElementById('filterPrice');
+  const coursesContainer = document.getElementById('coursesContainer');
+  const visibleCount = document.getElementById('visibleCount');
+  const totalCount = document.getElementById('totalCount');
+  const resultsCount = document.getElementById('resultsCount');
+  const noCoursesMessage = document.getElementById('noCoursesMessage');
+
+  // Get all course items
+  const courseItems = document.querySelectorAll('.course-item');
+  const totalCourses = courseItems.length;
+
+  // Update total count
+  if (totalCount) {
+    totalCount.textContent = totalCourses;
+  }
+
+  // Filter function
+  function filterCourses() {
+    const searchTerm = (searchInput.value || '').toLowerCase().trim();
+    const selectedLevel = filterLevel.value;
+    const selectedCategory = filterCategory.value;
+    const selectedPrice = filterPrice.value;
+
+    let visibleCourses = 0;
+
+    courseItems.forEach(course => {
+      const courseCategory = course.dataset.category || '';
+      const courseLevel = course.dataset.level || '';
+      const coursePrice = parseInt(course.dataset.price) || 0;
+      const courseTitle = course.dataset.title || '';
+      const courseInstructor = course.dataset.instructor || '';
+
+      // Check search filter
+      const searchMatch = !searchTerm || 
+        courseTitle.includes(searchTerm) || 
+        courseInstructor.includes(searchTerm) ||
+        courseCategory.toLowerCase().includes(searchTerm);
+
+      // Check level filter
+      const levelMatch = selectedLevel === 'Any' || courseLevel.toLowerCase().includes(selectedLevel.toLowerCase());
+
+      // Check category filter
+      const categoryMatch = selectedCategory === 'All' || courseCategory === selectedCategory;
+
+      // Check price filter
+      let priceMatch = true;
+      if (selectedPrice !== 'Any') {
+        switch(selectedPrice) {
+          case 'Free':
+            priceMatch = coursePrice === 0;
+            break;
+          case 'Under ₦50,000':
+            priceMatch = coursePrice > 0 && coursePrice < 50000;
+            break;
+          case '₦50,000 - ₦100,000':
+            priceMatch = coursePrice >= 50000 && coursePrice <= 100000;
+            break;
+          case 'Over ₦100,000':
+            priceMatch = coursePrice > 100000;
+            break;
+        }
+      }
+
+      // Show/hide course based on all filters
+      if (searchMatch && levelMatch && categoryMatch && priceMatch) {
+        course.style.display = '';
+        visibleCourses++;
+      } else {
+        course.style.display = 'none';
+      }
+    });
+
+    // Update results count
+    if (visibleCount) {
+      visibleCount.textContent = visibleCourses;
+    }
+
+    // Show/hide no courses message
+    if (noCoursesMessage) {
+      if (totalCourses === 0) {
+        noCoursesMessage.innerHTML = `
+          <p class="mb-1">No online courses are available yet.</p>
+          <p class="mb-0 small">Please check back soon for new programs.</p>
+        `;
+        noCoursesMessage.style.display = '';
+      } else if (visibleCourses === 0) {
+        noCoursesMessage.innerHTML = `
+          <p class="mb-1">No courses match your current filters.</p>
+          <p class="mb-0 small">Try adjusting your search or filter criteria.</p>
+        `;
+        noCoursesMessage.style.display = '';
+      } else {
+        noCoursesMessage.style.display = 'none';
+      }
+    }
+  }
+
+  // Add event listeners to filters
+  if (searchInput) {
+    searchInput.addEventListener('input', filterCourses);
+  }
+  if (filterLevel) {
+    filterLevel.addEventListener('change', filterCourses);
+  }
+  if (filterCategory) {
+    filterCategory.addEventListener('change', filterCourses);
+  }
+  if (filterPrice) {
+    filterPrice.addEventListener('change', filterCourses);
+  }
+
+  // Clear filters functionality
+  const clearFiltersBtn = document.getElementById('clearFilters');
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', function() {
+      // Reset all filter values
+      if (searchInput) searchInput.value = '';
+      if (filterLevel) filterLevel.value = 'Any';
+      if (filterCategory) filterCategory.value = 'All';
+      if (filterPrice) filterPrice.value = 'Any';
+      
+      // Reapply filters (which will show all courses)
+      filterCourses();
+    });
+  }
+
+  // Initial filter application
+  filterCourses();
+})();
+</script>
