@@ -44,7 +44,7 @@
             <button class="nav-link active text-success" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab">Courses</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link text-success" id="training-tab" data-bs-toggle="tab" data-bs-target="#training" type="button" role="tab">Training</button>
+            <button class="nav-link text-success" id="popular-courses-tab" data-bs-toggle="tab" data-bs-target="#popular-courses" type="button" role="tab">Popular Courses</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link text-success" id="tutorials-tab" data-bs-toggle="tab" data-bs-target="#tutorials" type="button" role="tab">Tutorials</button>
@@ -55,7 +55,7 @@
         <!-- Courses Tab -->
         <div class="tab-pane fade show active" id="courses" role="tabpanel">
             <div class="mb-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Online Courses</h5>
+                <h5 class="mb-0">Courses</h5>
                 <div>
                       <a href="#" class="btn btn-sm btn-outline-secondary">Manage Enrollments</a>
                       <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addCourseModal">Add Course</button>
@@ -72,6 +72,7 @@
                             <th>Lessons</th>
                             <th>Enrolled</th>
                             <th>Progress</th>
+                            <th>Popular</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -97,6 +98,11 @@
                                             <div class="progress-bar bg-success" role="progressbar" style="width:<%= Math.max(0, Math.min(100, prog)) %>%"></div>
                                         </div>
                                     </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm <%= course.isPopular ? 'btn-warning' : 'btn-outline-warning' %> btn-toggle-popular" data-id="<%= course.id %>" data-popular="<%= course.isPopular %>">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
+                                    </td>
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-outline-primary btn-edit-course" data-id="<%= course.id %>">Edit</button>
                                         <button type="button" class="btn btn-sm btn-outline-danger btn-delete-course" data-id="<%= course.id %>" style="margin-left:6px;">Delete</button>
@@ -105,7 +111,7 @@
                             <% }); %>
                         <% } else { %>
                             <tr>
-                                <td colspan="6" class="text-center">
+                                <td colspan="7" class="text-center">
                                     <div class="py-4">
                                         <i class="fa-solid fa-graduation-cap fa-2x text-success mb-2" aria-hidden="true"></i>
                                         <div class="h6 mb-1 text-muted">No courses yet</div>
@@ -120,30 +126,87 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+            <nav aria-label="Courses pagination" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    <% if (hasPrevPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= prevPage %>">
+                            <i class="fa-solid fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fa-solid fa-chevron-left"></i> Previous
+                        </span>
+                    </li>
+                    <% } %>
+
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <% if (i === currentPage) { %>
+                    <li class="page-item active">
+                        <span class="page-link"><%= i %></span>
+                    </li>
+                        <% } else { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
+                        <% } %>
+                    <% } %>
+
+                    <% if (hasNextPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= nextPage %>">
+                            Next <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Next <i class="fa-solid fa-chevron-right"></i>
+                        </span>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+            <% } %>
         </div>
 
-        <!-- Training Tab -->
-        <div class="tab-pane fade" id="training" role="tabpanel">
+        <!-- Popular Courses Tab -->
+        <div class="tab-pane fade" id="popular-courses" role="tabpanel">
             <div class="mb-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">In-House Training Programs</h5>
+                <h5 class="mb-0">Popular Courses</h5>
                 <div>
-                    <a href="#" class="btn btn-sm btn-outline-secondary">Manage Enrollments</a>
-                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addTrainingModal">Add Training</button>
+                    <a href="#" class="btn btn-sm btn-outline-secondary">View Analytics</a>
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addPopularCourseModal">Add Popular Course</button>
                 </div>
             </div>
 
             <div class="admin-card p-3">
-                <p class="small text-muted mb-2">Manage attendance, schedules and trainees for in-house programs.</p>
+                <p class="small text-muted mb-2">Manage featured and popular courses that are highlighted on the platform.</p>
                 <!-- Placeholder items -->
                 <div class="list-group">
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Leadership Workshop</strong>
-                            <div class="small text-muted">Next session: 2026-01-12</div>
+                            <strong>Web Development Fundamentals</strong>
+                            <div class="small text-muted">Featured course • 2,450 enrollments</div>
                         </div>
                         <div>
-                            <a href="#" class="btn btn-sm btn-outline-primary">Attendance</a>
-                            <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger">Remove</a>
+                        </div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Data Science with Python</strong>
+                            <div class="small text-muted">Popular course • 1,890 enrollments</div>
+                        </div>
+                        <div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger">Remove</a>
                         </div>
                     </div>
                 </div>
@@ -222,8 +285,24 @@
                                     <input id="editCourseImage" name="image" type="file" accept="image/*" class="form-control" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label small">Short description</label>
-                                    <textarea id="editCourseDescription" name="description" class="form-control" rows="3"></textarea>
+                                    <label class="form-label small">About the course</label>
+                                    <textarea id="editCourseAbout" name="about" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small">Curriculum</label>
+                                    <textarea id="editCourseCurriculum" name="curriculum" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small">Outcome</label>
+                                    <textarea id="editCourseOutcome" name="outcome" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small">Section</label>
+                                    <select id="editCourseSection" name="section" class="form-control">
+                                        <option value="">Select section</option>
+                                        <option value="morning">Morning</option>
+                                        <option value="afternoon">Afternoon</option>
+                                    </select>
                                 </div>
                                 <div class="row g-2">
                                     <div class="col-4">
@@ -317,7 +396,10 @@
                         document.getElementById('editCourseCategory').value = course.category || '';
                         document.getElementById('editCourseBadge').value = course.badge || '';
                         document.getElementById('editCourseInstructor').value = course.instructorName || '';
-                        document.getElementById('editCourseDescription').value = course.description || '';
+                        document.getElementById('editCourseAbout').value = course.about || '';
+                        document.getElementById('editCourseCurriculum').value = course.curriculum || '';
+                        document.getElementById('editCourseOutcome').value = course.outcome || '';
+                        document.getElementById('editCourseSection').value = course.section || '';
                         document.getElementById('editCourseLessons').value = course.lessons || 0;
                         document.getElementById('editCourseEnrolled').value = course.enrolled || 0;
                         document.getElementById('editCourseProgress').value = course.progress || 0;
@@ -354,8 +436,65 @@
                     modal.show();
                 });
             });
+
+            // toggle popular handler
+            document.querySelectorAll('.btn-toggle-popular').forEach(btn => {
+                btn.addEventListener('click', async function () {
+                    const id = this.dataset.id;
+                    const isPopular = this.dataset.popular === 'true';
+                    const button = this;
+
+                    try {
+                        const res = await fetch(`/admin/courses/${id}/toggle-popular`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+
+                        if (!res.ok) throw new Error('Failed to toggle popular status');
+
+                        const data = await res.json();
+
+                        // Update button appearance
+                        if (data.isPopular) {
+                            button.classList.remove('btn-outline-warning');
+                            button.classList.add('btn-warning');
+                        } else {
+                            button.classList.remove('btn-warning');
+                            button.classList.add('btn-outline-warning');
+                        }
+
+                        // Update data attribute
+                        button.dataset.popular = data.isPopular.toString();
+
+                        // Show success message (you could add a toast notification here)
+                        console.log(data.message);
+
+                    } catch (error) {
+                        console.error('Error toggling popular status:', error);
+                        alert('Failed to update popular status. Please try again.');
+                    }
+                });
+            });
         })();
     </script>
+
+    <style>
+        /* Ensure modals appear above overlays */
+        #addPopularCourseModal,
+        #addCourseModal,
+        #editCourseModal,
+        #confirmDeleteModal {
+            z-index: 9999 !important;
+        }
+        #addPopularCourseModal .modal-backdrop.show,
+        #addCourseModal .modal-backdrop.show,
+        #editCourseModal .modal-backdrop.show,
+        #confirmDeleteModal .modal-backdrop.show {
+            z-index: 9998 !important;
+        }
+    </style>
 
 <!-- Add Course Modal -->
 <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
@@ -390,8 +529,24 @@
                                 <input id="courseImage" name="image" type="file" accept="image/*" class="form-control" />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label small">Short description</label>
-                                <textarea id="courseDescription" name="description" class="form-control" rows="3" placeholder="Short course summary"></textarea>
+                                <label class="form-label small">About the course</label>
+                                <textarea id="courseAbout" name="about" class="form-control" rows="3" placeholder="Detailed course description"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Curriculum</label>
+                                <textarea id="courseCurriculum" name="curriculum" class="form-control" rows="3" placeholder="Course curriculum outline"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Outcome</label>
+                                <textarea id="courseOutcome" name="outcome" class="form-control" rows="3" placeholder="Learning outcomes"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Section</label>
+                                <select id="courseSection" name="section" class="form-control">
+                                    <option value="">Select section</option>
+                                    <option value="morning">Morning</option>
+                                    <option value="afternoon">Afternoon</option>
+                                </select>
                             </div>
                             <div class="row g-2">
                                 <div class="col-6">
@@ -464,7 +619,10 @@
         const badge = document.getElementById('courseBadge');
             const instructor = document.getElementById('courseInstructor');
         const image = document.getElementById('courseImage');
-        const desc = document.getElementById('courseDescription');
+        const about = document.getElementById('courseAbout');
+        const curriculum = document.getElementById('courseCurriculum');
+        const outcome = document.getElementById('courseOutcome');
+        const section = document.getElementById('courseSection');
         const lessons = document.getElementById('courseLessons');
         const enrolled = document.getElementById('courseEnrolled');
         const duration = document.getElementById('courseDuration');
@@ -502,7 +660,7 @@
                 pImage.src = '/images/python.png';
             }
 
-            pDesc.textContent = desc.value || 'Short course summary';
+            pDesc.textContent = about.value || 'Detailed course description';
             pEnrolled.innerHTML = `<i class="fa-solid fa-users"></i> ${enrolled.value || '0'} students`;
 
             if (pPrice) {
@@ -518,7 +676,7 @@
         }
 
         // attach listeners: use 'change' for file input, 'input' for others
-        [title, category, badge, instructor, desc, lessons, enrolled, duration, price].forEach(el => {
+        [title, category, badge, instructor, about, curriculum, outcome, section, lessons, enrolled, duration, price].forEach(el => {
             if (el) el.addEventListener('input', updatePreview);
         });
         if (image) image.addEventListener('change', updatePreview);
@@ -738,6 +896,113 @@
             </div>
         </div>
 
+        <!-- Add Popular Course Modal -->
+        <div class="modal fade" id="addPopularCourseModal" tabindex="-1" aria-labelledby="addPopularCourseModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPopularCourseModalLabel">Add Popular Course</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="addPopularCourseForm" action="/admin/popular-courses" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label small">Course Name</label>
+                                        <input id="popularCourseName" name="name" type="text" class="form-control" placeholder="Web Development Fundamentals" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">Badge (optional)</label>
+                                        <input id="popularCourseBadge" name="badge" type="text" class="form-control" placeholder="Bestseller" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">Course Image</label>
+                                        <input id="popularCourseImage" name="image" type="file" accept="image/*" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">Course Description</label>
+                                        <textarea id="popularCourseDescription" name="description" class="form-control" rows="3" placeholder="Brief description of the course"></textarea>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small">Rating</label>
+                                            <input id="popularCourseRating" name="rating" type="number" class="form-control" placeholder="4.8" min="0" max="5" step="0.1" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small">Number of Enrollments</label>
+                                            <input id="popularCourseEnrollments" name="enrollments" type="number" class="form-control" placeholder="2450" min="0" />
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">About the Course</label>
+                                        <textarea id="popularCourseAbout" name="about" class="form-control" rows="4" placeholder="Detailed information about what students will learn"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">Curriculum</label>
+                                        <textarea id="popularCourseCurriculum" name="curriculum" class="form-control" rows="4" placeholder="Course curriculum and modules (one per line)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">Outcomes and Sections</label>
+                                        <textarea id="popularCourseOutcomes" name="outcomes" class="form-control" rows="4" placeholder="Learning outcomes and course sections"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small">Preview</label>
+                                    <div class="card p-0">
+                                        <div id="previewPopularCourse" class="course-card">
+                                            <div class="course-image position-relative">
+                                                <img id="previewPopularCourseImage" src="/images/python.png" alt="Preview" class="w-100" />
+                                                <span id="previewPopularCourseBadge" class="badge bg-success position-absolute top-0 end-0 m-3">Bestseller</span>
+                                            </div>
+                                            <div class="course-content p-4">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <span id="previewPopularCourseCategory" class="badge bg-primary">Popular Course</span>
+                                                    <div id="previewPopularCourseRating" class="text-warning">
+                                                        <i class="fa-solid fa-star"></i> 4.8
+                                                    </div>
+                                                </div>
+                                                <h4 id="previewPopularCourseName" class="course-title">Web Development Fundamentals</h4>
+                                                <p id="previewPopularCourseDesc" class="text-muted small mb-2">Brief description of the course</p>
+                                                <div class="mb-3">
+                                                    <h6 class="small fw-semibold mb-2">About this Course:</h6>
+                                                    <p id="previewPopularCourseAbout" class="text-muted small">Detailed information about what students will learn in this comprehensive course.</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="small fw-semibold mb-2">Curriculum:</h6>
+                                                    <ul id="previewPopularCourseCurriculum" class="text-muted small">
+                                                        <li>Module 1: Introduction</li>
+                                                        <li>Module 2: Core Concepts</li>
+                                                        <li>Module 3: Advanced Topics</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="small fw-semibold mb-2">What you'll achieve:</h6>
+                                                    <p id="previewPopularCourseOutcomes" class="text-muted small">Master the skills and knowledge needed to excel in this field.</p>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                                    <span id="previewPopularCourseEnrollments" class="text-muted small"><i class="fa-solid fa-users"></i> 2,450 students</span>
+                                                    <span class="text-success small fw-semibold">Popular Course</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <a id="previewPopularCourseLink" href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Add Popular Course</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script>
                 (function () {
                     const title = document.getElementById('tutorialTitle');
@@ -790,6 +1055,91 @@
                         if (lastTutorialImageUrl) {
                             URL.revokeObjectURL(lastTutorialImageUrl);
                             lastTutorialImageUrl = null;
+                        }
+                        if (image) image.value = '';
+                    });
+                })();
+
+                // Popular Course Modal Preview
+                (function () {
+                    const name = document.getElementById('popularCourseName');
+                    const badge = document.getElementById('popularCourseBadge');
+                    const image = document.getElementById('popularCourseImage');
+                    const desc = document.getElementById('popularCourseDescription');
+                    const rating = document.getElementById('popularCourseRating');
+                    const enrollments = document.getElementById('popularCourseEnrollments');
+                    const about = document.getElementById('popularCourseAbout');
+                    const curriculum = document.getElementById('popularCourseCurriculum');
+                    const outcomes = document.getElementById('popularCourseOutcomes');
+
+                    const pName = document.getElementById('previewPopularCourseName');
+                    const pBadge = document.getElementById('previewPopularCourseBadge');
+                    const pImage = document.getElementById('previewPopularCourseImage');
+                    const pDesc = document.getElementById('previewPopularCourseDesc');
+                    const pRating = document.getElementById('previewPopularCourseRating');
+                    const pEnrollments = document.getElementById('previewPopularCourseEnrollments');
+                    const pAbout = document.getElementById('previewPopularCourseAbout');
+                    const pCurriculum = document.getElementById('previewPopularCourseCurriculum');
+                    const pOutcomes = document.getElementById('previewPopularCourseOutcomes');
+
+                    let lastPopularCourseImageUrl = null;
+
+                    function updatePopularCoursePreview() {
+                        pName.textContent = name.value || 'Web Development Fundamentals';
+                        pDesc.textContent = desc.value || 'Brief description of the course';
+
+                        if (badge.value) {
+                            pBadge.textContent = badge.value;
+                            pBadge.style.display = '';
+                        } else {
+                            pBadge.textContent = 'Popular';
+                            pBadge.style.display = '';
+                        }
+
+                        // Rating display
+                        const ratingValue = rating.value || 4.8;
+                        pRating.innerHTML = `<i class="fa-solid fa-star"></i> ${ratingValue}`;
+
+                        // Enrollments display
+                        const enrollmentsValue = enrollments.value || 2450;
+                        pEnrollments.innerHTML = `<i class="fa-solid fa-users"></i> ${parseInt(enrollmentsValue).toLocaleString()} students`;
+
+                        // About section
+                        pAbout.textContent = about.value || 'Detailed information about what students will learn in this comprehensive course.';
+
+                        // Curriculum list
+                        const curriculumLines = (curriculum.value || 'Module 1: Introduction\nModule 2: Core Concepts\nModule 3: Advanced Topics').split('\n').map(l => l.trim()).filter(Boolean);
+                        pCurriculum.innerHTML = curriculumLines.map(line => `<li>${line}</li>`).join('');
+
+                        // Outcomes
+                        pOutcomes.textContent = outcomes.value || 'Master the skills and knowledge needed to excel in this field.';
+
+                        // File input preview
+                        if (image && image.files && image.files[0]) {
+                            const file = image.files[0];
+                            if (lastPopularCourseImageUrl) URL.revokeObjectURL(lastPopularCourseImageUrl);
+                            lastPopularCourseImageUrl = URL.createObjectURL(file);
+                            pImage.src = lastPopularCourseImageUrl;
+                        } else {
+                            pImage.src = '/images/python.png';
+                        }
+                    }
+
+                    [name, badge, desc, rating, enrollments, about, curriculum, outcomes].forEach(el => {
+                        if (el) el.addEventListener('input', updatePopularCoursePreview);
+                    });
+                    if (image) image.addEventListener('change', updatePopularCoursePreview);
+
+                    const addPopularCourseModal = document.getElementById('addPopularCourseModal');
+                    addPopularCourseModal.addEventListener('shown.bs.modal', function () {
+                        updatePopularCoursePreview();
+                        name.focus();
+                    });
+
+                    addPopularCourseModal.addEventListener('hidden.bs.modal', function () {
+                        if (lastPopularCourseImageUrl) {
+                            URL.revokeObjectURL(lastPopularCourseImageUrl);
+                            lastPopularCourseImageUrl = null;
                         }
                         if (image) image.value = '';
                     });

@@ -6,21 +6,34 @@ import { fileURLToPath } from "url";
 import morgan from "morgan";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-
 import session from "express-session";
 import fs from "fs";
 import flash from "connect-flash";
 import cookieParser from "cookie-parser";
 import { flashMessage } from "./middleware/flashMessage.js";
+import compression from 'compression';
 import expressLayouts from "express-ejs-layouts";
 import pagesRouter from "./routes/pages.js";
 import adminRouter from "./routes/admin.js";
 import adminAuth from "./routes/admin.auth.js";
 import userRouter from "./routes/user.js";
 
+
 // Import database connection and models (after dotenv.config)
 import "./models/index.js";
 const app = express();
+
+
+// Compression middleware - reduces response size
+app.use(compression({
+  level: 6, // Good balance between speed and compression
+  threshold: 1024, // Only compress responses > 1KB
+  filter: (req, res) => {
+    // Don't compress if client doesn't support it
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
 // Helmet security headers (CSP disabled so external CDNs like Bootstrap/Unsplash can load)
 app.use(
@@ -86,12 +99,17 @@ const apiLimiter = rateLimit({
 });
 
 // Apply rate limiting
-app.use(generalLimiter); // General rate limiting for all routes
+// app.use(generalLimiter); // General rate limiting for all routes
 app.use('/auth', authLimiter); // Stricter limits for authentication routes
 app.use('/admin/auth', authLimiter); // Stricter limits for admin authentication
 app.use('/api', apiLimiter); // API-specific rate limiting
 
-app.use(morgan("dev"));
+// Morgan logging - optimized for production
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined')); // Less verbose for production
+} else {
+  app.use(morgan('dev')); // More detailed for development
+}
 
 app.set("view engine", "ejs");
 // Resolve __dirname for ES modules and set an absolute views path to avoid deployment issues
@@ -125,7 +143,12 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.set("layout", "layouts/main");
 
-app.use(express.static("public"));
+// Static files with optimized caching
+app.use(express.static("public", {
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0, // 1 day cache in production
+  etag: true,
+  lastModified: true
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

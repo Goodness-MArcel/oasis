@@ -7,10 +7,10 @@ import db from "../models/index.js";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { listCourses, createCourse } from '../controllers/admin/courses.js';
-import { getCourse, updateCourse, deleteCourse } from '../controllers/admin/courses.js';
+import { listCourses, createCourse, getCourse, updateCourse, deleteCourse, togglePopular } from '../controllers/admin/courses.js';
 // analytics logic is handled inline below (moved from controller)
 import { listMeetings, createMeeting, updateMeeting, deleteMeeting } from "../controllers/admin/meetings.js";
+import { createUser } from '../controllers/admin/users.js';
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 const router = Router();
@@ -201,46 +201,74 @@ router.post('/courses/:id/update', upload.single('image'), updateCourse);
 // Delete a course (admin)
 router.post('/courses/:id/delete', deleteCourse);
 
+// Toggle popular status for a course
+router.post('/courses/:id/toggle-popular', togglePopular);
+
 
 // Example page: manage users
-router.get("/users", (req, res) => {
-  db.User.findAll({
-    order: [["createdAt", "DESC"]],
-    include: [
-      {
-        model: db.Enrollment,
-        as: "enrollments",
+router.get("/users", async (req, res) => {
+  try {
+    const [users, courses] = await Promise.all([
+      db.User.findAll({
+        order: [["createdAt", "DESC"]],
         include: [
           {
-            model: db.Course,
-            as: "course",
-            attributes: ["id", "title", "category"]
+            model: db.Enrollment,
+            as: "enrollments",
+            include: [
+              {
+                model: db.Course,
+                as: "course",
+                attributes: ["id", "title", "category"]
+              }
+            ]
+          },
+          {
+            model: db.Payment,
+            as: "payments",
+            include: [
+              {
+                model: db.Course,
+                as: "course",
+                attributes: ["id", "title", "price"]
+              }
+            ]
           }
         ]
-      }
-    ]
-  })
-    .then((users) => {
-      res.render("admin/users", {
-        layout: "layouts/admin-main",
-        title: "Manage Users",
-        description: "View and manage registered users.",
-        pageStyles: "admin.css",
-        users,
-      });
-    })
-    .catch((err) => {
-      console.error("Error fetching users for admin:", err);
-      req.flash("error", "Unable to load users.");
-      res.render("admin/users", {
-        layout: "layouts/admin-main",
-        title: "Manage Users",
-        description: "View and manage registered users.",
-        pageStyles: "admin.css",
-        users: [],
-      });
+      }),
+      db.Course.findAll({
+        attributes: ["id", "title", "category", "price"],
+        order: [["title", "ASC"]]
+      })
+    ]);
+
+    res.render("admin/users", {
+      layout: "layouts/admin-main",
+      title: "Manage Users",
+      description: "View and manage registered users.",
+      pageStyles: "admin.css",
+      users,
+      courses,
+      error: res.locals.error && res.locals.error.length > 0 ? res.locals.error[0] : null,
+      success: res.locals.success && res.locals.success.length > 0 ? res.locals.success[0] : null,
     });
+  } catch (err) {
+    console.error("Error fetching users for admin:", err);
+    req.flash("error", "Unable to load users.");
+    res.render("admin/users", {
+      layout: "layouts/admin-main",
+      title: "Manage Users",
+      description: "View and manage registered users.",
+      pageStyles: "admin.css",
+      users: [],
+      courses: [],
+      error: res.locals.error && res.locals.error.length > 0 ? res.locals.error[0] : null,
+      success: res.locals.success && res.locals.success.length > 0 ? res.locals.success[0] : null,
+    });
+  }
 });
+
+router.post("/users", adminAuth, createUser);
 
 router.get("/Revenue", (req, res) => {
   res.render("admin/Revenue", {
@@ -577,6 +605,158 @@ router.delete("/users/:userId", adminAuth, async (req, res) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ success: false, message: "Failed to delete user" });
+  }
+});
+
+// Update payment status and handle balance calculations
+router.put("/payments/:paymentId/status", adminAuth, async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const { status, amountPaid, action } = req.body; // Added action parameter
+
+    if (!paymentId || isNaN(parseInt(paymentId))) {
+      return res.status(400).json({ success: false, message: "Invalid payment ID" });
+    }
+
+    // Find the payment
+    const payment = await db.Payment.findByPk(parseInt(paymentId));
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    // Check if payment is already completed (all paid)
+    if (payment.balance_remaining === 0 && action !== 'add_payment') {
+      return res.status(400).json({ success: false, message: "Payment is already completed. No further payments allowed." });
+    }
+
+    const oldStatus = payment.installment_status || payment.status;
+    const oldAmount = payment.installment_amount || payment.amount;
+
+    // Handle different actions
+    if (action === 'add_payment' && amountPaid && parseFloat(amountPaid) > 0) {
+      // Adding a new payment to an existing installment
+      const newPaymentAmount = parseFloat(amountPaid);
+      
+      // Validate payment amount
+      if (newPaymentAmount <= 0) {
+        return res.status(400).json({ success: false, message: "Payment amount must be greater than $0" });
+      }
+
+      const currentTotalPaid = payment.total_paid || 0;
+      const newTotalPaid = currentTotalPaid + newPaymentAmount;
+
+      if (newTotalPaid > payment.amount) {
+        return res.status(400).json({ success: false, message: `Payment amount ($${newPaymentAmount}) would exceed the course price ($${payment.amount}). Remaining balance: $${payment.amount - currentTotalPaid}` });
+      }
+
+      // Update payment record
+      const updateData = {
+        installment_amount: newPaymentAmount, // Amount of this specific payment transaction
+        total_paid: newTotalPaid, // Cumulative total paid so far
+        balance_remaining: payment.amount - newTotalPaid,
+        paid_date: new Date() // Update last payment date
+      };
+
+      // Update overall status
+      if (updateData.balance_remaining === 0) {
+        updateData.status = 'completed';
+        updateData.installment_status = 'paid';
+      }
+
+      // Update payment history in metadata
+      const currentMetadata = payment.metadata || {};
+      const paymentHistory = currentMetadata.paymentHistory || [];
+      paymentHistory.push({
+        amount: newPaymentAmount,
+        date: new Date().toISOString(),
+        type: 'additional_payment'
+      });
+
+      updateData.metadata = {
+        ...currentMetadata,
+        paymentHistory,
+        lastPaymentDate: new Date().toISOString(),
+        totalPaid: newTotalPaid
+      };
+
+      await payment.update(updateData);
+
+      // Log the activity
+      await db.Activity.create({
+        type: 'payment_updated',
+        description: `Additional payment of $${newPaymentAmount} added. Total paid: $${newTotalPaid}/${payment.amount}`,
+        metadata: {
+          paymentId: payment.id,
+          userId: payment.userId,
+          courseId: payment.courseId,
+          amountAdded: newPaymentAmount,
+          totalPaid: newTotalPaid,
+          remainingBalance: updateData.balance_remaining
+        }
+      });
+
+      return res.json({
+        success: true,
+        message: "Payment added successfully",
+        data: {
+          paymentId: payment.id,
+          amountAdded: newPaymentAmount,
+          totalPaid: newTotalPaid,
+          balanceRemaining: updateData.balance_remaining,
+          isCompleted: updateData.balance_remaining === 0
+        }
+      });
+
+    } else {
+      // Regular status update (paid/pending/overdue)
+      const updateData = {
+        installment_status: status,
+        status: status === 'paid' ? 'completed' : status
+      };
+
+      if (amountPaid && parseFloat(amountPaid) > 0) {
+        updateData.installment_amount = parseFloat(amountPaid);
+        updateData.paid_date = status === 'paid' || status === 'completed' ? new Date() : null;
+      }
+
+      // For regular updates, don't change balance_remaining unless it's a completion
+      if (status === 'paid' || status === 'completed') {
+        updateData.balance_remaining = 0;
+      }
+
+      await payment.update(updateData);
+
+      // Log the activity
+      await db.Activity.create({
+        type: 'payment_updated',
+        description: `Payment status updated: ${oldStatus} → ${status}${amountPaid ? ` ($${amountPaid})` : ''}`,
+        metadata: {
+          paymentId: payment.id,
+          userId: payment.userId,
+          courseId: payment.courseId,
+          oldStatus,
+          newStatus: status,
+          oldAmount,
+          newAmount: amountPaid || oldAmount,
+          balanceRemaining: updateData.balance_remaining
+        }
+      });
+
+      return res.json({
+        success: true,
+        message: "Payment status updated successfully",
+        data: {
+          paymentId: payment.id,
+          status: updateData.installment_status,
+          amountPaid: updateData.installment_amount,
+          balanceRemaining: updateData.balance_remaining
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ success: false, message: "Failed to update payment status" });
   }
 });
 

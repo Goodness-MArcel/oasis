@@ -41,9 +41,26 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      description: {
+      about: {
         type: DataTypes.TEXT,
         allowNull: true,
+      },
+      curriculum: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      outcome: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      section: {
+        type: DataTypes.ENUM('morning', 'afternoon'),
+        allowNull: true,
+      },
+      isPopular: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       lessons: {
         type: DataTypes.INTEGER,

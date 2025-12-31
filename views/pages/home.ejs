@@ -1,35 +1,146 @@
 <!-- Hero Section -->
-<section class="hero-banner" data-aos="fade-up">
+<section class="hero-banner d-none d-lg-block" data-aos="fade-up">
 	<div class="hero-overlay"></div>
-	<div class="container hero-content">
-		<div class="row align-items-center min-vh-100">
-			<div class="col-lg-8 mx-auto text-center">
-				<h1 class="hero-title">Learn Tech Skills Anytime, Anywhere</h1>
-				<p class="hero-subtitle">Unlock your potential with expert-led online training, immersive in-house programs, and free tutorials from Integrated Oasis.</p>
-				
-				<!-- CTA Buttons -->
-				<div class="hero-ctas d-flex flex-wrap gap-3 justify-content-center mt-5">
-					<a href="/online-training" class="btn btn-lg btn-primary" data-aos="fade-right" data-aos-duration="1200">
+	<div class="container-fluid hero-content border" >
+		<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+			<!-- Carousel Indicators -->
+			<div class="carousel-indicators">
+				<button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+				<button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+				<button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+			</div>
+
+			<!-- Carousel Items -->
+			<div class="carousel-inner">
+				<!-- Slide 1: Original Content -->
+				<div class="carousel-item active">
+					<div class="row align-items-center min-vh-100">
+						<div class="col-lg-6 hero-text">
+							<h1 class="hero-title">Learn Tech Skills, Anywhere</h1>
+							<p class="hero-subtitle">Unlock your potential with 
+								expert-led online training,
+								 immersive in-house programs, and free tutorials from Integrated Oasis.</p>
+
+							<!-- CTA Button -->
+							<div class="hero-ctas d-flex flex-wrap gap-3 mt-4">
+								<a href="/online-training" class="btn btn-lg btn-primary">
+									<i class="fa-solid fa-chalkboard-user"></i>
+									Start Online Training
+								</a>
+							</div>
+
+							<!-- Trust badges -->
+							<div class="hero-badges mt-5 pt-4">
+								<p class="small text-muted mb-3">Trusted by thousands of learners worldwide</p>
+								<div class="d-flex gap-4 justify-content-start flex-wrap">
+									<span class="badge-item"><i class="fa-solid fa-star"></i> 4.9/5 Rating</span>
+									<span class="badge-item"><i class="fa-solid fa-people-group"></i> 10K+ Students</span>
+									<span class="badge-item"><i class="fa-solid fa-book-atlas"></i> 500+ Courses</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6 hero-image  ">
+							<img src="/images/hero-learning.jpg" alt="Online Learning" class="img-fluid" onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop'">
+						</div>
+					</div>
+				</div>
+
+				<!-- Slide 2: In-House Training Focus -->
+				<div class="carousel-item">
+					<div class="row align-items-center min-vh-100">
+						<div class="col-lg-6 hero-text">
+							<h1 class="hero-title">Transform Your
+								 <!-- Team with In-House Training -->
+								</h1>
+							<p class="hero-subtitle">Customized corporate training programs designed for your organization's specific needs. Boost productivity and skill development with our expert-led workshops.</p>
+
+							<!-- CTA Button -->
+							<div class="hero-ctas d-flex flex-wrap gap-3 mt-4">
+								<a href="/in-house-training" class="btn btn-lg btn-success">
+									<i class="fa-solid fa-building"></i>
+									Join In-House Training
+								</a>
+							</div>
+
+							<!-- Trust badges -->
+							<div class="hero-badges mt-5 pt-4">
+								<p class="small text-muted mb-3">Trusted by leading companies worldwide</p>
+								<div class="d-flex gap-4 justify-content-start flex-wrap">
+									<span class="badge-item"><i class="fa-solid fa-building"></i> 200+ Companies</span>
+									<span class="badge-item"><i class="fa-solid fa-users"></i> 50K+ Trained</span>
+									<span class="badge-item"><i class="fa-solid fa-certificate"></i> Certified Programs</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6 hero-image ">
+							<img src="/images/hero-corporate.jpg" alt="Corporate Training" class="img-fluid" onerror="this.src='https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop'">
+						</div>
+					</div>
+				</div>
+
+				<!-- Slide 3: Free Tutorials Focus -->
+				<div class="carousel-item">
+					<div class="row align-items-center min-vh-100">
+						<div class="col-lg-6 hero-text">
+							<h1 class="hero-title">Start Learning for Free Today</h1>
+							<p class="hero-subtitle">Access our comprehensive library of free tutorials and resources. Perfect for beginners and professionals looking to upskill without any cost.</p>
+
+							<!-- CTA Button -->
+							<!-- <div class="hero-ctas d-flex flex-wrap gap-3 mt-4">
+								<a href="/free-tutorials" class="btn btn-lg btn-outline-light">
+									<i class="fa-solid fa-book-open-reader"></i>
+									Access Free Tutorials
+								</a>
+							</div> -->
+
+							<!-- Trust badges -->
+							<div class="hero-badges mt-5 pt-4">
+								<p class="small text-muted mb-3">Free learning resources for everyone</p>
+								<div class="d-flex gap-4 justify-content-start flex-wrap">
+									<span class="badge-item"><i class="fa-solid fa-infinity"></i> Unlimited Access</span>
+									<span class="badge-item"><i class="fa-solid fa-clock"></i> Self-Paced</span>
+									<span class="badge-item"><i class="fa-solid fa-trophy"></i> Skill Building</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6 hero-image">
+							<img src="/images/hero-free.jpg" alt="Free Learning" class="img-fluid" onerror="this.src='https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=600&fit=crop'">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Carousel Navigation -->
+			<button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Next</span>
+			</button>
+		</div>
+	</div>
+</section>
+
+<!-- Mobile Hero Section -->
+<section class="mobile-hero d-block d-lg-none py-5" data-aos="fade-up">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-12 text-center">
+				<h1 class="mobile-hero-title">Learn Tech Skills, Anywhere</h1>
+				<p class="mobile-hero-subtitle">Unlock your potential with expert-led online training, immersive in-house programs, and free tutorials from Integrated Oasis.</p>
+				<div class="mobile-hero-ctas mt-4">
+					<a href="/online-training" class="btn btn-primary btn-lg">
 						<i class="fa-solid fa-chalkboard-user"></i>
 						Start Online Training
 					</a>
-					<a href="/in-house-training" class="btn btn-lg btn-success" data-aos="fade-left" data-aos-duration="1200">
-						<i class="fa-solid fa-building"></i>
-						Join In-House Training
-					</a>
-					<a href="/free-tutorials" class="btn btn-lg btn-outline-light" data-aos="zoom-in" data-aos-duration="1200">
-						<i class="fa-solid fa-book-open-reader"></i>
-						Access Free Tutorials
-					</a>
 				</div>
-
-				<!-- Trust badges -->
-				<div class="hero-badges mt-5 pt-4">
-					<p class="small text-muted mb-3">Trusted by thousands of learners worldwide</p>
-					<div class="d-flex gap-4 justify-content-center flex-wrap">
-						<span class="badge-item"><i class="fa-solid fa-star"></i> 4.9/5 Rating</span>
-						<span class="badge-item"><i class="fa-solid fa-people-group"></i> 10K+ Students</span>
-						<span class="badge-item"><i class="fa-solid fa-book-atlas"></i> 500+ Courses</span>
+				<div class="mobile-hero-badges mt-4">
+					<div class="d-flex flex-column gap-2">
+						<span class="badge-item-mobile"><i class="fa-solid fa-star"></i> 4.9/5 Rating</span>
+						<span class="badge-item-mobile"><i class="fa-solid fa-people-group"></i> 10K+ Students</span>
+						<span class="badge-item-mobile"><i class="fa-solid fa-book-atlas"></i> 500+ Courses</span>
 					</div>
 				</div>
 			</div>
@@ -66,80 +177,50 @@
 	</div>
 </section>
 
-<!-- Popular Online Courses Section -->
+<!-- Popular Courses Section -->
 <section class="popular-courses py-5 bg-light" data-aos="fade-up">
 	<div class="container">
 		<div class="text-center mb-5">
-			<h2 class="fw-bold mb-3">Popular Online Courses</h2>
+			<h2 class="fw-bold mb-3">Popular Courses</h2>
 			<p class="text-muted">Top-rated courses to advance your career</p>
 		</div>
 		<div class="row g-4">
-			<div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
+			<% if (typeof popularCourses !== 'undefined' && popularCourses && popularCourses.length > 0) { %>
+				<% popularCourses.forEach((course, index) => { %>
+			<div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
 				<div class="course-card">
 					<div class="course-image">
-						<img src="/images/python.png" alt="Python Programming" class="w-100">
-						<span class="badge bg-success position-absolute top-0 end-0 m-3">Bestseller</span>
+						<img src="<%= course.image || '/images/python.png' %>" alt="<%= course.title %>" class="w-100" onerror="this.src='/images/python.png'">
+						<% if (course.badge) { %>
+						<span class="badge bg-success position-absolute top-0 end-0 m-3"><%= course.badge %></span>
+						<% } %>
 					</div>
 					<div class="course-content p-4">
 						<div class="d-flex justify-content-between align-items-start mb-2">
-							<span class="badge bg-primary">Programming</span>
+							<span class="badge bg-dark"><%= course.category || 'General' %></span>
 							<div class="text-warning">
 								<i class="fa-solid fa-star"></i> 4.8
 							</div>
 						</div>
-						<h4 class="course-title">Python for Data Science</h4>
-						<p class="text-muted small">Master Python programming and data analysis with hands-on projects.</p>
+						<h4 class="course-title"><%= course.title %></h4>
+						<p class="text-muted small"><%= course.about ? course.about.substring(0, 100) + '...' : 'Learn valuable skills with this comprehensive course.' %></p>
 						<div class="d-flex justify-content-between align-items-center mt-3">
-							<span class="text-muted small"><i class="fa-solid fa-users"></i> 2,450 students</span>
-							<a href="/courses/python" class="btn btn-sm btn-outline-primary">Learn More</a>
+							<span class="text-muted small"><i class="fa-solid fa-users"></i> <%= course.enrolled || 0 %> students</span>
+							<a href="/course/<%= course.id %>" class="btn btn-sm btn-outline-primary">Details</a>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-				<div class="course-card">
-					<div class="course-image">
-						<img src="/images/web.jpg" alt="Web Development" class="w-100">
-						<span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">Hot</span>
-					</div>
-					<div class="course-content p-4">
-						<div class="d-flex justify-content-between align-items-start mb-2">
-							<span class="badge bg-info">Web Development</span>
-							<div class="text-warning">
-								<i class="fa-solid fa-star"></i> 4.9
-							</div>
-						</div>
-						<h4 class="course-title">Full-Stack Web Development</h4>
-						<p class="text-muted small">Build modern web applications with HTML, CSS, JavaScript, and Node.js.</p>
-						<div class="d-flex justify-content-between align-items-center mt-3">
-							<span class="text-muted small"><i class="fa-solid fa-users"></i> 3,120 students</span>
-							<a href="/courses/web-dev" class="btn btn-sm btn-outline-primary">Learn More</a>
-						</div>
-					</div>
+				<% }); %>
+			<% } else { %>
+			<div class="col-12 text-center">
+				<div class="py-5">
+					<i class="fa-solid fa-graduation-cap fa-3x text-muted mb-3"></i>
+					<h5 class="text-muted">No Popular Courses Available</h5>
+					<p class="text-muted">Check back soon for our featured courses!</p>
 				</div>
 			</div>
-			<div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-				<div class="course-card">
-					<div class="course-image">
-						<img src="/images/MI.jpg" alt="AI and Machine Learning" class="w-100">
-						<span class="badge bg-danger position-absolute top-0 end-0 m-3">New</span>
-					</div>
-					<div class="course-content p-4">
-						<div class="d-flex justify-content-between align-items-start mb-2">
-							<span class="badge bg-danger">AI/ML</span>
-							<div class="text-warning">
-								<i class="fa-solid fa-star"></i> 4.7
-							</div>
-						</div>
-						<h4 class="course-title">AI & Machine Learning Fundamentals</h4>
-						<p class="text-muted small">Learn the basics of artificial intelligence and machine learning algorithms.</p>
-						<div class="d-flex justify-content-between align-items-center mt-3">
-							<span class="text-muted small"><i class="fa-solid fa-users"></i> 1,890 students</span>
-							<a href="/courses/ai-ml" class="btn btn-sm btn-outline-primary">Learn More</a>
-						</div>
-					</div>
-				</div>
-			</div>
+			<% } %>
 		</div>
 		<div class="text-center mt-5">
 			<a href="/online-training" class="btn btn-primary btn-lg">Browse All Courses</a>
@@ -148,7 +229,7 @@
 </section>
 
 <!-- Upcoming In-House Training Section -->
-<section class="in-house-training py-5" data-aos="fade-up">
+<!-- <section class="in-house-training py-5" data-aos="fade-up">
 	<div class="container">
 		<div class="text-center mb-5">
 			<h2 class="fw-bold mb-3">Upcoming In-House Training</h2>
@@ -166,9 +247,9 @@
 							<h4 class="mb-2">Advanced JavaScript & React Workshop</h4>
 							<p class="text-muted mb-3">Deep dive into modern JavaScript and React development with real-world projects.</p>
 							<div class="training-meta">
-								<div class="mb-2"><i class="fa-solid fa-location-dot text-primary"></i> Lagos, Nigeria</div>
-								<div class="mb-2"><i class="fa-solid fa-clock text-primary"></i> 3 Days | 9:00 AM - 5:00 PM</div>
-								<div><i class="fa-solid fa-users text-primary"></i> 12 seats available</div>
+								<div class="mb-2"><i class="fa-solid fa-location-dot text-dark"></i> Lagos, Nigeria</div>
+								<div class="mb-2"><i class="fa-solid fa-clock text-dark"></i> 3 Days | 9:00 AM - 5:00 PM</div>
+								<div><i class="fa-solid fa-users text-dark"></i> 12 seats available</div>
 							</div>
 							<a href="/in-house-training/react-workshop" class="btn btn-sm btn-outline-warning mt-3">Register Now</a>
 						</div>
@@ -186,9 +267,9 @@
 							<h4 class="mb-2">Cloud Computing with AWS</h4>
 							<p class="text-muted mb-3">Master AWS services and cloud architecture best practices.</p>
 							<div class="training-meta">
-								<div class="mb-2"><i class="fa-solid fa-location-dot text-primary"></i> Abuja, Nigeria</div>
-								<div class="mb-2"><i class="fa-solid fa-clock text-primary"></i> 5 Days | 9:00 AM - 5:00 PM</div>
-								<div><i class="fa-solid fa-users text-primary"></i> 8 seats available</div>
+								<div class="mb-2"><i class="fa-solid fa-location-dot text-dark"></i> Abuja, Nigeria</div>
+								<div class="mb-2"><i class="fa-solid fa-clock text-dark"></i> 5 Days | 9:00 AM - 5:00 PM</div>
+								<div><i class="fa-solid fa-users text-dark"></i> 8 seats available</div>
 							</div>
 							<a href="/in-house-training/aws-cloud" class="btn btn-sm btn-outline-warning mt-3">Register Now</a>
 						</div>
@@ -206,9 +287,9 @@
 							<h4 class="mb-2">Cybersecurity Essentials</h4>
 							<p class="text-muted mb-3">Learn network security, ethical hacking, and threat prevention strategies.</p>
 							<div class="training-meta">
-								<div class="mb-2"><i class="fa-solid fa-location-dot text-primary"></i> Port Harcourt, Nigeria</div>
-								<div class="mb-2"><i class="fa-solid fa-clock text-primary"></i> 4 Days | 9:00 AM - 5:00 PM</div>
-								<div><i class="fa-solid fa-users text-primary"></i> 15 seats available</div>
+								<div class="mb-2"><i class="fa-solid fa-location-dot text-dark"></i> Port Harcourt, Nigeria</div>
+								<div class="mb-2"><i class="fa-solid fa-clock text-dark"></i> 4 Days | 9:00 AM - 5:00 PM</div>
+								<div><i class="fa-solid fa-users text-dark"></i> 15 seats available</div>
 							</div>
 							<a href="/in-house-training/cybersecurity" class="btn btn-sm btn-outline-warning mt-3">Register Now</a>
 						</div>
@@ -226,9 +307,9 @@
 							<h4 class="mb-2">Mobile App Development (Flutter)</h4>
 							<p class="text-muted mb-3">Build cross-platform mobile apps with Flutter and Dart.</p>
 							<div class="training-meta">
-								<div class="mb-2"><i class="fa-solid fa-location-dot text-primary"></i> Lagos, Nigeria</div>
-								<div class="mb-2"><i class="fa-solid fa-clock text-primary"></i> 6 Days | 9:00 AM - 5:00 PM</div>
-								<div><i class="fa-solid fa-users text-primary"></i> 10 seats available</div>
+								<div class="mb-2"><i class="fa-solid fa-location-dot text-dark"></i> Lagos, Nigeria</div>
+								<div class="mb-2"><i class="fa-solid fa-clock text-dark"></i> 6 Days | 9:00 AM - 5:00 PM</div>
+								<div><i class="fa-solid fa-users text-dark"></i> 10 seats available</div>
 							</div>
 							<a href="/in-house-training/flutter" class="btn btn-sm btn-outline-warning mt-3">Register Now</a>
 						</div>
@@ -240,7 +321,7 @@
 			<a href="/in-house-training" class="btn btn-primary btn-lg">View All Training Sessions</a>
 		</div>
 	</div>
-</section>
+</section> -->
 
 <!-- Free Tutorials Section -->
 <section class="free-tutorials py-5 bg-light" data-aos="fade-up">

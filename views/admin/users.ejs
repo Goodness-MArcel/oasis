@@ -9,6 +9,21 @@
     </a>
   </div>
 
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-exclamation-triangle me-2"></i>
+      <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-check-circle me-2"></i>
+      <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
   <% const userList = Array.isArray(users) ? users : []; %>
   <% const totalUsers = userList.length; %>
   <% const adminCount = userList.filter(u => u.role === 'admin').length; %>
@@ -77,7 +92,7 @@
           >
         </div>
       </div>
-        <button class="btn btn-success btn-sm" type="button">
+        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addUserModal">
           <i class="fa-solid fa-user-plus me-1"></i> Add User
         </button>
       </div>
@@ -116,7 +131,40 @@
                   <%= user.createdAt ? user.createdAt.toISOString().slice(0, 10) : '—' %>
                 </td>
                 <td>
-                  <span class="badge bg-success-soft">Active</span>
+
+                  <% 
+                    let paymentStatus = 'No Payments';
+                    let statusClass = 'bg-light text-dark';
+                    if (user.payments && user.payments.length > 0) {
+                      // Full payment (fully paid, no balance)
+                      const paid = user.payments.find(p => 
+                        ((p.status === 'completed' || p.installment_status === 'paid') && Number(p.balance_remaining) === 0)
+                      );
+                      // Installment paid (installment_status: 'paid', but still has balance)
+                      const installmentPaid = user.payments.find(p => 
+                        p.installment_status === 'paid' && Number(p.balance_remaining) > 0
+                      );
+                      const pending = user.payments.find(p => (p.status === 'pending' || p.installment_status === 'pending'));
+                      const overdue = user.payments.find(p => p.installment_status === 'overdue');
+                      if (paid) {
+                        paymentStatus = 'Paid';
+                        statusClass = 'bg-success';
+                      } else if (installmentPaid) {
+                        paymentStatus = 'Installment Paid';
+                        statusClass = 'bg-warning';
+                      } else if (overdue) {
+                        paymentStatus = 'Overdue';
+                        statusClass = 'bg-danger';
+                      } else if (pending) {
+                        paymentStatus = 'Pending';
+                        statusClass = 'bg-warning';
+                      } else {
+                        paymentStatus = 'Unknown';
+                        statusClass = 'bg-secondary';
+                      }
+                    }
+                  %>
+                  <span class="badge <%= statusClass %>"><%= paymentStatus %></span>
                 </td>
                 <td class="text-end">
                   <button class="btn btn-outline-secondary btn-xs view-user-btn" type="button" 
@@ -259,8 +307,8 @@
       </nav>
     </div>
   </div>
-
   <script>
+
     (function () {
       const searchInput = document.getElementById("adminUserSearchInput");
       const rows = Array.from(document.querySelectorAll(".admin-user-row"));
@@ -328,92 +376,6 @@
         currentPage = 1;
         render();
       });
-
-      if (prevBtn && nextBtn) {
-        prevBtn.addEventListener("click", () => {
-          if (currentPage > 1) {
-            currentPage -= 1;
-            render();
-          }
-        });
-
-        nextBtn.addEventListener("click", () => {
-          currentPage += 1;
-          render();
-        });
-      }
-
-      // Initial render
-      render();
-    })();
-
-    // Pagination for Awaiting Users Section
-    (function () {
-      const awaitingRows = Array.from(document.querySelectorAll(".awaiting-user-row"));
-      const awaitingPagination = document.getElementById("awaitingUserPagination");
-      const awaitingPageFromEl = document.getElementById("awaitingUserPageFrom");
-      const awaitingPageToEl = document.getElementById("awaitingUserPageTo");
-      const awaitingTotalEl = document.getElementById("awaitingUserTotal");
-      const awaitingPrevBtn = document.getElementById("awaitingUserPrev");
-      const awaitingNextBtn = document.getElementById("awaitingUserNext");
-      const awaitingPageLabel = document.getElementById("awaitingUserPageLabel");
-      const awaitingPageSize = 5; // Display 5 users at a time
-      let awaitingCurrentPage = 1;
-
-      if (!awaitingRows.length) return;
-
-      const renderAwaitingUsers = () => {
-        const total = awaitingRows.length;
-
-        // Hide all awaiting rows by default
-        awaitingRows.forEach((row) => {
-          row.style.display = "none";
-        });
-
-        if (total === 0) {
-          if (awaitingPagination) awaitingPagination.style.display = "none";
-          return;
-        }
-
-        const totalPages = Math.ceil(total / awaitingPageSize);
-        if (awaitingCurrentPage > totalPages) awaitingCurrentPage = totalPages;
-        if (awaitingCurrentPage < 1) awaitingCurrentPage = 1;
-
-        const startIndex = (awaitingCurrentPage - 1) * awaitingPageSize;
-        const endIndex = Math.min(startIndex + awaitingPageSize, total);
-
-        for (let i = startIndex; i < endIndex; i++) {
-          awaitingRows[i].style.display = "";
-        }
-
-        if (awaitingPagination && awaitingPageFromEl && awaitingPageToEl && awaitingTotalEl && awaitingPrevBtn && awaitingNextBtn && awaitingPageLabel) {
-          awaitingPagination.style.display = totalPages > 1 ? "" : "none";
-          awaitingPageFromEl.textContent = startIndex + 1;
-          awaitingPageToEl.textContent = endIndex;
-          awaitingTotalEl.textContent = total;
-          awaitingPageLabel.textContent = `Page ${awaitingCurrentPage} of ${totalPages}`;
-          awaitingPrevBtn.disabled = awaitingCurrentPage === 1;
-          awaitingNextBtn.disabled = awaitingCurrentPage === totalPages;
-        }
-      };
-
-      if (awaitingPrevBtn && awaitingNextBtn) {
-        awaitingPrevBtn.addEventListener("click", () => {
-          if (awaitingCurrentPage > 1) {
-            awaitingCurrentPage -= 1;
-            renderAwaitingUsers();
-          }
-        });
-
-        awaitingNextBtn.addEventListener("click", () => {
-          awaitingCurrentPage += 1;
-          renderAwaitingUsers();
-        });
-      }
-
-      // Initial render for awaiting users
-      renderAwaitingUsers();
-    })();
 
     // Follow-up email functionality
     (function () {
@@ -520,5 +482,242 @@
         });
       }
     })();
+
+    // Add User Modal functionality
+    (function() {
+      const courseSelect = document.getElementById('courseId');
+      const paymentMethodSelect = document.getElementById('paymentMethod');
+      const paymentTypeSelect = document.getElementById('paymentType');
+      const paymentAmountInput = document.getElementById('paymentAmount');
+      const paymentAmountGroup = document.getElementById('paymentAmount').closest('.col-md-6');
+      const paymentMethodGroup = document.getElementById('paymentMethod').closest('.col-md-6');
+      const paymentTypeGroup = document.getElementById('paymentType').closest('.col-md-6');
+
+      // Add installment info display
+      const installmentInfo = document.createElement('div');
+      installmentInfo.id = 'installmentInfo';
+      installmentInfo.className = 'alert alert-info mt-2';
+      installmentInfo.style.display = 'none';
+      paymentTypeGroup.appendChild(installmentInfo);
+
+      function togglePaymentFields() {
+        const courseSelected = courseSelect.value !== '';
+        paymentMethodGroup.style.display = courseSelected ? 'block' : 'none';
+        paymentTypeGroup.style.display = courseSelected ? 'block' : 'none';
+        paymentAmountGroup.style.display = courseSelected ? 'block' : 'none';
+
+        if (courseSelected) {
+          updateInstallmentInfo();
+          updatePaymentAmount();
+        } else {
+          installmentInfo.style.display = 'none';
+          if (paymentAmountInput) paymentAmountInput.value = '';
+        }
+      }
+
+      function updatePaymentAmount() {
+        const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+        const coursePrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price') || 0) : 0;
+        
+        if (coursePrice > 0 && paymentAmountInput) {
+          paymentAmountInput.placeholder = coursePrice.toFixed(2);
+          paymentAmountInput.max = coursePrice.toString();
+        }
+      }
+
+      function updateInstallmentInfo() {
+        const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+        const coursePrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price') || 0) : 0;
+        const paymentType = paymentTypeSelect.value;
+        const customAmount = paymentAmountInput ? parseFloat(paymentAmountInput.value || 0) : 0;
+        const amountToUse = customAmount > 0 ? customAmount : coursePrice;
+        const paymentAmountHelp = document.getElementById('paymentAmountHelp');
+
+        if (paymentType === 'full') {
+          installmentInfo.innerHTML = `
+            <strong>Full Payment:</strong><br>
+            Course Price: $${coursePrice.toFixed(2)}<br>
+            <small class="text-success">Payment amount must exactly equal the course price</small>
+          `;
+          installmentInfo.className = 'alert alert-success mt-2';
+          installmentInfo.style.display = 'block';
+          
+          // For full payment, set the amount to course price and disable input
+          if (paymentAmountInput) {
+            paymentAmountInput.value = coursePrice.toFixed(2);
+            paymentAmountInput.readOnly = true;
+          }
+          if (paymentAmountHelp) {
+            paymentAmountHelp.textContent = 'Amount automatically set to course price for full payment';
+          }
+        } else if (amountToUse > 0 && paymentType === 'installment') {
+          const maxInstallment = coursePrice - 0.01; // Must be less than full price
+          installmentInfo.innerHTML = `
+            <strong>Installment Payment:</strong><br>
+            Course Price: $${coursePrice.toFixed(2)}<br>
+            <small class="text-warning">Payment amount must be less than $${coursePrice.toFixed(2)}</small>
+          `;
+          installmentInfo.className = 'alert alert-warning mt-2';
+          installmentInfo.style.display = 'block';
+          
+          // For installment, enable input and set max
+          if (paymentAmountInput) {
+            paymentAmountInput.readOnly = false;
+            paymentAmountInput.max = maxInstallment.toString();
+          }
+          if (paymentAmountHelp) {
+            paymentAmountHelp.textContent = `Enter deposit amount (must be less than $${coursePrice.toFixed(2)})`;
+          }
+        } else {
+          installmentInfo.style.display = 'none';
+          if (paymentAmountInput) {
+            paymentAmountInput.readOnly = false;
+            paymentAmountInput.max = '';
+          }
+          if (paymentAmountHelp) {
+            paymentAmountHelp.textContent = 'Enter the amount the user actually paid';
+          }
+        }
+      }
+
+      if (courseSelect) {
+        courseSelect.addEventListener('change', function() {
+          togglePaymentFields();
+          updateInstallmentInfo();
+        });
+      }
+
+      if (paymentTypeSelect) {
+        paymentTypeSelect.addEventListener('change', updateInstallmentInfo);
+      }
+
+      if (paymentAmountInput) {
+        paymentAmountInput.addEventListener('input', updateInstallmentInfo);
+      }
+
+      // Form validation
+      const addUserForm = document.getElementById('addUserForm');
+      if (addUserForm) {
+        addUserForm.addEventListener('submit', function(e) {
+          const courseSelected = courseSelect.value !== '';
+          if (!courseSelected) return; // No course selected, let server handle
+
+          const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+          const coursePrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price') || 0) : 0;
+          const paymentType = paymentTypeSelect.value;
+          const paymentAmount = parseFloat(paymentAmountInput.value || 0);
+
+          if (paymentType === 'full') {
+            if (paymentAmount !== coursePrice) {
+              e.preventDefault();
+              alert(`Full payment amount must exactly equal the course price of $${coursePrice.toFixed(2)}`);
+              return false;
+            }
+          } else if (paymentType === 'installment') {
+            if (paymentAmount <= 0) {
+              e.preventDefault();
+              alert('Installment payment amount must be greater than $0');
+              return false;
+            }
+            if (paymentAmount >= coursePrice) {
+              e.preventDefault();
+              alert(`Installment payment amount must be less than the course price of $${coursePrice.toFixed(2)}`);
+              return false;
+            }
+          }
+        });
+      }
+
+      // Initial check
+      togglePaymentFields();
+    })();
   </script>
 </section>
+
+<!-- Add User Modal -->
+<div class="modal fade modal-admin-user" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/admin/users" method="POST">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="col-md-6">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="role" class="form-label">Role</label>
+              <select class="form-select" id="role" name="role">
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="courseId" class="form-label">Enroll in Course (Optional)</label>
+              <select class="form-select" id="courseId" name="courseId">
+                <option value="">Select Course (Optional)</option>
+                <% if (typeof courses !== 'undefined' && courses && courses.length > 0) { %>
+                  <% courses.forEach(function(course) { %>
+                    <option value="<%= course.id %>" data-price="<%= course.price || 0 %>"><%= course.title %> <% if (course.category) { %>(<%= course.category %>)<% } %> - ₦<%= course.price || 0 %></option>
+                  <% }); %>
+                <% } %>
+              </select>
+              <div class="form-text">A random password will be generated for the user.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="paymentMethod" class="form-label">Payment Method</label>
+              <select class="form-select" id="paymentMethod" name="paymentMethod">
+                <option value="">Select Payment Method</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="cash">Cash</option>
+                <option value="check">Check</option>
+                <option value="online_payment">Online Payment</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="paymentType" class="form-label">Payment Type</label>
+              <select class="form-select" id="paymentType" name="paymentType">
+                <option value="full">Full Payment</option>
+                <option value="installment">Installment Payment</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="paymentAmount" class="form-label">Payment Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" step="0.01" min="0.01" placeholder="0.00">
+              </div>
+              <div class="form-text" id="paymentAmountHelp">Enter the amount the user actually paid</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Add User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>

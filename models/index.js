@@ -130,6 +130,12 @@ if (process.env.DATABASE_URL) {
     protocol: inferredDialect,
     dialectOptions: dialectOpts,
     logging: false,
+    pool: {
+      max: 5,          // Maximum connections
+      min: 0,          // Minimum connections
+      acquire: 30000,  // Maximum time to get connection (ms)
+      idle: 10000      // Maximum idle time (ms)
+    },
     ...restConfig
   });
 
@@ -138,6 +144,13 @@ if (process.env.DATABASE_URL) {
     host,
     port,
     dialect,
+    logging: false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    },
     ...restConfig
   });
 } else {
@@ -145,6 +158,13 @@ if (process.env.DATABASE_URL) {
     host,
     port,
     dialect,
+    logging: false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    },
     ...restConfig
   });
 }

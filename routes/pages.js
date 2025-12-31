@@ -5,13 +5,32 @@ import db from "../models/index.js";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.render("pages/home", {
-    title: "Home",
-    description: "Welcome to Integrated Oasis",
-    pageStyles: "home.css",
-    pageScript: "home.js",
-  });
+router.get("/", async (req, res) => {
+  try {
+    // Fetch popular courses (limit to 6 for homepage display)
+    const popularCourses = await db.Course.findAll({
+      where: { isPopular: true },
+      order: [["createdAt", "DESC"]],
+      limit: 6
+    });
+
+    res.render("pages/home", {
+      title: "Home",
+      description: "Welcome to Integrated Oasis",
+      pageStyles: "home.css",
+      pageScript: "home.js",
+      popularCourses: popularCourses || []
+    });
+  } catch (err) {
+    console.error("Error fetching popular courses:", err);
+    res.render("pages/home", {
+      title: "Home",
+      description: "Welcome to Integrated Oasis",
+      pageStyles: "home.css",
+      pageScript: "home.js",
+      popularCourses: []
+    });
+  }
 });
 
 router.get("/about", (req, res) => {
@@ -170,5 +189,52 @@ router.post(
   ],
   resetPassword
 );
+
+// Course details page
+router.get("/course/:id", async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const course = await db.Course.findByPk(courseId);
+
+    if (!course) {
+      return res.status(404).render("error", {
+        title: "Course Not Found",
+        message: "The course you're looking for doesn't exist.",
+        error: { status: 404 }
+      });
+    }
+
+    res.render("pages/course-details", {
+      title: course.title,
+      description: course.about ? course.about.substring(0, 160) : `Learn ${course.title} at Integrated Oasis`,
+      pageStyles: "course-details.css",
+      pageScript: "course-details.js",
+      course: course
+    });
+  } catch (err) {
+    console.error("Error fetching course details:", err);
+    res.status(500).render("error", {
+      title: "Server Error",
+      message: "Something went wrong while loading the course.",
+      error: { status: 500 }
+    });
+  }
+});
+
+// API endpoint to get popular courses for homepage
+router.get("/api/popular-courses", async (req, res) => {
+  try {
+    const popularCourses = await db.Course.findAll({
+      where: { isPopular: true },
+      order: [["createdAt", "DESC"]],
+      limit: 6, // Limit to 6 popular courses for homepage display
+    });
+
+    res.json({ courses: popularCourses });
+  } catch (err) {
+    console.error("Error fetching popular courses:", err);
+    res.status(500).json({ error: "Failed to fetch popular courses" });
+  }
+});
 
 export default router;

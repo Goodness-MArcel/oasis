@@ -80,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // No carousel on this page – safe to ignore
   }
 
+  // Manually initialize Hero Carousel
+  const heroCarouselElement = document.getElementById('heroCarousel');
+  if (heroCarouselElement) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
+      try {
+        new bootstrap.Carousel(heroCarouselElement, {
+          interval: 5000,
+          ride: 'carousel',
+          wrap: true,
+          keyboard: true,
+          pause: 'hover'
+        });
+      } catch (error) {
+        console.error('Error initializing hero carousel:', error);
+      }
+    }
+  }
+
   // Manually initialize Bootstrap Accordion
   const accordionElement = document.getElementById('faqAccordion');
   if (accordionElement) {

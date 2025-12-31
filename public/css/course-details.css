@@ -1,0 +1,123 @@
+/* Course Details Page Styles */
+
+.course-header-card {
+    transition: box-shadow 0.3s ease;
+}
+
+.course-header-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.course-stats-card {
+    position: sticky;
+    top: 20px;
+}
+
+.stats-list i {
+    width: 16px;
+    color: #6c757d;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 0;
+}
+
+.nav-tabs .nav-link {
+    padding: 12px 24px;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link i {
+    font-size: 0.9em;
+}
+
+.tab-content {
+    background-color: #fff;
+    min-height: 300px;
+}
+
+.about-content h4,
+.curriculum-content h4,
+.outcome-content h4 {
+    color: #2c3e50;
+    border-bottom: 2px solid #28a745;
+    padding-bottom: 10px;
+}
+
+.course-description {
+    font-size: 1.1em;
+    color: #495057;
+    margin-bottom: 30px;
+    white-space: pre-line;
+}
+
+.curriculum-list,
+.outcome-list {
+    white-space: pre-line;
+    font-size: 1.1em;
+    color: #495057;
+    margin-bottom: 30px;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 10px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .course-header-card .row {
+        text-align: center;
+    }
+
+    .course-stats-card {
+        position: static;
+        margin-top: 20px;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    .tab-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .course-header-card {
+        margin-bottom: 20px;
+    }
+
+    .stats-list {
+        font-size: 0.9em;
+    }
+}
+
+/* Loading animation for tab content */
+.tab-pane {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

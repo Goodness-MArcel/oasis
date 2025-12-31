@@ -61,6 +61,55 @@
   background-color: var(--secondary-green);
   border-color: var(--secondary-green);
 }
+
+/* Add User Modal Styles */
+.modal-admin-user {
+  z-index: 9999;
+}
+
+.modal-admin-user .modal-backdrop {
+  z-index: 9998;
+}
+
+.modal-admin-user.show {
+  display: block;
+}
+
+.modal-admin-user .modal-dialog {
+  position: relative;
+  z-index: 10000;
+}
+
+body.modal-open .modal-admin-user {
+  z-index: 9999;
+}
+
+#addUserModal .modal-content {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+}
+
+#addUserModal .modal-header {
+  background: rgba(22, 163, 74, 0.08);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#addUserModal .modal-title {
+  color: #166534;
+  font-weight: 600;
+}
+
+#addUserModal .btn-success {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+#addUserModal .btn-success:hover {
+  background-color: var(--secondary-green);
+  border-color: var(--secondary-green);
+}
+
 /* Admin auth page (no public nav/footer) */
 
 .admin-auth-wrapper {

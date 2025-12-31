@@ -7,11 +7,21 @@ const uploadPublicPath = '/uploads/courses';
 
 export async function listCourses(req, res) {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const offset = (page - 1) * limit;
+
     const [courses, totalCourses, activeEnrollments] = await Promise.all([
-      db.Course.findAll({ order: [['createdAt', 'DESC']] }),
+      db.Course.findAll({
+        order: [['createdAt', 'DESC']],
+        limit: limit,
+        offset: offset
+      }),
       db.Course.count(),
       db.Enrollment.count({ where: { status: 'enrolled' } }),
     ]);
+
+    const totalPages = Math.ceil(totalCourses / limit);
 
     // Currently, dedicated models for training programs and tutorials do not exist,
     // so these reflect real tracked items (zero until such data is introduced).
@@ -27,6 +37,12 @@ export async function listCourses(req, res) {
       trainingProgramsCount,
       tutorialsCount,
       activeEnrollments,
+      currentPage: page,
+      totalPages: totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
       error: res.locals.error && res.locals.error.length > 0 ? res.locals.error[0] : null,
       success: res.locals.success && res.locals.success.length > 0 ? res.locals.success[0] : null,
     });
@@ -48,7 +64,7 @@ export async function listCourses(req, res) {
 
 export async function createCourse(req, res) {
   try {
-    const { title, category, badge, description, lessons, enrolled, instructorName, duration, price } = req.body;
+    const { title, category, badge, about, curriculum, outcome, section, lessons, enrolled, instructorName, duration, price } = req.body;
 
     // validation
     if (!title || !title.trim()) {
@@ -97,7 +113,10 @@ export async function createCourse(req, res) {
       category: category || null,
       badge: badge || null,
       image: imagePath,
-      description: description || null,
+      about: about || null,
+      curriculum: curriculum || null,
+      outcome: outcome || null,
+      section: section || null,
       lessons: lessons ? parseInt(lessons, 10) : 0,
       enrolled: enrolled ? parseInt(enrolled, 10) : 0,
       duration: duration || null,
@@ -135,7 +154,7 @@ export async function updateCourse(req, res) {
       return res.redirect('/admin/courses');
     }
 
-    const { title, category, badge, description, lessons, enrolled, instructorName, duration, progress, price } = req.body;
+    const { title, category, badge, about, curriculum, outcome, section, lessons, enrolled, instructorName, duration, progress, price } = req.body;
 
     if (!title || !title.trim()) {
       req.flash('error', 'Course title is required.');
@@ -185,7 +204,10 @@ export async function updateCourse(req, res) {
     course.title = title.trim();
     course.category = category || null;
     course.badge = badge || null;
-    course.description = description || null;
+    course.about = about || null;
+    course.curriculum = curriculum || null;
+    course.outcome = outcome || null;
+    course.section = section || null;
     course.lessons = lessons ? parseInt(lessons, 10) : 0;
     course.enrolled = enrolled ? parseInt(enrolled, 10) : 0;
     course.instructorName = instructorName || null;
@@ -231,5 +253,28 @@ export async function deleteCourse(req, res) {
     console.error('Error deleting course:', err);
     req.flash('error', 'Failed to delete course.');
     return res.redirect('/admin/courses');
+  }
+}
+
+export async function togglePopular(req, res) {
+  try {
+    const id = req.params.id;
+    const course = await db.Course.findByPk(id);
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    // Toggle the popular status
+    course.isPopular = !course.isPopular;
+    await course.save();
+
+    return res.json({
+      success: true,
+      isPopular: course.isPopular,
+      message: `Course ${course.isPopular ? 'marked as' : 'unmarked from'} popular`
+    });
+  } catch (err) {
+    console.error('Error toggling popular status:', err);
+    return res.status(500).json({ error: 'Failed to update popular status' });
   }
 }

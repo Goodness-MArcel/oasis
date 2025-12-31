@@ -1,0 +1,246 @@
+<div class="container-fluid bg-light py-4">
+    <div class="container">
+        <h1 class="h2 text-center mb-0"><%= course.title %></h1>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Course Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="course-header-card p-4 bg-white rounded shadow-sm">
+                <div class="row">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <img src="<%= course.image || '/images/python.png' %>" alt="<%= course.title %>" class="img-fluid rounded" onerror="this.src='/images/python.png'">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div>
+                                <% if (course.badge) { %>
+                                <span class="badge bg-success mb-2"><%= course.badge %></span>
+                                <% } %>
+                                <span class="badge bg-dark"><%= course.category || 'General' %></span>
+                            </div>
+                            <div class="text-warning">
+                                <i class="fa-solid fa-star"></i> 4.8
+                            </div>
+                        </div>
+                        <h1 class="h2 mb-3"><%= course.title %></h1>
+                        <p class="text-muted mb-3"><%= course.about ? course.about.substring(0, 200) + '...' : 'Learn valuable skills with this comprehensive course.' %></p>
+                        <div class="d-flex align-items-center gap-4 mb-3">
+                            <span class="text-muted small"><i class="fa-solid fa-users me-1"></i><%= course.enrolled || 0 %> students enrolled</span>
+                            <span class="text-muted small"><i class="fa-solid fa-clock me-1"></i><%= course.duration || 'Self-paced' %></span>
+                            <span class="text-muted small"><i class="fa-solid fa-chalkboard-teacher me-1"></i><%= course.instructorName || 'Expert Instructor' %></span>
+                        </div>
+                        <% if (course.price && course.price > 0) { %>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="h4 text-success fw-bold mb-0">₦<%= course.price.toLocaleString() %></span>
+                            <button class="btn btn-success">Enroll Now</button>
+                        </div>
+                        <% } else { %>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="h4 text-success fw-bold mb-0">Free</span>
+                            <button class="btn btn-success">Start Learning</button>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="course-stats-card p-4 bg-white rounded shadow-sm">
+                <h5 class="mb-3">Course Overview</h5>
+                <div class="stats-list">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fa-solid fa-book me-2"></i>Lessons</span>
+                        <span class="fw-semibold"><%= course.lessons || 0 %></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fa-solid fa-clock me-2"></i>Duration</span>
+                        <span class="fw-semibold"><%= course.duration || 'Self-paced' %></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fa-solid fa-language me-2"></i>Language</span>
+                        <span class="fw-semibold">English</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span><i class="fa-solid fa-certificate me-2"></i>Certificate</span>
+                        <span class="fw-semibold">Yes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="course-content-card bg-white rounded shadow-sm">
+                <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="true">
+                            <i class="fa-solid fa-info-circle me-2"></i>About
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button" role="tab" aria-controls="curriculum" aria-selected="false">
+                            <i class="fa-solid fa-list-check me-2"></i>Curriculum
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="outcome-tab" data-bs-toggle="tab" data-bs-target="#outcome" type="button" role="tab" aria-controls="outcome" aria-selected="false">
+                            <i class="fa-solid fa-trophy me-2"></i>Outcome
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4" id="courseTabsContent">
+                    <!-- About Tab -->
+                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                        <div class="about-content">
+                            <h4 class="mb-3">About This Course</h4>
+                            <% if (course.about) { %>
+                            <div class="course-description">
+                                <%- course.about.replace(/\n/g, '<br>') %>
+                            </div>
+                            <% } else { %>
+                            <p class="text-muted">Course description coming soon...</p>
+                            <% } %>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h5 class="mb-3">What You'll Learn</h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Hands-on practical skills</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Industry-relevant knowledge</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Real-world projects</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Expert instructor guidance</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="mb-3">Requirements</h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fa-solid fa-dot-circle text-dark me-2"></i>Basic computer skills</li>
+                                        <li class="mb-2"><i class="fa-solid fa-dot-circle text-dark me-2"></i>Internet connection</li>
+                                        <li class="mb-2"><i class="fa-solid fa-dot-circle text-dark me-2"></i>Dedication to learning</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Curriculum Tab -->
+                    <div class="tab-pane fade" id="curriculum" role="tabpanel" aria-labelledby="curriculum-tab">
+                        <div class="curriculum-content">
+                            <h4 class="mb-3">Course Curriculum</h4>
+                            <% if (course.curriculum) { %>
+                            <div class="curriculum-list">
+                                <%- course.curriculum.replace(/\n/g, '<br>') %>
+                            </div>
+                            <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fa-solid fa-list-check fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Curriculum Coming Soon</h5>
+                                <p class="text-muted">Detailed course outline will be available shortly.</p>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Outcome Tab -->
+                    <div class="tab-pane fade" id="outcome" role="tabpanel" aria-labelledby="outcome-tab">
+                        <div class="outcome-content">
+                            <h4 class="mb-3">Learning Outcomes</h4>
+                            <% if (course.outcome) { %>
+                            <div class="outcome-list">
+                                <%- course.outcome.replace(/\n/g, '<br>') %>
+                            </div>
+                            <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fa-solid fa-trophy fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Outcomes Coming Soon</h5>
+                                <p class="text-muted">Learning objectives will be available shortly.</p>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.course-header-card {
+    border-left: 4px solid #28a745;
+}
+
+.course-stats-card .stats-list .border-bottom:last-child {
+    border-bottom: none !important;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    border-bottom-color: #28a745;
+    color: #28a745;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: #28a745;
+    color: #28a745;
+}
+
+.tab-content {
+    border-top: 1px solid #dee2e6;
+}
+
+.about-content, .curriculum-content, .outcome-content {
+    line-height: 1.6;
+}
+
+.curriculum-list, .outcome-list {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+@media (max-width: 768px) {
+    .course-header-card .row {
+        text-align: center;
+    }
+
+    .course-stats-card {
+        margin-top: 20px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap tabs
+    const triggerTabList = [].slice.call(document.querySelectorAll('#courseTabs button'));
+    triggerTabList.forEach(function (triggerEl) {
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        triggerEl.addEventListener('click', function (event) {
+            event.preventDefault();
+            tabTrigger.show();
+        });
+    });
+
+    // Add smooth scrolling for anchor links if needed
+    const hash = window.location.hash;
+    if (hash) {
+        const tab = document.querySelector(hash + '-tab');
+        if (tab) {
+            tab.click();
+        }
+    }
+});
+</script>

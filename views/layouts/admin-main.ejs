@@ -105,7 +105,7 @@
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body p-4">
+          <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
             <div class="row">
               <div class="col-md-6">
                 <h6 class="fw-bold mb-3" style="color: #166534;"><i class="fa-solid fa-user me-2"></i>Personal Information</h6>
@@ -123,6 +123,16 @@
                   <!-- Populated by JS -->
                 </ul>
               </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold mb-0" style="color: #166534;"><i class="fa-solid fa-credit-card me-2"></i>Payment History</h6>
+              <div id="paymentSummary" class="badge bg-info">Loading...</div>
+            </div>
+            <div id="paymentsList">
+              <div class="text-muted small">No payments found</div>
             </div>
           </div>
           <div class="modal-footer d-flex justify-content-between" style="border-top: 1px solid #e5e7eb;">
@@ -209,7 +219,7 @@
       });
 
       // Modal logic for user details
-      document.addEventListener('DOMContentLoaded', function() {
+      window.addEventListener('load', function() {
         // Toast notification function
         function showToast(message, type = 'success') {
           const toastEl = document.getElementById('emailToast');
@@ -249,6 +259,8 @@
         const personalInfoList = document.getElementById('personalInfoList');
         const accountInfoList = document.getElementById('accountInfoList');
         const coursesList = document.getElementById('coursesList');
+        const paymentsList = document.getElementById('paymentsList');
+        const paymentSummaryEl = document.getElementById('paymentSummary');
         let currentUser = null;
 
         document.querySelectorAll('.view-user-btn').forEach(btn => {
@@ -258,6 +270,7 @@
             personalInfoList.innerHTML = '';
             accountInfoList.innerHTML = '';
             coursesList.innerHTML = '';
+            paymentsList.innerHTML = '';
             // Show username in header
             document.getElementById('userDetailsUsername').textContent = user.username ? `@${user.username}` : '';
 
@@ -292,12 +305,530 @@
               coursesList.innerHTML = '<li class="list-group-item text-muted"><i class="fa-solid fa-info-circle me-2"></i>No courses yet</li>';
             }
 
-            // Show modal (Bootstrap 5)
+            // Calculate payment summary
+            let paymentSummary = '';
+
+            if (user.payments && user.payments.length > 0) {
+              const totalPayments = user.payments.length;
+              const paidPayments = user.payments.filter(p => (p.installment_status || p.status) === 'paid' || (p.installment_status || p.status) === 'completed').length;
+              const pendingPayments = user.payments.filter(p => (p.installment_status || p.status) === 'pending').length;
+              const overduePayments = user.payments.filter(p => (p.installment_status || p.status) === 'overdue').length;
+              const failedPayments = user.payments.filter(p => (p.installment_status || p.status) === 'failed').length;
+
+              // Check if this is an installment plan
+              const hasInstallments = user.payments.some(p => p.total_installments > 1);
+              const totalInstallments = hasInstallments ? Math.max(...user.payments.map(p => p.total_installments || 1)) : 1;
+
+              if (hasInstallments) {
+                if (paidPayments === totalInstallments) {
+                  paymentSummary = '<span class="badge bg-success">All Paid</span>';
+                } else if (overduePayments > 0) {
+                  paymentSummary = `<span class="badge bg-danger">${paidPayments}/${totalInstallments} Paid (${overduePayments} Overdue)</span>`;
+                } else if (pendingPayments > 0) {
+                  paymentSummary = `<span class="badge bg-warning">${paidPayments}/${totalInstallments} Paid</span>`;
+                } else {
+                  paymentSummary = `<span class="badge bg-secondary">${paidPayments}/${totalInstallments} Paid</span>`;
+                }
+              } else {
+                // Single payments
+                if (paidPayments === totalPayments) {
+                  paymentSummary = '<span class="badge bg-success">Paid</span>';
+                } else if (overduePayments > 0) {
+                  paymentSummary = '<span class="badge bg-danger">Overdue</span>';
+                } else if (pendingPayments > 0) {
+                  paymentSummary = '<span class="badge bg-warning">Pending</span>';
+                } else if (failedPayments > 0) {
+                  paymentSummary = '<span class="badge bg-danger">Failed</span>';
+                } else {
+                  paymentSummary = '<span class="badge bg-secondary">Unknown</span>';
+                }
+              }
+            } else {
+              paymentSummary = '<span class="badge bg-light text-dark">No Payments</span>';
+            }
+
+            paymentSummaryEl.innerHTML = paymentSummary;
+
+            // Always show the payment section
+            if (user.payments && user.payments.length > 0) {
+              const paymentHtml = user.payments.map(payment => {
+                const courseTitle = payment.course ? payment.course.title : 'Unknown Course';
+                const coursePrice = payment.course ? payment.course.price : 0;
+                const installmentInfo = payment.total_installments > 1 ?
+                  ` (Installment ${payment.installment_number}/${payment.total_installments})` : '';
+
+                let statusBadge = '';
+                switch (payment.installment_status || payment.status) {
+                  case 'paid':
+                  case 'completed':
+                    statusBadge = '<span class="badge bg-success">Paid</span>';
+                    break;
+                  case 'pending':
+                    statusBadge = '<span class="badge bg-warning">Pending</span>';
+                    break;
+                  case 'overdue':
+                    statusBadge = '<span class="badge bg-danger">Overdue</span>';
+                    break;
+                  case 'failed':
+                    statusBadge = '<span class="badge bg-danger">Failed</span>';
+                    break;
+                  case 'cancelled':
+                    statusBadge = '<span class="badge bg-secondary">Cancelled</span>';
+                    break;
+                  default:
+                    statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                }
+
+                const paidDate = payment.paid_date ? new Date(payment.paid_date).toLocaleDateString() : 'N/A';
+                const balanceInfo = payment.balance_remaining > 0 ?
+                  `<div class="text-muted small">Balance Remaining: $${payment.balance_remaining}</div>` : '';
+
+                // Show add payment button if there's remaining balance
+                const addPaymentButton = payment.balance_remaining > 0 ?
+                  `<button class="btn btn-success btn-sm add-payment-btn ms-2" 
+                           data-payment-id="${payment.id}"
+                           data-course-title="${courseTitle}"
+                           data-balance-remaining="${payment.balance_remaining}">
+                    <i class="fa-solid fa-plus"></i> Add Payment
+                  </button>` : '';
+
+                return `
+                  <div class="mb-3 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div class="flex-grow-1">
+                        <div class="fw-semibold">${courseTitle}${installmentInfo}</div>
+                        <div class="text-muted small">Total Amount: $${payment.amount}</div>
+                        <div class="text-muted small">Total Paid: $${payment.total_paid || 0}</div>
+                        <div class="text-muted small">Paid Date: ${paidDate}</div>
+                        ${balanceInfo}
+                      </div>
+                      <div class="d-flex flex-column gap-2" style="min-width: 200px;">
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text">$</span>
+                          <input type="number" class="form-control form-control-sm amount-paid-input" 
+                                 data-payment-id="${payment.id}" 
+                                 placeholder="Amount Paid" 
+                                 step="0.01" 
+                                 min="0"
+                                 value="${payment.installment_status === 'paid' || payment.status === 'completed' ? (payment.installment_amount || payment.amount) : ''}">
+                        </div>
+                        <div class="d-flex gap-1">
+                          <select class="form-select form-select-sm payment-status-select" 
+                                  data-payment-id="${payment.id}" 
+                                  style="flex: 1;">
+                            <option value="pending" ${payment.installment_status === 'pending' || payment.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="paid" ${payment.installment_status === 'paid' || payment.status === 'completed' ? 'selected' : ''}>Paid</option>
+                            <option value="overdue" ${payment.installment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
+                            <option value="failed" ${payment.installment_status === 'failed' || payment.status === 'failed' ? 'selected' : ''}>Failed</option>
+                            <option value="cancelled" ${payment.installment_status === 'cancelled' || payment.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                          </select>
+                          <button class="btn btn-outline-primary btn-sm update-payment-btn" 
+                                  data-payment-id="${payment.id}"
+                                  data-current-status="${payment.installment_status || payment.status}">
+                            <i class="fa-solid fa-save"></i>
+                          </button>
+                          ${addPaymentButton}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+              paymentsList.innerHTML = paymentHtml;
+
+              // Add event listeners for payment updates
+              setTimeout(() => {
+                addPaymentUpdateListeners(user);
+              }, 100);
+            } else {
+              paymentsList.innerHTML = '<div class="text-muted small">No payments found</div>';
+            }
+
+            // Show the modal
             const modal = new bootstrap.Modal(userDetailsModal);
             modal.show();
           });
         });
 
+        function addPaymentUpdateListeners(user) {
+          const updateButtons = document.querySelectorAll('.update-payment-btn');
+          const addPaymentButtons = document.querySelectorAll('.add-payment-btn');
+          
+          updateButtons.forEach(btn => {
+            btn.addEventListener('click', async function() {
+              const paymentId = this.getAttribute('data-payment-id');
+              const currentStatus = this.getAttribute('data-current-status');
+              const selectEl = document.querySelector(`.payment-status-select[data-payment-id="${paymentId}"]`);
+              const amountInputEl = document.querySelector(`.amount-paid-input[data-payment-id="${paymentId}"]`);
+              const newStatus = selectEl ? selectEl.value : currentStatus;
+              const amountPaid = amountInputEl ? parseFloat(amountInputEl.value || 0) : 0;
+
+              // Find the payment to get expected amount
+              const payment = user.payments.find(p => p.id == paymentId);
+              const expectedAmount = payment ? (payment.installment_amount || payment.amount) : 0;
+
+              if (newStatus === currentStatus && amountPaid === 0) {
+                showToast('No changes to save', 'info');
+                return;
+              }
+
+              // Validate amount if status is paid
+              if ((newStatus === 'paid' || newStatus === 'completed') && amountPaid <= 0) {
+                showToast('Please enter the amount paid when marking as paid', 'error');
+                return;
+              }
+
+              if (newStatus === 'paid' || newStatus === 'completed') {
+                if (confirm(`Update payment status to "${newStatus}" with amount $${amountPaid.toFixed(2)}?`)) {
+                  // Proceed with update
+                } else {
+                  return;
+                }
+              } else {
+                if (confirm(`Update payment status to "${newStatus}"?`)) {
+                  // Proceed with update
+                } else {
+                  return;
+                }
+              }
+
+              try {
+                const response = await fetch(`/admin/payments/${paymentId}/status`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ 
+                    status: newStatus,
+                    amountPaid: amountPaid > 0 ? amountPaid : undefined
+                  })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                  showToast('Payment updated successfully', 'success');
+                  this.setAttribute('data-current-status', newStatus);
+                  
+                  // Update the cached user data with the new payment status and amount
+                  if (user.payments) {
+                    const paymentToUpdate = user.payments.find(p => p.id == paymentId);
+                    if (paymentToUpdate) {
+                      paymentToUpdate.installment_status = newStatus;
+                      paymentToUpdate.status = newStatus === 'paid' ? 'completed' : newStatus;
+                      if (newStatus === 'paid' || newStatus === 'completed') {
+                        paymentToUpdate.paid_date = new Date().toISOString();
+                        if (amountPaid > 0) {
+                          paymentToUpdate.installment_amount = amountPaid;
+                        }
+                      }
+                      // Update the data-user attribute with fresh data
+                      const viewBtn = document.querySelector('.view-user-btn');
+                      if (viewBtn) {
+                        viewBtn.setAttribute('data-user', JSON.stringify(user));
+                      }
+                    }
+                  }
+
+                  // Update the payment summary badge
+                  const totalPayments = user.payments.length;
+                  const paidPayments = user.payments.filter(p => (p.installment_status || p.status) === 'paid' || (p.installment_status || p.status) === 'completed').length;
+                  const pendingPayments = user.payments.filter(p => (p.installment_status || p.status) === 'pending').length;
+                  const overduePayments = user.payments.filter(p => (p.installment_status || p.status) === 'overdue').length;
+
+                  const hasInstallments = user.payments.some(p => p.total_installments > 1);
+                  const totalInstallments = hasInstallments ? Math.max(...user.payments.map(p => p.total_installments || 1)) : 1;
+
+                  let paymentSummary = '';
+                  if (hasInstallments) {
+                    if (paidPayments === totalInstallments) {
+                      paymentSummary = '<span class="badge bg-success">All Paid</span>';
+                    } else if (overduePayments > 0) {
+                      paymentSummary = `<span class="badge bg-danger">${paidPayments}/${totalInstallments} Paid (${overduePayments} Overdue)</span>`;
+                    } else if (pendingPayments > 0) {
+                      paymentSummary = `<span class="badge bg-warning">${paidPayments}/${totalInstallments} Paid</span>`;
+                    } else {
+                      paymentSummary = `<span class="badge bg-secondary">${paidPayments}/${totalInstallments} Paid</span>`;
+                    }
+                  } else {
+                    if (paidPayments === totalPayments) {
+                      paymentSummary = '<span class="badge bg-success">Paid</span>';
+                    } else if (overduePayments > 0) {
+                      paymentSummary = '<span class="badge bg-danger">Overdue</span>';
+                    } else if (pendingPayments > 0) {
+                      paymentSummary = '<span class="badge bg-warning">Pending</span>';
+                    } else {
+                      paymentSummary = '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                  }
+                  paymentSummaryEl.innerHTML = paymentSummary;
+                } else {
+                  showToast('Error: ' + result.message, 'error');
+                }
+              } catch (error) {
+                console.error('Error updating payment status:', error);
+                showToast('Failed to update payment status', 'error');
+              }
+            });
+          });
+
+          // Add event listeners for add payment buttons
+          addPaymentButtons.forEach(btn => {
+            btn.addEventListener('click', async function() {
+              const paymentId = this.getAttribute('data-payment-id');
+              const courseTitle = this.getAttribute('data-course-title');
+              const balanceRemaining = parseFloat(this.getAttribute('data-balance-remaining'));
+
+              // Find the payment
+              const payment = user.payments.find(p => p.id == paymentId);
+              if (!payment) {
+                showToast('Payment not found', 'error');
+                return;
+              }
+
+              // Prompt for payment amount
+              const paymentAmount = prompt(
+                `Add Payment for ${courseTitle}\n\nTotal Course Amount: $${payment.amount}\nCurrent Balance: $${balanceRemaining}\n\nEnter payment amount:`,
+                balanceRemaining.toString()
+              );
+
+              if (!paymentAmount || paymentAmount.trim() === '') {
+                return; // User cancelled
+              }
+
+              const amount = parseFloat(paymentAmount);
+              if (isNaN(amount) || amount <= 0) {
+                showToast('Please enter a valid payment amount', 'error');
+                return;
+              }
+
+              if (amount > balanceRemaining) {
+                showToast(`Payment amount cannot exceed remaining balance of $${balanceRemaining}`, 'error');
+                return;
+              }
+
+              if (!confirm(`Add payment of $${amount.toFixed(2)} to ${courseTitle}?\n\nRemaining balance will be $${(balanceRemaining - amount).toFixed(2)}`)) {
+                return;
+              }
+
+              try {
+                showToast('Adding payment...', 'info');
+
+                const response = await fetch(`/admin/payments/${paymentId}/status`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ 
+                    action: 'add_payment',
+                    amountPaid: amount
+                  })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                  showToast(`Payment of $${amount.toFixed(2)} added successfully!`, 'success');
+                  
+                  // Update the cached user data
+                  if (user.payments) {
+                    const paymentToUpdate = user.payments.find(p => p.id == paymentId);
+                    if (paymentToUpdate) {
+                      paymentToUpdate.installment_amount = (paymentToUpdate.installment_amount || 0) + amount;
+                      paymentToUpdate.total_paid = (paymentToUpdate.total_paid || 0) + amount;
+                      paymentToUpdate.balance_remaining = result.data.balanceRemaining;
+                      
+                      if (result.data.isCompleted) {
+                        paymentToUpdate.status = 'completed';
+                        paymentToUpdate.installment_status = 'paid';
+                      }
+                      
+                      // Update the data-user attribute with fresh data
+                      const viewBtn = document.querySelector('.view-user-btn');
+                      if (viewBtn) {
+                        viewBtn.setAttribute('data-user', JSON.stringify(user));
+                      }
+                    }
+                  }
+
+                  // Refresh the modal to show updated data
+                  // Re-populate the modal
+                  personalInfoList.innerHTML = '';
+                  accountInfoList.innerHTML = '';
+                  coursesList.innerHTML = '';
+                  paymentsList.innerHTML = '';
+
+                  // Re-run the population logic (same as initial modal load)
+                  // Personal Info
+                  const personalFields = ['id', 'username', 'email', 'gender', 'role'];
+                  personalFields.forEach(key => {
+                    if (user[key] !== undefined && key !== 'password') {
+                      personalInfoList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${key.charAt(0).toUpperCase() + key.slice(1)}</span><span class="fw-semibold">${user[key] ?? ''}</span></li>`;
+                    }
+                  });
+
+                  // Account Info
+                  const accountFields = ['createdAt', 'updatedAt'];
+                  accountFields.forEach(key => {
+                    if (user[key] !== undefined) {
+                      let value = user[key];
+                      if (key === 'createdAt' || key === 'updatedAt') {
+                        value = value ? new Date(value).toLocaleString() : '';
+                      }
+                      accountInfoList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${key === 'createdAt' ? 'Joined' : 'Last Updated'}</span><span class="fw-semibold">${value}</span></li>`;
+                    }
+                  });
+
+                  // Courses
+                  if (user.enrollments && user.enrollments.length > 0) {
+                    user.enrollments.forEach(enrollment => {
+                      if (enrollment.course) {
+                        coursesList.innerHTML += `<li class="list-group-item d-flex justify-content-between"><span>${enrollment.course.title}</span><span class="badge bg-success">${enrollment.course.category}</span></li>`;
+                      }
+                    });
+                  } else {
+                    coursesList.innerHTML = '<li class="list-group-item text-muted"><i class="fa-solid fa-info-circle me-2"></i>No courses yet</li>';
+                  }
+
+                  // Update payment summary
+                  const totalPayments = user.payments.length;
+                  const paidPayments = user.payments.filter(p => (p.installment_status || p.status) === 'paid' || (p.installment_status || p.status) === 'completed').length;
+                  const pendingPayments = user.payments.filter(p => (p.installment_status || p.status) === 'pending').length;
+                  const overduePayments = user.payments.filter(p => (p.installment_status || p.status) === 'overdue').length;
+
+                  const hasInstallments = user.payments.some(p => p.total_installments > 1);
+                  const totalInstallments = hasInstallments ? Math.max(...user.payments.map(p => p.total_installments || 1)) : 1;
+
+                  let paymentSummary = '';
+                  if (hasInstallments) {
+                    if (paidPayments === totalInstallments) {
+                      paymentSummary = '<span class="badge bg-success">All Paid</span>';
+                    } else if (overduePayments > 0) {
+                      paymentSummary = `<span class="badge bg-danger">${paidPayments}/${totalInstallments} Paid (${overduePayments} Overdue)</span>`;
+                    } else if (pendingPayments > 0) {
+                      paymentSummary = `<span class="badge bg-warning">${paidPayments}/${totalInstallments} Paid</span>`;
+                    } else {
+                      paymentSummary = `<span class="badge bg-secondary">${paidPayments}/${totalInstallments} Paid</span>`;
+                    }
+                  } else {
+                    if (paidPayments === totalPayments && result.data.isCompleted) {
+                      paymentSummary = '<span class="badge bg-success">Paid</span>';
+                    } else if (overduePayments > 0) {
+                      paymentSummary = '<span class="badge bg-danger">Overdue</span>';
+                    } else if (pendingPayments > 0) {
+                      paymentSummary = '<span class="badge bg-warning">Pending</span>';
+                    } else {
+                      paymentSummary = '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                  }
+                  paymentSummaryEl.innerHTML = paymentSummary;
+
+                  // Re-populate payments list
+                  if (user.payments && user.payments.length > 0) {
+                    const paymentHtml = user.payments.map(payment => {
+                      const courseTitle = payment.course ? payment.course.title : 'Unknown Course';
+                      const installmentInfo = payment.total_installments > 1 ?
+                        ` (Installment ${payment.installment_number}/${payment.total_installments})` : '';
+
+                      let statusBadge = '';
+                      switch (payment.installment_status || payment.status) {
+                        case 'paid':
+                        case 'completed':
+                          statusBadge = '<span class="badge bg-success">Paid</span>';
+                          break;
+                        case 'pending':
+                          statusBadge = '<span class="badge bg-warning">Pending</span>';
+                          break;
+                        case 'overdue':
+                          statusBadge = '<span class="badge bg-danger">Overdue</span>';
+                          break;
+                        case 'failed':
+                          statusBadge = '<span class="badge bg-danger">Failed</span>';
+                          break;
+                        case 'cancelled':
+                          statusBadge = '<span class="badge bg-secondary">Cancelled</span>';
+                          break;
+                        default:
+                          statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                      }
+
+                      const paidDate = payment.paid_date ? new Date(payment.paid_date).toLocaleDateString() : 'N/A';
+                      const balanceInfo = payment.balance_remaining > 0 ?
+                        `<div class="text-muted small">Balance Remaining: $${payment.balance_remaining}</div>` : '';
+
+                      // Show add payment button if there's remaining balance
+                      const addPaymentButton = payment.balance_remaining > 0 ?
+                        `<button class="btn btn-success btn-sm add-payment-btn ms-2" 
+                                 data-payment-id="${payment.id}"
+                                 data-course-title="${courseTitle}"
+                                 data-balance-remaining="${payment.balance_remaining}">
+                          <i class="fa-solid fa-plus"></i> Add Payment
+                        </button>` : '';
+
+                      return `
+                        <div class="mb-3 p-3 border rounded">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
+                              <div class="fw-semibold">${courseTitle}${installmentInfo}</div>
+                              <div class="text-muted small">Total Amount: $${payment.amount}</div>
+                              <div class="text-muted small">Total Paid: $${payment.total_paid || 0}</div>
+                              <div class="text-muted small">Paid Date: ${paidDate}</div>
+                              ${balanceInfo}
+                            </div>
+                            <div class="d-flex flex-column gap-2" style="min-width: 200px;">
+                              <div class="input-group input-group-sm">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control form-control-sm amount-paid-input" 
+                                       data-payment-id="${payment.id}" 
+                                       placeholder="Amount Paid" 
+                                       step="0.01" 
+                                       min="0"
+                                       value="${payment.installment_status === 'paid' || payment.status === 'completed' ? (payment.installment_amount || payment.amount) : ''}">
+                              </div>
+                              <div class="d-flex gap-1">
+                                <select class="form-select form-select-sm payment-status-select" 
+                                        data-payment-id="${payment.id}" 
+                                        style="flex: 1;">
+                                  <option value="pending" ${payment.installment_status === 'pending' || payment.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                  <option value="paid" ${payment.installment_status === 'paid' || payment.status === 'completed' ? 'selected' : ''}>Paid</option>
+                                  <option value="overdue" ${payment.installment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
+                                  <option value="failed" ${payment.installment_status === 'failed' || payment.status === 'failed' ? 'selected' : ''}>Failed</option>
+                                  <option value="cancelled" ${payment.installment_status === 'cancelled' || payment.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                                <button class="btn btn-outline-primary btn-sm update-payment-btn" 
+                                        data-payment-id="${payment.id}"
+                                        data-current-status="${payment.installment_status || payment.status}">
+                                  <i class="fa-solid fa-save"></i>
+                                </button>
+                                ${addPaymentButton}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('');
+                    paymentsList.innerHTML = paymentHtml;
+
+                    // Re-add listeners
+                    setTimeout(() => {
+                      addPaymentUpdateListeners(user);
+                    }, 100);
+                  } else {
+                    paymentsList.innerHTML = '<div class="text-muted small">No payments found</div>';
+                  }
+
+                } else {
+                  showToast('Error: ' + result.message, 'error');
+                }
+              } catch (error) {
+                console.error('Error adding payment:', error);
+                showToast('Failed to add payment', 'error');
+              }
+            });
+          });
+        }
+
+        // Delete user button logic
         document.getElementById('deleteUserBtn').onclick = async function() {
           if (!currentUser) return;
 
@@ -347,7 +878,9 @@
             }
           }
         };
-        document.getElementById('suspendUserBtn').onclick = function() {
+
+        // Suspend user button logic
+        document.getElementById('suspendUserBtn').onclick = async function() {
           if (!currentUser) return;
           if (confirm('Suspend this user account?')) {
             // TODO: Implement AJAX call to suspend user
@@ -428,11 +961,10 @@
       }
     </style>
 
-    <!-- Scripts: reuse global JS stack -->
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-    <!-- FullCalendar for admin meetings calendar (office scheduling) -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet" />
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="/js/main.js" defer></script>
   </body>

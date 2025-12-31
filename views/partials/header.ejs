@@ -1,79 +1,476 @@
 <header class="site-header border-bottom bg-white sticky-top shadow-sm">
-	<div class="container py-2 py-lg-3">
-		<div class="d-flex align-items-center justify-content-between gap-3">
-			<!-- Logo -->
-			<a href="/" class="d-inline-flex align-items-center text-decoration-none">
-				<img src="/images/logo.png" alt="Integrated Oasis Logo" height="32" class="me-2" />
-				<span class="fw-semibold text-dark">Integrated Oasis</span>
-			</a>
+  <div class="container py-2 py-lg-3">
+    <div class="d-flex align-items-center justify-content-between gap-3">
+      <!-- Logo -->
+      <a href="/" class="d-inline-flex align-items-center text-decoration-none">
+        <img
+          src="/images/logo.png"
+          alt="Integrated Oasis Logo"
+          height="32"
+          class="me-2"
+        />
+        <span class="fw-semibold text-dark">Integrated Oasis</span>
+      </a>
 
-			<!-- Hamburger for small screens -->
-		<button class="btn btn-outline-secondary d-inline-flex d-md-none align-items-center justify-content-center" id="navToggle" aria-label="Toggle navigation">
-			<i class="fa-solid fa-bars"></i>
-		</button>
+      <!-- Hamburger for small screens -->
+      <button
+        class="btn btn-outline-secondary d-inline-flex d-md-none align-items-center justify-content-center"
+        id="navToggle"
+        aria-label="Toggle navigation"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
 
-			<!-- Navigation -->
-			<nav class="nav-primary d-none d-md-block">
-				<ul class="nav mb-0 align-items-center">
-					<li class="nav-item"><a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Home</a></li>
-					<li class="nav-item dropdown">
-						<a
-							class="nav-link dropdown-toggle <%= (currentPath.startsWith('/online-training') || currentPath.startsWith('/in-house-training') || currentPath.startsWith('/free-tutorials')) ? 'active' : '' %>"
-							href="#"
-							id="trainingDropdown"
-							role="button"
-							data-bs-toggle="dropdown"
-							aria-expanded="false"
-						>
-							Training
-						</a>
-						<ul class="dropdown-menu" aria-labelledby="trainingDropdown">
-							<li><a class="dropdown-item <%= currentPath.startsWith('/online-training') ? 'active' : '' %>" href="/online-training">Online Training</a></li>
-							<li><a class="dropdown-item <%= currentPath.startsWith('/in-house-training') ? 'active' : '' %>" href="/in-house-training">In-House Training</a></li>
-							<li><a class="dropdown-item <%= currentPath.startsWith('/free-tutorials') ? 'active' : '' %>" href="/free-tutorials">Free Tutorials</a></li>
-						</ul>
-					</li>
-					<li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/about') ? 'active' : '' %>" href="/about">About Us</a></li>
-					<li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/contact') ? 'active' : '' %>" href="/contact">Contact</a></li>
-					<!-- Login/Signup link for medium screens -->
-					<li class="nav-item d-lg-none"><a class="nav-link <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login/Signup</a></li>
-					<!-- Login & Sign Up buttons for large screens -->
-					<li class="nav-item ms-lg-3 d-none d-lg-flex align-items-center gap-2">
-						<a href="/auth" class="btn btn-outline-primary btn-sm <%= currentPath.startsWith('/auth') ? 'active' : '' %>">Login</a>
-						<a href="/signup" class="btn btn-success btn-sm <%= currentPath.startsWith('/signup') ? 'active' : '' %>">Sign Up</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+      <!-- Navigation -->
+      <nav class="nav-primary d-none d-md-block">
+        <ul class="nav mb-0 align-items-center">
+          <li class="nav-item">
+            <a
+              class="nav-link <%= currentPath === '/' ? 'active' : '' %>"
+              href="/"
+               style="font-weight: bolder;"
+              >Home</a
+            >
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle <%= (currentPath.startsWith('/online-training') || currentPath.startsWith('/in-house-training') || currentPath.startsWith('/free-tutorials')) ? 'active' : '' %>"
+              href="#"
+              id="trainingDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+			   style="font-weight: bolder;"
+            >
+              Courses
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="trainingDropdown">
+              <!-- <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/online-training') ? 'active' : '' %>"
+                  href="/online-training"
+                  >Online Training</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/in-house-training') ? 'active' : '' %>"
+                  href="/in-house-training"
+                  >In-House Training</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/free-tutorials') ? 'active' : '' %>"
+                  href="/free-tutorials"
+                  >Free Tutorials</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li> -->
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/web-dev') ? 'active' : '' %>"
+                  href="/courses/web-dev"
+                  ><i class="fa-solid fa-code me-2"></i>Web Development</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/cyber-security') ? 'active' : '' %>"
+                  href="/courses/cyber-security"
+                  ><i class="fa-solid fa-shield-halved me-2"></i>Cyber Security</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/data-science') ? 'active' : '' %>"
+                  href="/courses/data-science"
+                  ><i class="fa-solid fa-chart-line me-2"></i>Data Science</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/ai-ml') ? 'active' : '' %>"
+                  href="/courses/ai-ml"
+                  ><i class="fa-solid fa-brain me-2"></i>AI & Machine Learning</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/cloud') ? 'active' : '' %>"
+                  href="/courses/cloud"
+                  ><i class="fa-solid fa-cloud me-2"></i>Cloud Computing</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/ui-ux') ? 'active' : '' %>"
+                  href="/courses/ui-ux"
+                  ><i class="fa-solid fa-palette me-2"></i>UI/UX Design</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/devops') ? 'active' : '' %>"
+                  href="/courses/devops"
+                  ><i class="fa-solid fa-cogs me-2"></i>DevOps</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/courses/database') ? 'active' : '' %>"
+                  href="/courses/database"
+                  ><i class="fa-solid fa-database me-2"></i>Database Fundamentals</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link <%= currentPath.startsWith('/about') ? 'active' : '' %>"
+              href="/about"
+			   style="font-weight: bolder;"
+              >About Us</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link <%= currentPath.startsWith('/contact') ? 'active' : '' %>"
+              href="/contact"
+			  style="font-weight: bolder;"
+              >Contact</a
+            >
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle <%= (currentPath.startsWith('/services/tech-solutions') || currentPath.startsWith('/services/tech-projects') || currentPath.startsWith('/services/trainings')) ? 'active' : '' %>"
+              href="#"
+              id="servicesDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-weight: bolder;"
+            >
+              Services
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/services/tech-solutions') ? 'active' : '' %>"
+                  href="/services/tech-solutions"
+                  ><i class="fa-solid fa-tools me-2"></i>Tech Solutions</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/services/tech-projects') ? 'active' : '' %>"
+                  href="/services/tech-projects"
+                  ><i class="fa-solid fa-project-diagram me-2"></i>Tech Projects</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/services/trainings') ? 'active' : '' %>"
+                  href="/services/trainings"
+                  ><i class="fa-solid fa-graduation-cap me-2"></i>Trainings</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle <%= (currentPath.startsWith('/resources/blog') || currentPath.startsWith('/resources/docs') || currentPath.startsWith('/resources/faq') || currentPath.startsWith('/resources/downloads') || currentPath.startsWith('/resources/community')) ? 'active' : '' %>"
+              href="#"
+              id="resourcesDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-weight: bolder;"
+            >
+              Resources
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/resources/blog') ? 'active' : '' %>"
+                  href="/resources/blog"
+                  ><i class="fa-solid fa-blog me-2"></i>Blog</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/resources/docs') ? 'active' : '' %>"
+                  href="/free-courses"
+                  ><i class="fa-solid fa-book me-2"></i>Free Courses</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/resources/faq') ? 'active' : '' %>"
+                  href="/tutorials"
+                  ><i class="fa-solid fa-question-circle me-2"></i>Tutorials</a
+                >
+              </li>
+             
+              <li>
+                <a
+                  class="dropdown-item <%= currentPath.startsWith('/resources/community') ? 'active' : '' %>"
+                  href="/events"
+                  ><i class="fa-solid fa-users me-2"></i>Events</a
+                >
+              </li>
+            </ul>
+          </li>
+          <!-- Login/Signup link for medium screens -->
+          <li class="nav-item d-lg-none">
+            <a
+              class="nav-link <%= currentPath.startsWith('/auth') ? 'active' : '' %>"
+              href="/auth"
+              >Login/Signup</a
+            >
+          </li>
+          <!-- Login & Sign Up buttons for large screens -->
+          <li
+            class="nav-item ms-lg-3 d-none d-lg-flex align-items-center gap-2"
+          >
+            <a
+              href="/auth"
+              class="btn btn-outline-primary btn-sm <%= currentPath.startsWith('/auth') ? 'active' : '' %>"
+              >Login</a
+            >
+            <a
+              href="/signup"
+              class="btn btn-success btn-sm <%= currentPath.startsWith('/signup') ? 'active' : '' %>"
+              >Sign Up</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 
-	<!-- Mobile menu -->
-	<div class="container d-md-none" id="mobileMenu" hidden>
-		<nav>
-			<ul class="list-unstyled mb-2">
-				<li><a class="d-block py-2 <%= currentPath === '/' ? 'active' : '' %>" href="/">Home</a></li>
-				<li>
-					<a class="d-block py-2 dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#mobileTrainingMenu" aria-expanded="false">Training</a>
-					<div class="collapse" id="mobileTrainingMenu">
-						<ul class="list-unstyled ps-3">
-							<li><a class="d-block py-2 <%= currentPath.startsWith('/online-training') ? 'active' : '' %>" href="/online-training">Online Training</a></li>
-							<li><a class="d-block py-2 <%= currentPath.startsWith('/in-house-training') ? 'active' : '' %>" href="/in-house-training">In-House Training</a></li>
-							<li><a class="d-block py-2 <%= currentPath.startsWith('/free-tutorials') ? 'active' : '' %>" href="/free-tutorials">Free Tutorials</a></li>
-						</ul>
-					</div>
-				</li>
-				<li><a class="d-block py-2 <%= currentPath.startsWith('/about') ? 'active' : '' %>" href="/about">About Us</a></li>
-				<li><a class="d-block py-2 <%= currentPath.startsWith('/contact') ? 'active' : '' %>" href="/contact">Contact</a></li>
-				<li class="mt-3">
-					<div class="d-flex gap-2">
-						<a class="btn btn-outline-primary flex-fill py-2 <%= currentPath.startsWith('/auth') ? 'active' : '' %>" href="/auth">Login</a>
-						<a class="btn btn-primary flex-fill py-2 <%= currentPath.startsWith('/signup') ? 'active' : '' %>" href="/signup">Sign Up</a>
-					</div>
-				</li>
-				<li class="mt-2">
-					<a class="d-block py-2 btn btn-success w-100 <%= currentPath.startsWith('/get-started') ? 'active' : '' %>" href="/get-started">Get Started</a>
-				</li>
-		</ul>
-		</nav>
-	</div>
+  <!-- Mobile menu -->
+  <div class="container d-md-none" id="mobileMenu" hidden>
+    <nav>
+      <ul class="list-unstyled mb-2">
+        <li>
+          <a
+            class="d-block py-2 <%= currentPath === '/' ? 'active' : '' %>"
+            href="/"
+            >Home</a
+          >
+        </li>
+        <li>
+          <a
+            class="d-block py-2 dropdown-toggle"
+            href="#"
+            data-bs-toggle="collapse"
+            data-bs-target="#mobileTrainingMenu"
+            aria-expanded="false"
+            >Courses</a
+          >
+          <div class="collapse" id="mobileTrainingMenu" style="max-height: 60vh; overflow-y: auto;">
+            <ul class="list-unstyled ps-3">
+              <!-- <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/online-training') ? 'active' : '' %>"
+                  href="/online-training"
+                  >Online Training</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/in-house-training') ? 'active' : '' %>"
+                  href="/in-house-training"
+                  >In-House Training</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/free-tutorials') ? 'active' : '' %>"
+                  href="/free-tutorials"
+                  >Free Tutorials</a
+                >
+              </li> -->
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/web-dev') ? 'active' : '' %>"
+                    href="/courses/web-dev"
+                    ><i class="fa-solid fa-code me-2"></i>Web Development</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/cyber-security') ? 'active' : '' %>"
+                    href="/courses/cyber-security"
+                    ><i class="fa-solid fa-shield-halved me-2"></i>Cyber Security</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/data-science') ? 'active' : '' %>"
+                    href="/courses/data-science"
+                    ><i class="fa-solid fa-chart-line me-2"></i>Data Science</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/ai-ml') ? 'active' : '' %>"
+                    href="/courses/ai-ml"
+                    ><i class="fa-solid fa-brain me-2"></i>AI & Machine Learning</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/cloud') ? 'active' : '' %>"
+                    href="/courses/cloud"
+                    ><i class="fa-solid fa-cloud me-2"></i>Cloud Computing</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/ui-ux') ? 'active' : '' %>"
+                    href="/courses/ui-ux"
+                    ><i class="fa-solid fa-palette me-2"></i>UI/UX Design</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/devops') ? 'active' : '' %>"
+                    href="/courses/devops"
+                    ><i class="fa-solid fa-cogs me-2"></i>DevOps</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="d-block py-2 <%= currentPath.startsWith('/courses/database') ? 'active' : '' %>"
+                    href="/courses/database"
+                    ><i class="fa-solid fa-database me-2"></i>Database Fundamentals</a
+                  >
+                </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a
+            class="d-block py-2 <%= currentPath.startsWith('/about') ? 'active' : '' %>"
+            href="/about"
+            >About Us</a
+          >
+        </li>
+        <li>
+          <a
+            class="d-block py-2 <%= currentPath.startsWith('/contact') ? 'active' : '' %>"
+            href="/contact"
+            >Contact</a
+          >
+        </li>
+        <li>
+          <a
+            class="d-block py-2 dropdown-toggle"
+            href="#"
+            data-bs-toggle="collapse"
+            data-bs-target="#mobileServicesMenu"
+            aria-expanded="false"
+            >Services</a
+          >
+          <div class="collapse" id="mobileServicesMenu">
+            <ul class="list-unstyled ps-3">
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/services/tech-solutions') ? 'active' : '' %>"
+                  href="/services/tech-solutions"
+                  ><i class="fa-solid fa-tools me-2"></i>Tech Solutions</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/services/tech-projects') ? 'active' : '' %>"
+                  href="/services/tech-projects"
+                  ><i class="fa-solid fa-project-diagram me-2"></i>Tech Projects</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/services/trainings') ? 'active' : '' %>"
+                  href="/services/trainings"
+                  ><i class="fa-solid fa-graduation-cap me-2"></i>Trainings</a
+                >
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a
+            class="d-block py-2 dropdown-toggle"
+            href="#"
+            data-bs-toggle="collapse"
+            data-bs-target="#mobileResourcesMenu"
+            aria-expanded="false"
+            >Resources</a
+          >
+          <div class="collapse" id="mobileResourcesMenu">
+            <ul class="list-unstyled ps-3">
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/resources/blog') ? 'active' : '' %>"
+                  href="/resources/blog"
+                  ><i class="fa-solid fa-blog me-2"></i>Blog</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/resources/docs') ? 'active' : '' %>"
+                  href="/resources/docs"
+                  ><i class="fa-solid fa-book me-2"></i>Documentation</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/resources/faq') ? 'active' : '' %>"
+                  href="/resources/faq"
+                  ><i class="fa-solid fa-question-circle me-2"></i>FAQ</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/resources/downloads') ? 'active' : '' %>"
+                  href="/resources/downloads"
+                  ><i class="fa-solid fa-download me-2"></i>Downloads</a
+                >
+              </li>
+              <li>
+                <a
+                  class="d-block py-2 <%= currentPath.startsWith('/resources/community') ? 'active' : '' %>"
+                  href="/resources/community"
+                  ><i class="fa-solid fa-users me-2"></i>Community</a
+                >
+              </li>
+            </ul>
+          </div>
+        </li>
+          <div class="d-flex gap-2">
+            <a
+              class="btn btn-outline-primary flex-fill py-2 <%= currentPath.startsWith('/auth') ? 'active' : '' %>"
+              href="/auth"
+              >Login</a
+            >
+            <a
+              class="btn btn-primary flex-fill py-2 <%= currentPath.startsWith('/signup') ? 'active' : '' %>"
+              href="/signup"
+              >Sign Up</a
+            >
+          </div>
+        </li>
+        <li class="mt-2">
+          <a
+            class="d-block py-2 btn btn-success w-100 <%= currentPath.startsWith('/get-started') ? 'active' : '' %>"
+            href="/get-started"
+            >Get Started</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
 </header>

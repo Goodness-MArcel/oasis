@@ -77,6 +77,45 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      installment_number: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'Installment number (1, 2, 3) for installment payments'
+      },
+      total_installments: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        comment: 'Total number of installments for this payment plan'
+      },
+      installment_amount: {
+        type: DataTypes.DECIMAL(12, 2),
+        allowNull: true,
+        comment: 'Amount for this specific installment'
+      },
+      paid_date: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        comment: 'Date when this installment was paid'
+      },
+      installment_status: {
+        type: DataTypes.ENUM('pending', 'paid', 'overdue', 'cancelled'),
+        allowNull: false,
+        defaultValue: 'pending',
+        comment: 'Status of this installment'
+      },
+      balance_remaining: {
+        type: DataTypes.DECIMAL(12, 2),
+        allowNull: false,
+        defaultValue: 0,
+        comment: 'Remaining balance for installment payments'
+      },
+      total_paid: {
+        type: DataTypes.DECIMAL(12, 2),
+        allowNull: false,
+        defaultValue: 0,
+        comment: 'Cumulative total amount paid so far for this course'
+      },
     },
     {
       sequelize,
